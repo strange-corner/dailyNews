@@ -158,7 +158,11 @@ def generate_today():
         date_time = date_entry.get_date()
         f.writelines(["Nr. 0 vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}", "\\sectionline"])
         # Artikel
-        for i in range(article_listbox.size()):
+        selected_indices = article_listbox.curselection()
+        if not selected_indices:
+            messagebox.showwarning("Fehler", "Bitte mindestens einen Artikel auswählen.")
+            return
+        for i in selected_indices:
             path = os.path.join(folder, article_listbox.get(i))
             with open(path, "r", encoding="utf-8") as af:
                 f.write("\n" + af.read() + "\n")
@@ -171,6 +175,14 @@ def generate_today():
     generate_pdf()
     os.system(os.path.join(folder, "template.pdf"))
 
+previous_selection = set()
+def article_selected():
+    global previous_selection
+    selected_items = set(article_listbox.curselection())
+    new_selection = selected_items - previous_selection
+    if len(new_selection) > 0:
+        populate_form(article_listbox.get(new_selection.pop()))
+    previous_selection = selected_items
 
 # --- GUI Setup ---
 root = tk.Tk()
@@ -211,9 +223,9 @@ tk.Button(wf, text="Wetter für Datum speichern", command=save_weather_block).pa
 # Auswahl und Reihenfolge der Artikel
 self = tk.LabelFrame(root, text="Artikel für Tagesausgabe", padx=5, pady=5)
 self.pack(fill="both", expand=True, padx=10, pady=5)
-article_listbox = tk.Listbox(self, selectmode=tk.BROWSE, width=60, height=8)
+article_listbox = tk.Listbox(self, selectmode=tk.MULTIPLE, width=60, height=8)
 article_listbox.pack(side="left", fill="both", expand=True)
-article_listbox.bind("<<ListboxSelect>>", lambda e: populate_form(article_listbox.get(article_listbox.curselection()[0])))
+article_listbox.bind("<<ListboxSelect>>", lambda e: article_selected())
 btnf = tk.Frame(self)
 btnf.pack(side="right", fill="y")
 tk.Button(btnf, text="↑", command=move_up).pack(fill="x")
