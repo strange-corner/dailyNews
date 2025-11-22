@@ -156,7 +156,7 @@ def generate_today():
     with open(today_path, "w", encoding="utf-8") as f:
         # Nr. Datum
         date_time = date_entry.get_date()
-        f.writelines(["Nr. 0 vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}", "\\sectionline"])
+        f.writelines([f"Nr. {nr_entry.get()} vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}", "\\sectionline"])
         # Artikel
         selected_indices = article_listbox.curselection()
         if not selected_indices:
@@ -191,6 +191,9 @@ root.title("Zeitungs-Generator mit Wetter & Datum")
 # Datumsauswahl
 date_frame = tk.Frame(root)
 date_frame.pack(padx=10, pady=5)
+tk.Label(date_frame, text="Nr.:").pack(side="left")
+nr_entry = tk.Entry(date_frame)
+nr_entry.pack(side="left")
 tk.Label(date_frame, text="Datum:").pack(side="left")
 date_entry = DateEntry(date_frame, date_pattern="dd.mm.yyyy")
 date_entry.set_date(datetime.now())
