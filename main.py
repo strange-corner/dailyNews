@@ -46,6 +46,9 @@ def getFolderFromDate():
     return folder
 
 
+def articleFilenameFromTitle(title: str) -> str:
+    return f"a_{title.replace(' ', '_')}.tex"
+
 # --- GUI-Funktionen ---
 
 def save_article():
@@ -60,9 +63,9 @@ def save_article():
     os.makedirs(getFolderFromDate(), exist_ok=True)
 
     # Dateiname sicher machen
-    fname = title.replace(" ", "_")
     folder = getFolderFromDate()
-    article_filename = os.path.join(folder, f"{fname}.tex")
+    fname = articleFilenameFromTitle(title)
+    article_filename = os.path.join(folder, fname)
     with open(article_filename, "w", encoding="utf-8") as f:
         f.write(f"\\section*{{{title}}}\n")
         if lead:
@@ -110,7 +113,7 @@ def refresh_articles():
     folder = getFolderFromDate()
     if os.path.isdir(folder):
         for fname in os.listdir(folder):
-            if fname.endswith(".tex") and fname != "today.tex":
+            if fname.endswith(".tex") and fname.startswith("a_"):
                 article_listbox.insert(tk.END, os.path.join(folder, fname))
 
 
@@ -154,6 +157,9 @@ def generate_today():
     today_path = os.path.join(outfolder, "today.tex")
 
     with open(today_path, "w", encoding="utf-8") as f:
+        # Nr. Datum
+        date_time = date_entry.get_date()
+        f.writelines(["Nr. 0 vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}", "\\sectionline"])
         # Artikel
         for i in range(article_listbox.size()):
             path = article_listbox.get(i)
