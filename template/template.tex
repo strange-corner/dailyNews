@@ -1,0 +1,106 @@
+\documentclass[a4paper,10pt]{article}
+
+% --- Layout & Typografie ---
+\usepackage[margin=0.9cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{wrapfig}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage[ngerman]{babel} % deutsche Sprache
+\usepackage[useregional]{datetime2}
+\usepackage{ragged2e}
+
+\setlength{\columnsep}{0.8cm}
+
+% keine Seitenzahlen
+\pagestyle{empty}
+
+% --- Zeitungskopf ---
+\newcommand{\NewspaperTitle}{Gübsensee Nachrichten}
+\newcommand{\NewspaperSubtitle}{Tageszeitung für Herisau, St. Gallen und Umgebung als E-Papier oder zum selber ausdrucken}
+\newcommand{\NewspaperDate}{\today}
+
+% --- Überschriftenstyle ---
+\newcommand{\titellinie}{\noindent\rule{\columnwidth}{0.5pt}}
+
+\titleformat{\section}[block]
+  {\normalfont\Large\bfseries\scshape}
+  {}            % kein Label
+  {0pt}         % Abstand Label–Text
+  { }           % Formatierung (leer lassen)
+  [\vspace{-19pt}\titellinie] % <- hier kommt der Zusatz für das Ende!
+
+\titleformat{\subsection}
+  {\normalfont\Large\bfseries}
+  {}{0pt}{\vspace{0.5mm}}
+
+% --- Abstände für Überschriften (links, oben, unten) ---
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+\titlespacing*{\subsection}{0pt}{2pt}{1pt}
+
+% --- Lead/Vorspann-Stil ---
+\newcommand{\lead}[1]{
+    {\bfseries #1}
+    \vspace{1mm}
+}
+
+% --- Trennlinie ---
+\newcommand{\sectionline}{
+    \hrule
+}
+
+% --- Bild-Caption-Stil ---
+\captionsetup{
+    font=small,
+    labelfont=bf,
+    width=0.95\columnwidth
+}
+
+% --------------------
+% Wetterumgebung definieren
+% --------------------
+\newcommand{\wetter}[1]{%
+\begin{FlushLeft}
+\hrule\vspace{1mm} % kleine Trennlinie oben
+\section{Wetter}
+\small #1
+\vspace{1mm}
+\end{FlushLeft}
+}
+
+\newenvironment{AgendaBlock}{
+  \begin{list}{}{
+    \setlength{\leftmargin}{0pt}
+    \setlength{\itemsep}{0pt}
+  }
+}{\end{list}}
+
+\begin{document}
+
+% --- Titelblock ---
+\begin{center}
+    {\fontsize{28}{32}\selectfont\textsc{\NewspaperTitle}} \\[2mm]
+    {\large\itshape \NewspaperSubtitle} \\[4mm]
+\end{center}
+
+\hrule
+
+% --- Dreispaltig ---
+\begin{multicols}{3}
+\setlength{\parindent}{0pt}
+\input{today.tex}
+
+% --------------------
+% Impressum (immer am Ende)
+% --------------------
+\input{impressum.tex}
+\end{multicols}
+
+\end{document}

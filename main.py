@@ -1,4 +1,6 @@
 import os
+import shutil
+import subprocess
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from datetime import datetime
@@ -59,6 +61,7 @@ def save_article():
 
     # Dateiname sicher machen
     fname = title.replace(" ", "_")
+    folder = getFolderFromDate()
     article_filename = os.path.join(folder, f"{fname}.tex")
     with open(article_filename, "w", encoding="utf-8") as f:
         f.write(f"\\section*{{{title}}}\n")
@@ -136,29 +139,21 @@ def move_down():
     article_listbox.insert(i + 1, val)
     article_listbox.selection_set(i + 1)
 
+def generate_pdf():
+    folder = getFolderFromDate()
+    for filename in ("template.tex", "impressum.tex"):
+        src_template = os.path.join("template", filename)
+        tgt_template = os.path.join(folder, filename)
+        shutil.copy(src_template, tgt_template)
+    subprocess.run(["pdflatex", "/template.tex"], cwd=folder)
 
 def generate_today():
-    d = date_entry.get()
-    folder = d.replace("-", "")
-    folder = folder[2:] + "_" + folder[4:]
+    folder = getFolderFromDate()
     outfolder = folder
     os.makedirs(outfolder, exist_ok=True)
     today_path = os.path.join(outfolder, "today.tex")
 
     with open(today_path, "w", encoding="utf-8") as f:
-        # Präambel
-        f.write(r"""\documentclass[10pt,a4paper]{article}
-\usepackage[ngerman]{babel}
-\usepackage{graphicx}
-\usepackage{paracol}
-\usepackage{titlesec}
-\newcommand{\sectionline}{\noindent\rule{\columnwidth}{0.5pt}}
-\titleformat{\section}[block]{\bfseries\Large}{}{0pt}{}[\vspace{-4pt}\sectionline]
-\titlespacing*{\section}{0pt}{6pt}{12pt}
-\pagestyle{empty}
-\begin{document}
-\begin{paracol}{3}
-""")
         # Artikel
         for i in range(article_listbox.size()):
             path = article_listbox.get(i)
@@ -170,11 +165,7 @@ def generate_today():
             f.write("\n% Wetter\n")
             with open(weather_file, "r", encoding="utf-8") as wf:
                 f.write(wf.read())
-        # Abschluss
-        f.write(r"""
-\end{paracol}
-\end{document}
-""")
+    generate_pdf()
     messagebox.showinfo("Tagesausgabe erstellt", today_path)
 
 
