@@ -9,6 +9,8 @@ import requests
 from tkcalendar import DateEntry
 
 # --- Konstanten / Konfiguration ---
+import article_codec
+
 LAT = 47.3833  # Beispielkoordinaten Ostschweiz / Herisau (anpassen)
 LON = 9.3
 
@@ -66,19 +68,7 @@ def save_article():
     folder = getFolderFromDate()
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
-    with open(article_filename, "w", encoding="utf-8") as f:
-        f.write(f"\\section*{{{title}}}\n")
-        if lead:
-            f.write(f"\\textbf{{{lead}}}\n\n")
-        f.write(content + "\n")
-        if url:
-            # QR-Code erzeugen
-            qr = qrcode.make(url)
-            qr_path = os.path.join(folder, f"{fname}_qr.png")
-            qr.save(qr_path)
-            # In Tex einbinden
-            f.write(
-                f"\n\\begin{{center}}\\includegraphics[width=3cm]{{{os.path.basename(qr_path)}}}\\\\\nmehr…\\end{{center}}\n")
+    article_codec.encode(article_filename, {"title": title, "lead": lead, "content": content, "url": url})
     messagebox.showinfo("Artikel gespeichert", f"{article_filename}")
     refresh_articles()
 
@@ -114,8 +104,15 @@ def refresh_articles():
     if os.path.isdir(folder):
         for fname in os.listdir(folder):
             if fname.endswith(".tex") and fname.startswith("a_"):
-                article_listbox.insert(tk.END, os.path.join(folder, fname))
+                article_listbox.insert(tk.END, fname)
 
+def populate_form(article_filename):
+    felder_loeschen()
+    article_path = os.path.join(getFolderFromDate(), article_filename)
+    article_dict = article_codec.decode(article_path)
+    article_title.insert(0, article_dict["title"])
+    article_lead.insert(1.0, article_dict["lead"])
+    article_content.insert(1.0, article_dict["content"])
 
 def move_up():
     sel = article_listbox.curselection()
@@ -162,7 +159,7 @@ def generate_today():
         f.writelines(["Nr. 0 vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}", "\\sectionline"])
         # Artikel
         for i in range(article_listbox.size()):
-            path = article_listbox.get(i)
+            path = os.path.join(folder, article_listbox.get(i))
             with open(path, "r", encoding="utf-8") as af:
                 f.write("\n" + af.read() + "\n")
         # Wetter
@@ -172,7 +169,7 @@ def generate_today():
             with open(weather_file, "r", encoding="utf-8") as wf:
                 f.write(wf.read())
     generate_pdf()
-    messagebox.showinfo("Tagesausgabe erstellt", today_path)
+    os.system(os.path.join(folder, "template.pdf"))
 
 
 # --- GUI Setup ---
@@ -216,6 +213,7 @@ self = tk.LabelFrame(root, text="Artikel für Tagesausgabe", padx=5, pady=5)
 self.pack(fill="both", expand=True, padx=10, pady=5)
 article_listbox = tk.Listbox(self, selectmode=tk.BROWSE, width=60, height=8)
 article_listbox.pack(side="left", fill="both", expand=True)
+article_listbox.bind("<<ListboxSelect>>", lambda e: populate_form(article_listbox.get(article_listbox.curselection()[0])))
 btnf = tk.Frame(self)
 btnf.pack(side="right", fill="y")
 tk.Button(btnf, text="↑", command=move_up).pack(fill="x")
