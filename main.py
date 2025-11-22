@@ -156,16 +156,15 @@ def generate_today():
     with open(today_path, "w", encoding="utf-8") as f:
         # Nr. Datum
         date_time = date_entry.get_date()
-        f.writelines([f"Nr. {nr_entry.get()} vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}", "\\sectionline"])
+        f.writelines([f"Nr. {nr_entry.get()} vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}\n", "\\sectionline\n"])
         # Artikel
         selected_indices = article_listbox.curselection()
         if not selected_indices:
             messagebox.showwarning("Fehler", "Bitte mindestens einen Artikel auswählen.")
             return
         for i in selected_indices:
-            path = os.path.join(folder, article_listbox.get(i))
-            with open(path, "r", encoding="utf-8") as af:
-                f.write("\n" + af.read() + "\n")
+            file_to_include = article_listbox.get(i)
+            f.write("\\input{" + file_to_include + "}\n")
         # Wetter
         weather_file = os.path.join(folder, "wetter.tex")
         if os.path.isfile(weather_file):
