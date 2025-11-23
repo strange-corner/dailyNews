@@ -21,12 +21,15 @@ def decode(filepath: str) -> dict:
     result = dict()
     with open(filepath, "r", encoding="utf-8") as f:
         lines = f.readlines()
-        title_match = re.match(r"\\subsection\*\{(.*)\}", lines[0])
+        line = 0
+        title_match = re.match(r"\\subsection\*\{(.*)\}", lines[line])
+        line += 1
         if title_match:
             result["title"] = title_match.group(1)
-        lead_match = re.match(r"\\textbf\{(.*)\}", lines[1])
+        lead_match = re.match(r"\\textbf\{(.*)\}", lines[line])
         if lead_match:
             result["lead"] = lead_match.group(1)
-        result["content"] = lines[3]
+            line += 2
+        result["content"] = lines[line]
 
     return result

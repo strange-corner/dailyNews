@@ -53,6 +53,7 @@ def getFolderFromDate():
 def articleFilenameFromTitle(title: str) -> str:
     return f"a_{title.replace(' ', '_')}.tex"
 
+
 # --- GUI-Funktionen ---
 
 def save_article():
@@ -76,10 +77,17 @@ def save_article():
     refresh_article_ui()
     felder_loeschen()
 
+
+def add_category():
+    pageflow.add(CategoryMarker(combobox.get()))
+    refresh_article_ui()
+
+
 def felder_loeschen():
     article_title.delete(0, "end")
     article_lead.delete(1.0, tk.END)
     article_content.delete(1.0, tk.END)
+
 
 def save_weather_block():
     date = date_entry.get()
@@ -101,16 +109,19 @@ def save_weather_block():
     messagebox.showinfo("Wetter gespeichert", weather_filename)
     refresh_articles()
 
+
 def refresh_article_ui():
     article_listbox.delete(0, tk.END)
     for elem in pageflow.elements():
-        identifier = elem.identifier()
+        identifier = elem.ident()
         article_listbox.insert(tk.END, identifier)
+
 
 def refresh_articles():
     global pageflow
     pageflow.refreshArticles(getFolderFromDate())
     refresh_article_ui()
+
 
 def populate_form(article_filename):
     felder_loeschen()
@@ -120,6 +131,7 @@ def populate_form(article_filename):
     if "lead" in article_dict:
         article_lead.insert(1.0, article_dict["lead"])
     article_content.insert(1.0, article_dict["content"])
+
 
 def move_up():
     global pageflow
@@ -131,6 +143,7 @@ def move_up():
     newSel = [i - 1 for i in sel]
     article_listbox.selection_set(min(newSel), max(newSel))
 
+
 def move_down():
     global pageflow
     sel = article_listbox.curselection()
@@ -141,6 +154,7 @@ def move_down():
     newSel = [i + 1 for i in sel]
     article_listbox.selection_set(min(newSel), max(newSel))
 
+
 def generate_pdf():
     folder = getFolderFromDate()
     for filename in ("template.tex", "impressum.tex"):
@@ -148,6 +162,7 @@ def generate_pdf():
         tgt_template = os.path.join(folder, filename)
         shutil.copy(src_template, tgt_template)
     subprocess.run(["pdflatex", "/template.tex"], cwd=folder)
+
 
 def generate_today():
     folder = getFolderFromDate()
@@ -158,15 +173,20 @@ def generate_today():
     with open(today_path, "w", encoding="utf-8") as f:
         # Nr. Datum
         date_time = date_entry.get_date()
-        f.writelines([f"Nr. {nr_entry.get()} vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}\n", "\\sectionline\n"])
+        f.writelines(
+            [f"Nr. {nr_entry.get()} vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}\n", "\\sectionline\n"])
         # Artikel
         selected_indices = article_listbox.curselection()
         if not selected_indices:
             messagebox.showwarning("Fehler", "Bitte mindestens einen Artikel auswählen.")
             return
+        elements = pageflow.elements()
         for i in selected_indices:
-            file_to_include = article_listbox.get(i)
-            f.write("\\input{" + file_to_include + "}\n")
+            ele = elements[i]
+            if type(ele) == Article:
+                f.write("\\input{" + ele.filename + "}\n")
+            elif type(ele) == CategoryMarker:
+                f.write("\\section*{" + ele.ident() + "}\n")
         # Wetter
         weather_file = os.path.join(folder, "wetter.tex")
         if os.path.isfile(weather_file):
@@ -175,14 +195,22 @@ def generate_today():
     generate_pdf()
     os.system(os.path.join(folder, "template.pdf"))
 
+
 previous_selection = set()
+
+
 def article_selected():
     global previous_selection
     selected_items = set(article_listbox.curselection())
     new_selection = selected_items - previous_selection
     if len(new_selection) > 0:
-        populate_form(article_listbox.get(new_selection.pop()))
+
+        selection = new_selection.pop()
+        element = pageflow.elements()[selection]
+        if type(element) == Article:
+            populate_form(element.filename)
     previous_selection = selected_items
+
 
 # --- GUI Setup ---
 root = tk.Tk()
@@ -217,6 +245,13 @@ article_url = tk.Entry(artf, width=80)
 article_url.pack(fill="x", padx=5, pady=2)
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
+
+rf = tk.LabelFrame(root, text="Rubrik", padx=5, pady=5)
+rf.pack(fill="x", expand=True, padx=10, pady=5)
+combobox = ttk.Combobox(rf)
+combobox.pack(side="left", pady=5)
+combobox["values"] = ["Meldungen", "Meinungen"]
+tk.Button(rf, text="Rubrik einfügen", command=add_category).pack(pady=5)
 
 # Wetterbereich
 wf = tk.LabelFrame(root, text="Wetter (wird automatisch geladen)", padx=5, pady=5)
