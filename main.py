@@ -54,6 +54,15 @@ def articleFilenameFromTitle(title: str) -> str:
     return f"a_{title.replace(' ', '_')}.tex"
 
 
+def download_image(url):
+    image = requests.get(url)
+    image_name = url.split('/')[-1]
+    image_path = os.path.join(getFolderFromDate(), image_name)
+    with open(image_path, 'wb') as f:
+        for chunk in image.iter_content():
+            f.write(chunk)
+    return image_name
+
 # --- GUI-Funktionen ---
 
 def save_article():
@@ -61,9 +70,12 @@ def save_article():
     lead = article_lead.get("1.0", "end").strip()
     content = article_content.get("1.0", "end").strip()
     url = article_url.get().strip()
+    image_url = image_url_entry.get().strip()
     if not title:
         messagebox.showwarning("Fehler", "Titel ist erforderlich")
         return
+    if image_url:
+        download_image(image_url)
 
     os.makedirs(getFolderFromDate(), exist_ok=True)
 
@@ -243,6 +255,9 @@ article_content.pack(fill="x", padx=5, pady=2)
 tk.Label(artf, text="URL (optional):").pack(anchor="w")
 article_url = tk.Entry(artf, width=80)
 article_url.pack(fill="x", padx=5, pady=2)
+tk.Label(artf, text="Image-URL (optional):").pack(anchor="w")
+image_url_entry = tk.Entry(artf, width=80)
+image_url_entry.pack(fill="x", padx=5, pady=2)
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
