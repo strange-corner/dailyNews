@@ -71,11 +71,12 @@ def save_article():
     content = article_content.get("1.0", "end").strip()
     url = article_url.get().strip()
     image_url = image_url_entry.get().strip()
+    image_filename = None
     if not title:
         messagebox.showwarning("Fehler", "Titel ist erforderlich")
         return
     if image_url:
-        download_image(image_url)
+        image_filename = download_image(image_url)
 
     os.makedirs(getFolderFromDate(), exist_ok=True)
 
@@ -83,7 +84,7 @@ def save_article():
     folder = getFolderFromDate()
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
-    article_codec.encode(article_filename, {"title": title, "lead": lead, "content": content, "url": url})
+    article_codec.encode(article_filename, {"title": title, "lead": lead, "content": content, "url": url, "image": image_filename})
     global pageflow
     pageflow.add(Article(fname))
     refresh_article_ui()

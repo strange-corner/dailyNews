@@ -16,6 +16,9 @@ def encode(filepath, article: dict):
             # In Tex einbinden
             f.write(
                 f"\n\\begin{{center}}\\includegraphics[width=3cm]{{{os.path.basename(qr_path)}}}\\\\\nmehr…\\end{{center}}\n")
+        if article["image"]:
+            f.write(f"\\begin{{minipage}}{{\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n")
+
 
 def decode(filepath: str) -> dict:
     result = dict()
@@ -31,5 +34,10 @@ def decode(filepath: str) -> dict:
             result["lead"] = lead_match.group(1)
             line += 2
         result["content"] = lines[line]
+        line += 2
+        if line < len(lines):
+            image_match = re.match(r"\\includegraphics[width =\\columnwidth]\{(.*)\}", lines[line])
+            if image_match:
+                result["image"] = image_match.group(1)
 
     return result
