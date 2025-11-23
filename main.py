@@ -10,10 +10,12 @@ from tkcalendar import DateEntry
 
 # --- Konstanten / Konfiguration ---
 import article_codec
+from pageflow import *
 
 LAT = 47.3833  # Beispielkoordinaten Ostschweiz / Herisau (anpassen)
 LON = 9.3
 
+pageflow = PageFlow()
 
 # Funktion, um Wetterdaten via Open-Meteo (ICON CH) zu holen
 def fetch_weather(date):
@@ -69,8 +71,10 @@ def save_article():
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
     article_codec.encode(article_filename, {"title": title, "lead": lead, "content": content, "url": url})
-    messagebox.showinfo("Artikel gespeichert", f"{article_filename}")
-    refresh_articles()
+    global pageflow
+    pageflow.add(Article(fname))
+    refresh_article_ui()
+    felder_loeschen()
 
 def felder_loeschen():
     article_title.delete(0, "end")
@@ -97,47 +101,45 @@ def save_weather_block():
     messagebox.showinfo("Wetter gespeichert", weather_filename)
     refresh_articles()
 
+def refresh_article_ui():
+    article_listbox.delete(0, tk.END)
+    for elem in pageflow.elements():
+        identifier = elem.identifier()
+        article_listbox.insert(tk.END, identifier)
 
 def refresh_articles():
-    article_listbox.delete(0, tk.END)
-    folder = getFolderFromDate()
-    if os.path.isdir(folder):
-        for fname in os.listdir(folder):
-            if fname.endswith(".tex") and fname.startswith("a_"):
-                article_listbox.insert(tk.END, fname)
+    global pageflow
+    pageflow.refreshArticles(getFolderFromDate())
+    refresh_article_ui()
 
 def populate_form(article_filename):
     felder_loeschen()
     article_path = os.path.join(getFolderFromDate(), article_filename)
     article_dict = article_codec.decode(article_path)
     article_title.insert(0, article_dict["title"])
-    article_lead.insert(1.0, article_dict["lead"])
+    if "lead" in article_dict:
+        article_lead.insert(1.0, article_dict["lead"])
     article_content.insert(1.0, article_dict["content"])
 
 def move_up():
+    global pageflow
     sel = article_listbox.curselection()
     if not sel:
         return
-    i = sel[0]
-    if i == 0:
-        return
-    val = article_listbox.get(i)
-    article_listbox.delete(i)
-    article_listbox.insert(i - 1, val)
-    article_listbox.selection_set(i - 1)
-
+    pageflow.move_up(sel)
+    refresh_article_ui()
+    newSel = [i - 1 for i in sel]
+    article_listbox.selection_set(min(newSel), max(newSel))
 
 def move_down():
+    global pageflow
     sel = article_listbox.curselection()
     if not sel:
         return
-    i = sel[0]
-    if i == article_listbox.size() - 1:
-        return
-    val = article_listbox.get(i)
-    article_listbox.delete(i)
-    article_listbox.insert(i + 1, val)
-    article_listbox.selection_set(i + 1)
+    pageflow.move_dn(sel)
+    refresh_article_ui()
+    newSel = [i + 1 for i in sel]
+    article_listbox.selection_set(min(newSel), max(newSel))
 
 def generate_pdf():
     folder = getFolderFromDate()
@@ -169,8 +171,7 @@ def generate_today():
         weather_file = os.path.join(folder, "wetter.tex")
         if os.path.isfile(weather_file):
             f.write("\n% Wetter\n")
-            with open(weather_file, "r", encoding="utf-8") as wf:
-                f.write(wf.read())
+            f.write("\\input{wetter.tex}\n")
     generate_pdf()
     os.system(os.path.join(folder, "template.pdf"))
 
