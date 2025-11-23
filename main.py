@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from datetime import datetime
+from datetime import datetime, timedelta
 import qrcode
 import requests
 from tkcalendar import DateEntry
@@ -11,38 +11,12 @@ from tkcalendar import DateEntry
 # --- Konstanten / Konfiguration ---
 import article_codec
 from pageflow import *
+import wetterdaten
 
 LAT = 47.3833  # Beispielkoordinaten Ostschweiz / Herisau (anpassen)
 LON = 9.3
 
 pageflow = PageFlow()
-
-# Funktion, um Wetterdaten via Open-Meteo (ICON CH) zu holen
-def fetch_weather(date):
-    # Open-Meteo API: ICON CH
-    base = "https://api.open-meteo.com/v1/forecast"
-    params = {
-        "latitude": LAT,
-        "longitude": LON,
-        "daily": ["temperature_2m_max", "temperature_2m_min", "precipitation_sum", "cloudcover_mean",
-                  "sunshine_duration"],
-        "start_date": date,
-        "end_date": date,
-        "timezone": "Europe/Zurich",
-    }
-    r = requests.get(base, params=params)
-    r.raise_for_status()
-    data = r.json()
-    # Extrahieren der Werte
-    d = data["daily"]
-    return {
-        "temp_max": d["temperature_2m_max"][0],
-        "temp_min": d["temperature_2m_min"][0],
-        "precip": d["precipitation_sum"][0],
-        "cloud": d["cloudcover_mean"][0],
-        "sunshine": d["sunshine_duration"][0]
-    }
-
 
 def getFolderFromDate():
     date_time = date_entry.get_date()
@@ -103,22 +77,21 @@ def felder_loeschen():
 
 
 def save_weather_block():
-    date = date_entry.get()
-    folder = date.replace("-", "")
-    folder = folder[2:] + "_" + folder[4:]
+    folder = getFolderFromDate()
     os.makedirs(folder, exist_ok=True)
 
+    date = date_entry.get_date()
+
     # hole Wetter für heute und morgen
-    weather_today = fetch_weather(date)
-    tomorrow = (datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
-    weather_tomorrow = fetch_weather(tomorrow)
+    weather = wetterdaten.get_data_for_day(date)
 
     weather_filename = os.path.join(folder, "wetter.tex")
     with open(weather_filename, "w", encoding="utf-8") as f:
-        f.write(
-            f"\\textbf{{Heute:}} Max {weather_today['temp_max']}°C, Min {weather_today['temp_min']}°C, Regen {weather_today['precip']} mm, Wolken {weather_today['cloud']}%, Sonne {weather_today['sunshine']} h \n")
-        f.write(
-            f"\\textbf{{Morgen:}} Max {weather_tomorrow['temp_max']}°C, Min {weather_tomorrow['temp_min']}°C, Regen {weather_tomorrow['precip']} mm, Wolken {weather_tomorrow['cloud']}%, Sonne {weather_tomorrow['sunshine']} h \n")
+        f.write(f"\\section{{Wetter}}\n")
+        for day in weather:
+            d = weather[day]
+            f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min']}°C, max. {d['id_temp_max']}°C, Niederschl. {d['id_niederschlag']}mm\\\\ \n")
+        f.write(f" (Quelle: MeteoSchweiz)\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)
     refresh_articles()
 
@@ -186,8 +159,16 @@ def generate_today():
     with open(today_path, "w", encoding="utf-8") as f:
         # Nr. Datum
         date_time = date_entry.get_date()
+        nr = nr_entry.get()
+        if nr == "":
+            messagebox.showwarning("Fehler", "Bitte Nr eingeben .")
+            return
+
         f.writelines(
-            [f"Nr. {nr_entry.get()} vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}\n", "\\sectionline\n"])
+            [f"Nr. {nr} vom " + date_time.strftime("%d. %b. %Y"), "\\vspace{1ex}\n", "\\sectionline\n"])
+        # Wetter
+        if os.path.isfile(os.path.join(outfolder, "wetter.tex")):
+            f.write("\\input{wetter.tex}\n")
         # Artikel
         selected_indices = article_listbox.curselection()
         if not selected_indices:
@@ -200,11 +181,6 @@ def generate_today():
                 f.write("\\input{" + ele.filename + "}\n")
             elif type(ele) == CategoryMarker:
                 f.write("\\section*{" + ele.ident() + "}\n")
-        # Wetter
-        weather_file = os.path.join(folder, "wetter.tex")
-        if os.path.isfile(weather_file):
-            f.write("\n% Wetter\n")
-            f.write("\\input{wetter.tex}\n")
     generate_pdf()
     os.system(os.path.join(folder, "template.pdf"))
 
