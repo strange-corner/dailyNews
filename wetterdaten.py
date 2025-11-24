@@ -6,6 +6,7 @@ import os.path
 import requests
 from datetime import datetime, timedelta
 import json
+import time
 from pprint import pprint
 
 url_toc = "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-local-forecasting/items"
@@ -27,13 +28,19 @@ id_map = {
 
 
 def get_toc() -> dict:
-    response = requests.get(url_toc)
-    with open("toc.csv", "wb") as f:
-        f.write(response.content)
-
+    toc_file = "toc.csv"
+    filectime = os.path.getmtime(toc_file)
+    timenow = time.time()
+    diff_s = timenow - filectime
+    if (diff_s < 3600.0):
+        print(f"{toc_file} is {diff_s} s old. Use it")
+    else:
+        print(f"Downloading {toc_file}")
+        response = requests.get(url_toc)
+        with open(toc_file, "wb") as f:
+            f.write(response.content)
 
 def get_latest_url_from_toc(collection_id: str):
-    get_toc()
     with open('toc.csv', "r", newline='') as f:
         jsondata = json.load(f)
         # pprint(jsondata)
@@ -82,6 +89,7 @@ def get_val_of_date(csvfile: str, date: datetime):
 def get_data_for_day(date: datetime):
     dates = {"Heute": date, "Morgen": date + timedelta(days=1)}
     result = dict()
+    get_toc()
     for date in dates:
         result[date] = dict()
         for key in id_map:
@@ -93,9 +101,9 @@ def get_data_for_day(date: datetime):
 
 
 def replace_id_symbol(result_data: dict):
-    with open("wetter_icons.csv", "r", encoding="utf-8") as f:
-        for day in result_data:
-            id = result_data[day]["id_symbol"]
+    for day in result_data:
+        id = result_data[day]["id_symbol"]
+        with open("wetter_icons.csv", "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=("id", "val"), delimiter=';')
 
             def inner_loop():
