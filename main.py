@@ -46,13 +46,13 @@ def save_article():
     url = article_url.get().strip()
     image_url = image_url_entry.get().strip()
     image_filename = None
+
+    os.makedirs(getFolderFromDate(), exist_ok=True)
     if not title:
         messagebox.showwarning("Fehler", "Titel ist erforderlich")
         return
     if image_url:
         image_filename = download_image(image_url)
-
-    os.makedirs(getFolderFromDate(), exist_ok=True)
 
     # Dateiname sicher machen
     folder = getFolderFromDate()
