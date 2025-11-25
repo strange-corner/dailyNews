@@ -74,6 +74,8 @@ def felder_loeschen():
     article_title.delete(0, "end")
     article_lead.delete(1.0, tk.END)
     article_content.delete(1.0, tk.END)
+    article_url.delete(0, "end")
+    image_url_entry.delete(0, "end")
 
 
 def save_weather_block():
