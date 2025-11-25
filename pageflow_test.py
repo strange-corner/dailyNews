@@ -1,6 +1,7 @@
 import unittest
 from pageflow import *
 
+
 class Test(unittest.TestCase):
 
     def test1(self):
