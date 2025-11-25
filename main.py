@@ -56,7 +56,6 @@ def save_article():
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
     article_codec.encode(article_filename, {"title": title, "lead": lead, "content": content, "url": url, "image": image_filename})
-    global pageflow
     pageflow.add(Article(fname))
     refresh_article_ui()
     felder_loeschen()
@@ -103,7 +102,6 @@ def refresh_article_ui():
 
 
 def refresh_articles():
-    global pageflow
     pageflow.refreshArticles(getFolderFromDate())
     refresh_article_ui()
 
@@ -119,7 +117,6 @@ def populate_form(article_filename):
 
 
 def move_up():
-    global pageflow
     sel = article_listbox.curselection()
     if not sel:
         return
@@ -130,7 +127,6 @@ def move_up():
 
 
 def move_down():
-    global pageflow
     sel = article_listbox.curselection()
     if not sel:
         return
