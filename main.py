@@ -13,9 +13,6 @@ import article_codec
 from pageflow import *
 import wetterdaten
 
-LAT = 47.3833  # Beispielkoordinaten Ostschweiz / Herisau (anpassen)
-LON = 9.3
-
 pageflow = PageFlow()
 
 def getFolderFromDate():
@@ -92,7 +89,7 @@ def save_weather_block():
         f.write(f"\\section{{Wetter}}\n")
         for day in weather:
             d = weather[day]
-            f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min']}°C, max. {d['id_temp_max']}°C, Niederschl. {d['id_niederschlag']}mm\\\\ \n")
+            f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min']}°C, max. {d['id_temp_max']}°C, Niederschlag {d['id_niederschlag']}mm\\\\ \n")
         f.write(f" (Quelle: MeteoSchweiz)\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)
     refresh_articles()
