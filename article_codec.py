@@ -2,7 +2,15 @@ import qrcode
 import os
 import re
 
+
+def _encode_special_chars(text: str):
+    return text.replace("%", "\\%")
+
+
 def encode(filepath, article: dict):
+    for part in article:
+        if article[part]:
+            article[part] = _encode_special_chars(article[part])
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(f"\\subsection*{{{article['title']}}}\n")
         if article['lead']:
@@ -41,3 +49,16 @@ def decode(filepath: str) -> dict:
                 result["image"] = image_match.group(1)
 
     return result
+
+
+import unittest
+
+
+class Test(unittest.TestCase):
+
+    def test_char_replace(self):
+        teststr = "Wir brauchen 5 % mehr"
+
+        _encode_special_chars(teststr)
+
+        self.assertEqual("Wir brauchen 5 \\% mehr", _encode_special_chars(teststr))
