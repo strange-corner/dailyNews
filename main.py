@@ -1,15 +1,14 @@
-import os
 import shutil
 import subprocess
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-from datetime import datetime, timedelta
-import qrcode
+from tkinter import ttk, messagebox
+from datetime import datetime
 import requests
 from tkcalendar import DateEntry
 
 # --- Konstanten / Konfiguration ---
 import article_codec
+import online_article
 from pageflow import *
 import wetterdaten
 
@@ -22,7 +21,7 @@ def getFolderFromDate():
 
 
 def articleFilenameFromTitle(title: str) -> str:
-    return f"a_{title.replace(' ', '_')}.tex"
+    return f"a_{title[:9].replace(' ', '_')}{len(title)-10}.tex"
 
 
 def download_image(url):
@@ -35,6 +34,7 @@ def download_image(url):
     return image_name
 
 # --- GUI-Funktionen ---
+
 
 def save_article():
     title = article_title.get().strip()
@@ -106,14 +106,32 @@ def refresh_articles():
     refresh_article_ui()
 
 
-def populate_form(article_filename):
+def populate_form_from_dict(article_dict: dict):
     felder_loeschen()
-    article_path = os.path.join(getFolderFromDate(), article_filename)
-    article_dict = article_codec.decode(article_path)
     article_title.insert(0, article_dict["title"])
     if "lead" in article_dict:
         article_lead.insert(1.0, article_dict["lead"])
     article_content.insert(1.0, article_dict["content"])
+    if "image" in article_dict:
+        image_url_entry.insert(0, article_dict["image"])
+    if "url" in article_dict:
+        article_url.insert(0, article_dict["url"])
+
+
+def populate_form(article_filename):
+    article_path = os.path.join(getFolderFromDate(), article_filename)
+    article_dict = article_codec.decode(article_path)
+    populate_form_from_dict(article_dict)
+
+
+def fetch_online_article():
+    url = article_url.get().strip()
+    article_data = online_article.fetch_data(url)
+    for k in article_data:
+        print(k, article_data[k])
+    # Map to my fields
+    article_data["content"] = article_data["description"]
+    populate_form_from_dict(article_data)
 
 
 def move_up():
@@ -231,6 +249,7 @@ tk.Label(artf, text="Image-URL (optional):").pack(anchor="w")
 image_url_entry = tk.Entry(artf, width=80)
 image_url_entry.pack(fill="x", padx=5, pady=2)
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
+tk.Button(artf, text="Fetch online article", command=fetch_online_article).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
 rf = tk.LabelFrame(root, text="Rubrik", padx=5, pady=5)
