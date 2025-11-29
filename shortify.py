@@ -1,0 +1,91 @@
+import requests
+import APIKEY
+import sqlite3
+import json
+
+base_url = "https://gbsn.ch"
+api_url = f"{base_url}/wp-json/url-shortify/v1/links/"
+cache_db_file = "shorturl_cache.sqlite"
+
+
+def init_db():
+    # global db_con
+    db_con = sqlite3.connect(cache_db_file)
+    db_con.execute("create table if not exists shortlink (url primary key, slug)")
+    server_data = get_list()
+    for d in server_data:
+        query = f"insert into shortlink values (\"{d['url']}\", \"{d['slug']}\") on conflict do nothing"
+        print(query)
+        db_con.execute(query)
+    db_con.commit()
+    db_con.close()
+
+
+def insert_into_db(url: str, slug: str):
+    db_con = sqlite3.connect(cache_db_file)
+    query = f"insert into shortlink values (\"{url}\", \"{slug}\") on conflict do nothing"
+    db_con.execute(query)
+    db_con.commit()
+    db_con.close()
+
+
+def dump_db():
+    db_con = sqlite3.connect(cache_db_file)
+    result = db_con.execute("select * from shortlink")
+    resstr = result.fetchall()
+    for i in resstr:
+        print(i)
+    db_con.close()
+
+
+def get_slug_from_db(url: str) -> str or None:
+    db_con = sqlite3.connect(cache_db_file)
+    res = db_con.execute(f"select slug from shortlink where url = '{url}'")
+    result = res.fetchone()
+    db_con.close()
+    return result[0] if result else None
+
+
+def create_shortlink_or_get_from_db(url: str, title: str) -> str:
+    db_slug = get_slug_from_db(url)
+    if db_slug:
+        result = db_slug
+    else:
+        slug = create_shortlink(url, title)
+        insert_into_db(url, slug)
+        result = slug
+    return result
+
+
+def get_list() -> dict:
+    response = requests.get(api_url, auth=(APIKEY.key["user"], APIKEY.key["pass"]))
+    print(response)
+    print(response.content)
+    json_dict = json.loads(response.content)
+    data = json_dict["data"]
+    return data
+    for i in data:
+        print(i)
+
+
+def create_shortlink(url: str, title: str) -> str:
+    print("Creating new shortlink...")
+    body = {
+        "url": url,
+        "title": title
+    }
+    headers = {"Content-Type": "application/json"}
+    resp = requests.post(api_url, json=body, headers=headers, auth=(APIKEY.key["user"], APIKEY.key["pass"]))
+    print(resp)
+    print(resp.status_code, resp.json())
+    shortlink = resp.json()["data"]["short_url"]
+    result = shortlink.split("/")[-1]
+    print("Created ", result)
+    return result
+
+
+if __name__ == "__main__":
+
+    testurl = "https://weltwoche.ch/daily/korruptions-skandal-in-kiew-selenskyj-berater-andrij-jermak-legt-sein-amt-nieder/"
+    res = create_shortlink_or_get_from_db(testurl, "WWTEST")
+    print(res)

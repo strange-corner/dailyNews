@@ -9,6 +9,7 @@ from tkcalendar import DateEntry
 # --- Konstanten / Konfiguration ---
 import article_codec
 import online_article
+import shortify
 from pageflow import *
 import wetterdaten
 
@@ -131,6 +132,8 @@ def fetch_online_article():
         print(k, article_data[k])
     # Map to my fields
     article_data["content"] = article_data["description"]
+    slug = shortify.create_shortlink_or_get_from_db(article_data["url"], article_data["title"])
+    article_data["url"] = "gbsn.ch/" + slug
     populate_form_from_dict(article_data)
 
 
