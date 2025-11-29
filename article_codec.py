@@ -24,7 +24,7 @@ def encode(filepath, article: dict):
             # In Tex einbinden
             f.write("\\begin{wrapfigure}[2]{r}{0.9cm}\n")
             f.write("\\vspace{-0.5cm}\n")
-            f.write("\includegraphics[width=1cm]{")
+            f.write("\\includegraphics[width=1cm]{")
             f.write(f"{os.path.basename(qr_path)}")
             f.write("}\n")
             f.write("\\end{wrapfigure}")
@@ -32,7 +32,7 @@ def encode(filepath, article: dict):
             f.write("Weiterlesen bei:")
             f.write("\n\n")
         if article["image"]:
-            f.write(f"\\begin{{minipage}}{{\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n")
+            f.write(f"\\begin{{minipage}}{{\\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n")
 
 
 def decode(filepath: str) -> dict:
