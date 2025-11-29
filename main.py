@@ -134,6 +134,7 @@ def fetch_online_article():
     article_data["content"] = article_data["description"]
     slug = shortify.create_shortlink_or_get_from_db(article_data["url"], article_data["title"])
     article_data["url"] = "gbsn.ch/" + slug
+    del(article_data["image"])  # um nicht gegen Copyright zu verstossen
     populate_form_from_dict(article_data)
 
 
