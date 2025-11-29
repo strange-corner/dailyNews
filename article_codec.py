@@ -22,8 +22,15 @@ def encode(filepath, article: dict):
             qr_path = f"{filepath}_qr.png"
             qr.save(qr_path)
             # In Tex einbinden
-            f.write(
-                f"\n\\begin{{center}}\\includegraphics[width=3cm]{{{os.path.basename(qr_path)}}}\\\\\nmehr…\\end{{center}}\n")
+            f.write("\\begin{wrapfigure}[2]{r}{0.9cm}\n")
+            f.write("\\vspace{-0.5cm}\n")
+            f.write("\includegraphics[width=1cm]{")
+            f.write(f"{os.path.basename(qr_path)}")
+            f.write("}\n")
+            f.write("\\end{wrapfigure}")
+            f.write("\n\n")
+            f.write("Weiterlesen bei:")
+            f.write("\n\n")
         if article["image"]:
             f.write(f"\\begin{{minipage}}{{\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n")
 

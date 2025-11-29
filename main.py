@@ -56,7 +56,7 @@ def save_article():
     folder = getFolderFromDate()
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
-    article_codec.encode(article_filename, {"title": title, "lead": lead, "content": content, "url": url, "image": image_filename})
+    article_codec.encode(article_filename, {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url})
     pageflow.add(Article(fname))
     refresh_article_ui()
     felder_loeschen()
