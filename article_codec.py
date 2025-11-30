@@ -1,6 +1,7 @@
-import qrcode
 import os
 import re
+if not os.getenv("GITHUB_ACTIONS"):
+    import qrcode
 
 
 def _encode_special_chars(text: str):
@@ -17,10 +18,11 @@ def encode(filepath, article: dict):
             f.write(f"\\textbf{{{article['lead']}}}\n\n")
         f.write(article['content'] + "\n")
         if article['url']:
-            # QR-Code erzeugen
-            qr = qrcode.make(article['url'])
             qr_path = f"{filepath}_qr.png"
-            qr.save(qr_path)
+            # QR-Code erzeugen TODO auslagern aus codec
+            if not os.getenv("GITHUB_ACTIONS"):
+                qr = qrcode.make(article['url'])
+                qr.save(qr_path)
             # In Tex einbinden
             f.write("\\begin{wrapfigure}[2]{r}{0.9cm}\n")
             f.write("\\vspace{-0.5cm}\n")
