@@ -43,6 +43,7 @@ def save_article():
     content = article_content.get("1.0", "end").strip()
     url = article_url.get().strip()
     image_url = image_url_entry.get().strip()
+    quelle = quelle_entry.get().strip()
     image_filename = None
 
     os.makedirs(getFolderFromDate(), exist_ok=True)
@@ -56,7 +57,7 @@ def save_article():
     folder = getFolderFromDate()
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
-    article_codec.encode(article_filename, {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url})
+    article_codec.encode(article_filename, {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle})
     pageflow.add(Article(fname))
     refresh_article_ui()
     felder_loeschen()
@@ -73,6 +74,7 @@ def felder_loeschen():
     article_content.delete(1.0, tk.END)
     article_url.delete(0, "end")
     image_url_entry.delete(0, "end")
+    quelle_entry.delete(0, "end")
 
 
 def save_weather_block():
@@ -117,6 +119,8 @@ def populate_form_from_dict(article_dict: dict):
         image_url_entry.insert(0, article_dict["image"])
     if "url" in article_dict:
         article_url.insert(0, article_dict["url"])
+    if "quelle" in article_dict:
+        quelle_entry.insert(0, article_dict["quelle"])
 
 
 def populate_form(article_filename):
@@ -132,6 +136,7 @@ def fetch_online_article():
         print(k, article_data[k])
     # Map to my fields
     article_data["content"] = article_data["description"]
+    article_data["quelle"] = article_data["site_name"]
     slug = shortify.create_shortlink_or_get_from_db(article_data["url"], article_data["title"])
     article_data["url"] = "gbsn.ch/" + slug
     del(article_data["image"])  # um nicht gegen Copyright zu verstossen
@@ -252,6 +257,9 @@ article_url.pack(fill="x", padx=5, pady=2)
 tk.Label(artf, text="Image-URL (optional):").pack(anchor="w")
 image_url_entry = tk.Entry(artf, width=80)
 image_url_entry.pack(fill="x", padx=5, pady=2)
+tk.Label(artf, text="Quelle (required, wenn URL vorh.):").pack(anchor="w")
+quelle_entry = tk.Entry(artf, width=20)
+quelle_entry.pack(fill="x", padx=5, pady=2)
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
 tk.Button(artf, text="Fetch online article", command=fetch_online_article).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
