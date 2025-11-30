@@ -26,15 +26,16 @@ def encode(filepath, article: dict):
             # In Tex einbinden
             f.write("\\begin{wrapfigure}[2]{r}{0.9cm}\n")
             f.write("\\vspace{-0.5cm}\n")
-            f.write("\\includegraphics[width=1cm]{")
+            f.write(f"\\href{{https://{article['url']}}}")
+            f.write("{\\includegraphics[width=1cm]{")
             f.write(f"{os.path.basename(qr_path)}")
-            f.write("}\n")
+            f.write("}}\n")
             f.write("\\end{wrapfigure}")
             f.write("\n\n")
             f.write("Weiterlesen bei: \n")
             f.write(f"{article['quelle']}")
             f.write("\n\n")
-        if "image" in  article:
+        if "image" in article and article["image"]:
             f.write(f"\\begin{{minipage}}{{\\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n")
 
 
