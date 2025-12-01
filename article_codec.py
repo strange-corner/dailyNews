@@ -59,7 +59,7 @@ def decode(filepath: str) -> dict:
             if image_match:
                 result["image"] = image_match.group(1)
                 line += 7
-        while not line < len(lines) and re.match(r"Weiterlesen bei: ", lines[line]):
+        while line < len(lines) and not re.match(r"Weiterlesen bei: ", lines[line]):
             line += 1
         line += 1
         result['quelle'] = lines[line].strip()
