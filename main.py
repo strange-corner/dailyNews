@@ -5,6 +5,7 @@ from tkinter import ttk, messagebox
 from datetime import datetime
 import requests
 from tkcalendar import DateEntry
+import locale
 
 # --- Konstanten / Konfiguration ---
 import article_codec
@@ -187,7 +188,7 @@ def generate_today():
             return
 
         f.writelines(
-            [f"Nr. {nr} vom " + date_time.strftime("%d. %B %Y"), "\\vspace{1ex}\n", "\\sectionline\n"])
+            [f"Nr. {nr} vom " + date_time.strftime("%a %#d. %B %Y KW%W"), "\\vspace{1ex}\n", "\\sectionline\n"])
         # Wetter
         if os.path.isfile(os.path.join(outfolder, "wetter.tex")):
             f.write("\\input{wetter.tex}\n")
@@ -222,6 +223,8 @@ def article_selected():
             populate_form(element.filename)
     previous_selection = selected_items
 
+
+locale.setlocale(locale.LC_TIME, "de_CH.UTF-8")
 
 # --- GUI Setup ---
 root = tk.Tk()
