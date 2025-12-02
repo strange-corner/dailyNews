@@ -34,7 +34,10 @@ def encode(filepath, article: dict):
             f.write("\n\n")
             f.write("Weiterlesen bei: \n")
             f.write(f"{article['quelle']}")
-            f.write("\n\n")
+            f.write("\n")
+        else:
+            f.write(f"({article['quelle']})")
+        f.write("\n")
         if "image" in article and article["image"]:
             f.write(f"\\begin{{minipage}}{{\\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n")
 
@@ -61,7 +64,10 @@ def decode(filepath: str) -> dict:
                 line += 7
         while line < len(lines) and not re.match(r"Weiterlesen bei: ", lines[line]):
             line += 1
-        line += 1
+        if line < len(lines):
+            line += 1
+        else:
+            line -= 1
         result['quelle'] = lines[line].strip()
     return result
 
