@@ -40,6 +40,8 @@ def save_article():
     lead = article_lead.get("1.0", "end").strip()
     content = article_content.get("1.0", "end").strip()
     url = article_url.get().strip()
+    if not url.startswith(shortify.base_url):
+        url = shortify.create_shortlink_or_get_from_db(url, title)
     image_url = image_url_entry.get().strip()
     quelle = quelle_entry.get().strip()
     image_filename = None
@@ -135,8 +137,8 @@ def fetch_online_article():
     # Map to my fields
     article_data["content"] = article_data["description"]
     article_data["quelle"] = article_data["site_name"]
-    slug = shortify.create_shortlink_or_get_from_db(article_data["url"], article_data["title"])
-    article_data["url"] = "gbsn.ch/" + slug
+    link = shortify.create_shortlink_or_get_from_db(article_data["url"], article_data["title"])
+    article_data["url"] = link
     del(article_data["image"])  # um nicht gegen Copyright zu verstossen
     populate_form_from_dict(article_data)
 

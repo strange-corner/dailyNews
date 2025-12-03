@@ -3,7 +3,8 @@ import APIKEY
 import sqlite3
 import json
 
-base_url = "https://gbsn.ch"
+shortify_domain = "gbsn.ch"
+base_url = f"https://{shortify_domain}"
 api_url = f"{base_url}/wp-json/url-shortify/v1/links/"
 cache_db_file = "shorturl_cache.sqlite"
 
@@ -49,11 +50,11 @@ def get_slug_from_db(url: str) -> str or None:
 def create_shortlink_or_get_from_db(url: str, title: str) -> str:
     db_slug = get_slug_from_db(url)
     if db_slug:
-        result = db_slug
+        result = shortify_domain + "/" + db_slug
     else:
         slug = create_shortlink(url, title)
         insert_into_db(url, slug)
-        result = slug
+        result = shortify_domain + "/" + slug
     return result
 
 
