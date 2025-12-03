@@ -72,5 +72,17 @@ def decode(filepath: str) -> dict:
     return result
 
 
-def articleFilenameFromTitle(title: str) -> str:
-    return f"a_{title[:9].replace(' ', '_')}{len(title)-10}.tex"
+def articleFilenameFromTitle(titlefull: str) -> str:
+    title = titlefull[:9]
+    title = title.replace('"', '_')
+    title = title.replace('[', '_')
+    title = title.replace(']', '_')
+    title = title.replace('<', '_')
+    title = title.replace('>', '_')
+    title = title.replace(':', '_')
+    title = title.replace('/', '_')
+    title = title.replace('\\', '_')
+    title = title.replace('|', '_')
+    title = title.replace('?', '_')
+    title = title.replace('*', '_')
+    return f"a_{title.replace(' ', '_')}{len(titlefull)-10}.tex"
