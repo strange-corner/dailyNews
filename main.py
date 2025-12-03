@@ -11,6 +11,7 @@ import locale
 import article_codec
 import online_article
 import shortify
+from article_codec import articleFilenameFromTitle
 from pageflow import *
 import wetterdaten
 
@@ -20,10 +21,6 @@ def getFolderFromDate():
     date_time = date_entry.get_date()
     folder = date_time.strftime("%y%m_%d")
     return folder
-
-
-def articleFilenameFromTitle(title: str) -> str:
-    return f"a_{title[:9].replace(' ', '_')}{len(title)-10}.tex"
 
 
 def download_image(url):

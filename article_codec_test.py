@@ -25,3 +25,8 @@ class ArticleTest(unittest.TestCase):
         for key, value in read_article.items():
             self.assertEqual(value, self.article[key], f"{key} must match")
 
+    def test_char_replace(self):
+        teststr = "Wir brauchen 5 % mehr"
+        self.assertEqual("Wir brauchen 5 \\% mehr", article_codec._encode_special_chars(teststr))
+
+

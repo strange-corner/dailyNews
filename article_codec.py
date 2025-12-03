@@ -72,14 +72,5 @@ def decode(filepath: str) -> dict:
     return result
 
 
-import unittest
-
-
-class Test(unittest.TestCase):
-
-    def test_char_replace(self):
-        teststr = "Wir brauchen 5 % mehr"
-
-        _encode_special_chars(teststr)
-
-        self.assertEqual("Wir brauchen 5 \\% mehr", _encode_special_chars(teststr))
+def articleFilenameFromTitle(title: str) -> str:
+    return f"a_{title[:9].replace(' ', '_')}{len(title)-10}.tex"
