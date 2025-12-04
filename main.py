@@ -40,7 +40,7 @@ def save_article():
     lead = article_lead.get("1.0", "end").strip()
     content = article_content.get("1.0", "end").strip()
     url = article_url.get().strip()
-    if not url.startswith(shortify.base_url):
+    if len(url) > 1 and not url.startswith(shortify.base_url):
         url = shortify.create_shortlink_or_get_from_db(url, title)
     image_url = image_url_entry.get().strip()
     quelle = quelle_entry.get().strip()
