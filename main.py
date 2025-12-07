@@ -168,13 +168,13 @@ def move_down():
     article_listbox.selection_set(min(newSel), max(newSel))
 
 
-def generate_pdf():
+def generate_pdf(outname: str):
     folder = getFolderFromDate()
     for filename in ("template.tex", "impressum.tex"):
         src_template = os.path.join("template", filename)
         tgt_template = os.path.join(folder, filename)
         shutil.copy(src_template, tgt_template)
-    subprocess.run(["pdflatex", "/template.tex"], cwd=folder)
+    subprocess.run(["pdflatex", f"-jobname={outname}", "/template.tex"], cwd=folder)
 
 
 def generate_today():
@@ -208,8 +208,9 @@ def generate_today():
                 f.write("\\input{" + ele.filename + "}\n")
             elif type(ele) == CategoryMarker:
                 f.write("\\section*{" + ele.ident() + "}\n")
-    generate_pdf()
-    os.system(os.path.join(folder, "template.pdf"))
+    ausgabe_name = f"Guebsensee_Nachrichten_{outfolder}_Nr{nr}"
+    generate_pdf(ausgabe_name)
+    os.system(os.path.join(folder, f"{ausgabe_name}.pdf"))
 
 
 previous_selection = set()
