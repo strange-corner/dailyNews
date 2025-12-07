@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 import tkinter as tk
+import urllib.parse
 from tkinter import ttk, messagebox
 from datetime import datetime
 import requests
@@ -27,11 +28,12 @@ def getFolderFromDate():
 def download_image(url):
     image = requests.get(url)
     image_name = url.split('/')[-1]
-    image_path = os.path.join(getFolderFromDate(), image_name)
+    image_name_unquoted = urllib.parse.unquote(image_name)
+    image_path = os.path.join(getFolderFromDate(), image_name_unquoted)
     with open(image_path, 'wb') as f:
         for chunk in image.iter_content():
             f.write(chunk)
-    return image_name
+    return image_name_unquoted
 
 # --- GUI-Funktionen ---
 
