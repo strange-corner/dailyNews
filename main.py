@@ -9,6 +9,7 @@ import locale
 
 # --- Konstanten / Konfiguration ---
 import article_codec
+import article_saveload
 import online_article
 import shortify
 from article_codec import articleFilenameFromTitle
@@ -57,7 +58,9 @@ def save_article():
     folder = getFolderFromDate()
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
-    article_codec.encode(article_filename, {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle})
+    article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle}
+    article_saveload.article_save(article_filename + ".json", article_dict)
+    article_codec.encode(article_filename, article_dict)
     pageflow.add(Article(fname))
     refresh_article_ui()
     felder_loeschen()
@@ -125,7 +128,7 @@ def populate_form_from_dict(article_dict: dict):
 
 def populate_form(article_filename):
     article_path = os.path.join(getFolderFromDate(), article_filename)
-    article_dict = article_codec.decode(article_path)
+    article_dict = article_saveload.article_load(f"{article_path}.json")
     populate_form_from_dict(article_dict)
 
 
