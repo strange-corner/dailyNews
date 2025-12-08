@@ -174,7 +174,7 @@ def generate_pdf(outname: str):
         src_template = os.path.join("template", filename)
         tgt_template = os.path.join(folder, filename)
         shutil.copy(src_template, tgt_template)
-    subprocess.run(["pdflatex", f"-jobname={outname}", "/template.tex"], cwd=folder)
+    subprocess.run(["pdflatex", f"-jobname={outname}", "template.tex"], cwd=folder)
 
 
 def generate_today():
