@@ -120,7 +120,7 @@ def populate_form_from_dict(article_dict: dict):
     if "lead" in article_dict:
         article_lead.insert(1.0, article_dict["lead"])
     article_content.insert(1.0, article_dict["content"])
-    if "image" in article_dict:
+    if "image" in article_dict and article_dict["image"]:
         image_url_entry.insert(0, article_dict["image"])
     if "url" in article_dict:
         article_url.insert(0, article_dict["url"])
