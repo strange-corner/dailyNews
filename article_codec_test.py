@@ -17,6 +17,10 @@ class ArticleTest(unittest.TestCase):
         teststr = "Wir brauchen 5 % mehr"
         self.assertEqual("Wir brauchen 5 \\% mehr", article_codec._encode_special_chars(teststr))
 
+    def test_char_u2005_replace(self):
+        teststr = "CHF 10 000.00"
+        self.assertEqual("CHF 10 000.00", article_codec._encode_special_chars(teststr))
+
     def isValidFilename(self, filename) -> bool:
         ## Check for invalid characters
         invalid_chars = r'[<>:"/\\|?*] '

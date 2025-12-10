@@ -5,7 +5,9 @@ if not os.getenv("GITHUB_ACTIONS"):
 
 
 def _encode_special_chars(text: str):
-    return text.replace("%", "\\%")
+    text = text.replace("%", "\\%")
+    text = text.replace("\u2005", " ")  # spezielles Leerzeichen Four-Per-Em Space (verwendet auf admin.ch für Zahlen: 10 000)
+    return text
 
 
 def encode(filepath, article: dict):
