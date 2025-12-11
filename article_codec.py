@@ -25,17 +25,18 @@ def encode(filepath, article: dict):
             qr_path = f"{filepath}_qr.png"
             # QR-Code erzeugen TODO auslagern aus codec
             if not os.getenv("GITHUB_ACTIONS"):
-                qr = qrcode.make(article['url'])
+                qr = qrcode.make(article['url'], border=0)
                 qr.save(qr_path)
             # In Tex einbinden
-            f.write("\\begin{wrapfigure}[2]{r}{0.9cm}\n")
-            f.write("\\vspace{-0.5cm}\n")
+            f.write("\\begin{wrapfigure}{r}{0.9cm}\n")
+            f.write("\\vspace{-0.3cm}\n")
             f.write(f"\\href{{https://{article['url']}}}")
-            f.write("{\\includegraphics[width=1cm]{")
+            f.write("{\\includegraphics[width=0.9cm]{")
             f.write(f"{os.path.basename(qr_path)}")
             f.write("}}\n")
             f.write("\\end{wrapfigure}")
-            f.write("\n\n")
+            f.write("\\vspace{-0.4cm}\n")
+            f.write("\n")
             f.write("Weiterlesen bei: \n")
             f.write(f"{article['quelle']}")
             f.write("\n")
