@@ -192,7 +192,7 @@ def generate_today():
             return
 
         f.writelines(
-            [f"Nr. {nr} vom " + date_time.strftime("%a %#d. %B %Y KW%W"), "\\vspace{1ex}\n", "\\sectionline\n"])
+            [f"Nr. {nr} vom " + date_time.strftime("%a %#d. %B %Y KW") + str(date_time.isocalendar()[1]), "\\vspace{1ex}\n", "\\sectionline\n"])
         # Wetter
         if os.path.isfile(os.path.join(outfolder, "wetter.tex")):
             f.write("\\input{wetter.tex}\n")
