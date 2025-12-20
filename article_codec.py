@@ -40,7 +40,7 @@ def encode(filepath, article: dict):
             f.write("Weiterlesen bei: \n")
             f.write(f"{article['quelle']}")
             f.write("\n")
-        else:
+        elif article['quelle']:
             f.write(f"({article['quelle']})")
         f.write("\n")
 
