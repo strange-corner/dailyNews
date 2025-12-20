@@ -199,8 +199,7 @@ def generate_today():
         # Artikel
         selected_indices = article_listbox.curselection()
         if not selected_indices:
-            messagebox.showwarning("Fehler", "Bitte mindestens einen Artikel auswählen.")
-            return
+            selected_indices = range(article_listbox.size())
         elements = pageflow.elements()
         for i in selected_indices:
             ele = elements[i]
