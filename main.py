@@ -292,16 +292,18 @@ tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, sid
 tk.Button(artf, text="Fetch cross teaser", command=fetch_crossTeaser).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
-rf = tk.LabelFrame(root, text="Rubrik", padx=5, pady=5)
-rf.pack(fill="x", expand=True, padx=10, pady=5)
+l2rFrame = tk.Frame(root)
+l2rFrame.pack()
+rf = tk.LabelFrame(l2rFrame, text="Rubrik", padx=5, pady=5)
+rf.pack(side="left", padx=10, pady=5)
 combobox = ttk.Combobox(rf)
 combobox.pack(side="left", pady=5)
 combobox["values"] = ["Meldungen", "Meinungen"]
 tk.Button(rf, text="Rubrik einfügen", command=add_category).pack(pady=5)
 
 # Wetterbereich
-wf = tk.LabelFrame(root, text="Wetter (wird automatisch geladen)", padx=5, pady=5)
-wf.pack(fill="x", expand=True, padx=10, pady=5)
+wf = tk.LabelFrame(l2rFrame, text="Wetter (wird automatisch geladen)", padx=5, pady=5)
+wf.pack(side="left", padx=10, pady=5)
 tk.Button(wf, text="Wetter für Datum speichern", command=save_weather_block).pack()
 
 # Auswahl und Reihenfolge der Artikel
