@@ -2,8 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def fetch_data(url: str) -> dict:
-    headers = {"User-Agent": "Mozilla/5.0"}
+def fetch_crossteaser_data(url: str) -> dict:
+    headers = {"User-Agent": "GuebsenseeNachrichten/1.0 (info@gbsn.ch)"}
     r = requests.get(url, headers=headers, timeout=10)
     soup = BeautifulSoup(r.text, "html.parser")
 

@@ -7,6 +7,7 @@ from datetime import datetime
 import requests
 from tkcalendar import DateEntry
 import locale
+from feed import load_rss
 
 # --- Konstanten / Konfiguration ---
 import article_codec
@@ -134,9 +135,9 @@ def populate_form(article_filename):
     populate_form_from_dict(article_dict)
 
 
-def fetch_online_article():
+def fetch_crossTeaser():
     url = article_url.get().strip()
-    article_data = online_article.fetch_data(url)
+    article_data = online_article.fetch_crossteaser_data(url)
     for k in article_data:
         print(k, article_data[k])
     # Map to my fields
@@ -228,6 +229,26 @@ def article_selected():
     previous_selection = selected_items
 
 
+rss_articles = []
+
+def load_rss_clicked():
+    global rss_articles
+    rss_articles = load_rss(rss_url_entry.get())
+    rss_listbox.delete(0, tk.END)
+    for a in rss_articles:
+        rss_listbox.insert(tk.END, a["title"])
+
+
+def import_rss_article():
+    sel = rss_listbox.curselection()
+    if not sel:
+        return
+
+    article = rss_articles[sel[0]]
+
+    populate_form_from_dict(article)
+
+
 locale.setlocale(locale.LC_TIME, "de_CH.UTF-8")
 
 # --- GUI Setup ---
@@ -268,7 +289,7 @@ tk.Label(artf, text="Quelle (required, wenn URL vorh.):").pack(anchor="w")
 quelle_entry = tk.Entry(artf, width=20)
 quelle_entry.pack(fill="x", padx=5, pady=2)
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
-tk.Button(artf, text="Fetch online article", command=fetch_online_article).pack(pady=5, side="left")
+tk.Button(artf, text="Fetch cross teaser", command=fetch_crossTeaser).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
 rf = tk.LabelFrame(root, text="Rubrik", padx=5, pady=5)
@@ -294,6 +315,21 @@ btnf.pack(side="right", fill="y")
 tk.Button(btnf, text="↑", command=move_up).pack(fill="x")
 tk.Button(btnf, text="↓", command=move_down).pack(fill="x")
 tk.Button(btnf, text="Tagesausgabe erzeugen", command=generate_today).pack(pady=10)
+
+# RSS Feed
+rss_frame = tk.LabelFrame(root, text="RSS-Feeds", padx=5, pady=5)
+rss_frame.pack(fill="both", padx=10, pady=5)
+
+rss_url_entry = tk.Entry(rss_frame, width=60)
+rss_url_entry.insert(0, "https://www.sg.ch/sicherheit/kantonspolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf")
+rss_url_entry.pack(side="left", padx=5)
+
+tk.Button(rss_frame, text="RSS laden", command=load_rss_clicked).pack(side="left")
+
+rss_listbox = tk.Listbox(root, height=8, width=90)
+rss_listbox.pack(fill="x", padx=10, pady=5)
+
+tk.Button(root, text="Artikel übernehmen", command=import_rss_article).pack(pady=5)
 
 # Beim Start vorhandene Artikel laden
 refresh_articles()
