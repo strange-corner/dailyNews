@@ -13,4 +13,8 @@ def fetch_crossteaser_data(url: str) -> dict:
         if prop.startswith("og:"):
             og_data[prop[3:]] = tag.get("content", "")
 
+    # Änderungswünsche der Urheber
+    if og_data['site_name'] == "Schweizerzeit Verlags AG":
+        og_data['site_name'] = "www.schweizerzeit.ch"
+
     return og_data
