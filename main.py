@@ -20,9 +20,11 @@ import wetterdaten
 
 pageflow = PageFlow()
 
-def getFolderFromDate():
+def getExistingFolderFromDate():
+    """ gibt den Ordner zum Datum zurück, erstellt ihn, falls nötig"""
     date_time = date_entry.get_date()
     folder = date_time.strftime("%y%m_%d")
+    os.makedirs(folder, exist_ok=True)
     return folder
 
 
@@ -30,7 +32,7 @@ def download_image(url):
     image = requests.get(url)
     image_name = url.split('/')[-1]
     image_name_unquoted = urllib.parse.unquote(image_name)
-    image_path = os.path.join(getFolderFromDate(), image_name_unquoted)
+    image_path = os.path.join(getExistingFolderFromDate(), image_name_unquoted)
     with open(image_path, 'wb') as f:
         for chunk in image.iter_content():
             f.write(chunk)
@@ -50,7 +52,6 @@ def save_article():
     quelle = quelle_entry.get().strip()
     image_filename = None
 
-    os.makedirs(getFolderFromDate(), exist_ok=True)
     if not title:
         messagebox.showwarning("Fehler", "Titel ist erforderlich")
         return
@@ -58,7 +59,7 @@ def save_article():
         image_filename = download_image(image_url)
 
     # Dateiname sicher machen
-    folder = getFolderFromDate()
+    folder = getExistingFolderFromDate()
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
     article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle}
@@ -84,9 +85,7 @@ def felder_loeschen():
 
 
 def save_weather_block():
-    folder = getFolderFromDate()
-    os.makedirs(folder, exist_ok=True)
-
+    folder = getExistingFolderFromDate()
     date = date_entry.get_date()
 
     # hole Wetter für heute und morgen
@@ -111,7 +110,7 @@ def refresh_article_ui():
 
 
 def refresh_articles():
-    pageflow.refreshArticles(getFolderFromDate())
+    pageflow.refreshArticles(getExistingFolderFromDate())
     refresh_article_ui()
 
 
@@ -130,7 +129,7 @@ def populate_form_from_dict(article_dict: dict):
 
 
 def populate_form(article_filename):
-    article_path = os.path.join(getFolderFromDate(), article_filename)
+    article_path = os.path.join(getExistingFolderFromDate(), article_filename)
     article_dict = article_saveload.article_load(f"{article_path}.json")
     populate_form_from_dict(article_dict)
 
@@ -170,7 +169,7 @@ def move_down():
 
 
 def generate_pdf(outname: str):
-    folder = getFolderFromDate()
+    folder = getExistingFolderFromDate()
     for filename in ("template.tex", "impressum.tex"):
         src_template = os.path.join("template", filename)
         tgt_template = os.path.join(folder, filename)
@@ -179,7 +178,7 @@ def generate_pdf(outname: str):
 
 
 def generate_today():
-    folder = getFolderFromDate()
+    folder = getExistingFolderFromDate()
     outfolder = folder
     os.makedirs(outfolder, exist_ok=True)
     today_path = os.path.join(outfolder, "today.tex")
@@ -335,7 +334,5 @@ tk.Button(root, text="Artikel übernehmen", command=import_rss_article).pack(pad
 
 # Beim Start vorhandene Artikel laden
 refresh_articles()
-
-print(getFolderFromDate())
 
 root.mainloop()
