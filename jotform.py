@@ -92,3 +92,9 @@ def generate_text_for_date(events, today: date):
 def download_submissions() -> bytes:
     submissions_request = f"https://api.jotform.com/form/{config.jotform_formId}/submissions?apikey={config.jotform_apikey}"
     return requests.get(submissions_request).content
+
+def download_and_generate_text(datum: date):
+    submissions = download_submissions()
+    events = extract_events(submissions)
+    text = generate_text_for_date(events, datum)
+    return text

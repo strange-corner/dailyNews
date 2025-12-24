@@ -7,6 +7,8 @@ from datetime import datetime
 import requests
 from tkcalendar import DateEntry
 import locale
+
+import jotform
 from feed import load_rss
 
 # --- Konstanten / Konfiguration ---
@@ -101,6 +103,19 @@ def save_weather_block():
     messagebox.showinfo("Wetter gespeichert", weather_filename)
     refresh_articles()
 
+def save_agenda_block():
+    folder = getExistingFolderFromDate()
+    date = date_entry.get_date()
+
+    agenda_text = jotform.download_and_generate_text(date)
+    agenda_filename = os.path.join(folder, "a_agenda.tex")  # a_: als Artikel im Pageflow behandeln
+    with open(agenda_filename, "w", encoding="utf-8") as f:
+        f.write(f"\\section{{Agenda}}\n")
+        f.write(agenda_text)
+        f.write(f"\n\n Event erfassen auf: https://gbsn.ch/agenda\n")
+    messagebox.showinfo("Agenda gespeichert.", agenda_filename)
+    pageflow.add(Article(agenda_filename))
+    refresh_articles()
 
 def refresh_article_ui():
     article_listbox.delete(0, tk.END)
@@ -304,6 +319,11 @@ tk.Button(rf, text="Rubrik einfügen", command=add_category).pack(pady=5)
 wf = tk.LabelFrame(l2rFrame, text="Wetter (wird automatisch geladen)", padx=5, pady=5)
 wf.pack(side="left", padx=10, pady=5)
 tk.Button(wf, text="Wetter für Datum speichern", command=save_weather_block).pack()
+
+# Agenda
+af = tk.LabelFrame(l2rFrame, text="Agenda", padx=5, pady=5)
+af.pack(side="left", padx=10, pady=5)
+tk.Button(af, text="Agenda erstellen", command=save_agenda_block).pack()
 
 # Auswahl und Reihenfolge der Artikel
 self = tk.LabelFrame(root, text="Artikel für Tagesausgabe", padx=5, pady=5)

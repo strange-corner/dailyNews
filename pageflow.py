@@ -5,8 +5,9 @@ import os
 class SeqElem:
 
     @abc.abstractmethod
-    def ident(self):
-        return
+    def ident(self) -> str:
+        """ Representation in the page flow UI"""
+        raise NotImplementedError
 
 
 class Article(SeqElem):
@@ -28,6 +29,8 @@ class CategoryMarker(SeqElem):
 
 
 class PageFlow:
+    """ Represents the Sequence of Elements (SeqElems) in the newspaper. SeqElems can be Articles, Category markers, etc."""
+
     def __init__(self):
         self.seq = []
 
