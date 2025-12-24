@@ -1,5 +1,5 @@
 import requests
-import APIKEY
+import config
 import sqlite3
 import json
 
@@ -59,7 +59,7 @@ def create_shortlink_or_get_from_db(url: str, title: str) -> str:
 
 
 def get_list() -> dict:
-    response = requests.get(api_url, auth=(APIKEY.key["user"], APIKEY.key["pass"]))
+    response = requests.get(api_url, auth=(config.shortify_key["user"], config.shortify_key["pass"]))
     print(response)
     print(response.content)
     json_dict = json.loads(response.content)
@@ -76,7 +76,7 @@ def create_shortlink(url: str, title: str) -> str:
         "title": title
     }
     headers = {"Content-Type": "application/json"}
-    resp = requests.post(api_url, json=body, headers=headers, auth=(APIKEY.key["user"], APIKEY.key["pass"]))
+    resp = requests.post(api_url, json=body, headers=headers, auth=(config.shortify_key["user"], config.shortify_key["pass"]))
     print(resp)
     print(resp.status_code, resp.json())
     shortlink = resp.json()["data"]["short_url"]
