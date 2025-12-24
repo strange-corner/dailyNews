@@ -1,8 +1,9 @@
 import json
 from datetime import datetime, timedelta, date
 import requests
-
-import config
+import os
+if not os.getenv("GITHUB_ACTIONS"):
+    import config
 
 def extract_events(content):
     events = []
@@ -87,18 +88,7 @@ def generate_text_for_date(events, today: date):
 
     return "\n".join(lines)
 
+
 def download_submissions() -> bytes:
     submissions_request = f"https://api.jotform.com/form/{config.jotform_formId}/submissions?apikey={config.jotform_apikey}"
     return requests.get(submissions_request).content
-
-
-def get_agenda():
-    content = download_submissions()
-    events = extract_events(content)
-    print(events)
-    text = generate_text_for_date(events, datetime.strptime("2025-12-30", "%Y-%m-%d").date())
-    print(text)
-    return text
-
-if __name__ == "__main__":
-    get_agenda()
