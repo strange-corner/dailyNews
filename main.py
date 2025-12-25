@@ -259,7 +259,7 @@ def article_selected():
     previous_selection = selected_items
 
 
-rss_articles = []
+rss_articles: list[dict] = []
 
 def load_rss_clicked():
     global rss_articles
@@ -270,13 +270,15 @@ def load_rss_clicked():
 
 
 def import_rss_article():
-    sel = rss_listbox.curselection()
+    sel: list[int] = rss_listbox.curselection()
     if not sel:
         return
 
-    article = rss_articles[sel[0]]
+    x: int = sel[0]
+    article: dict = rss_articles[x]
 
     populate_form_from_dict(article)
+    comboQuellArt.set(QUELLENARTEN['quelle'])
 
 
 locale.setlocale(locale.LC_TIME, "de_CH.UTF-8")
