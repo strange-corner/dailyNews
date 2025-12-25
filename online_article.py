@@ -30,17 +30,19 @@ def copy_online_article(url: str) -> dict:
     first_paragraph = None
     content_paragraphs = []
 
+    # print(soup.prettify())
+
     # Suche nach allen <p> Tags im Artikelbereich
-    all_p = soup.find_all("p")
+    all_p = soup.find_all(["p", "h2"])
     if all_p:
-        # Der erste Paragraph (nach Titel/Datum) ist typischerweise der Vorspann
-        first_paragraph = all_p[0].get_text(strip=True)
+        # Der zweite Paragraph (nach Titel/Datum) ist typischerweise der Vorspann
+        first_paragraph = all_p[1].get_text(strip=True)
 
         # Alle weiteren Absätze als „Inhalt“
-        for p in all_p[1:]:
+        for p in all_p[2:]:
             text = p.get_text(strip=True)
             if text:
-                content_paragraphs.append(text)
+                content_paragraphs.append(text + '\n\n')
 
 
     article_data['lead'] = first_paragraph
