@@ -53,10 +53,13 @@ def save_article():
     image_url = image_url_entry.get().strip()
     quelle = quelle_entry.get().strip()
     image_filename = None
+    quellenArt = comboQuellArt.get()
 
     if not title:
         messagebox.showwarning("Fehler", "Titel ist erforderlich")
         return
+    if not quelle:
+        messagebox.showwarning("Warnung", "Quellenangabe fehlt")
     if image_url:
         image_filename = download_image(image_url)
 
@@ -64,7 +67,7 @@ def save_article():
     folder = getExistingFolderFromDate()
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
-    article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle}
+    article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle, "quellenArt": quellenArt}
     article_saveload.article_save(article_filename + ".json", article_dict)
     article_codec.encode(article_filename, article_dict)
     pageflow.add(Article(fname))
@@ -162,6 +165,11 @@ def fetch_crossTeaser():
     del(article_data["image"])  # um nicht gegen Copyright zu verstossen
     populate_form_from_dict(article_data)
 
+def copy_online_article():
+    url = article_url.get().strip()
+    article_data = online_article.copy_online_article(url)
+    populate_form_from_dict(article_data)
+    pass
 
 def move_up():
     sel = article_listbox.curselection()
@@ -299,11 +307,20 @@ article_url.pack(fill="x", padx=5, pady=2)
 tk.Label(artf, text="Image-URL (optional):").pack(anchor="w")
 image_url_entry = tk.Entry(artf, width=80)
 image_url_entry.pack(fill="x", padx=5, pady=2)
-tk.Label(artf, text="Quelle (required, wenn URL vorh.):").pack(anchor="w")
-quelle_entry = tk.Entry(artf, width=20)
-quelle_entry.pack(fill="x", padx=5, pady=2)
+
+# Quellen / Links / Weiterlesen
+quellFrame = tk.Frame(artf)
+quellFrame.pack(fill="x")
+tk.Label(quellFrame, text="Quelle / URL:").pack(anchor="w")
+quelle_entry = tk.Entry(quellFrame)
+quelle_entry.pack(side="left", fill="x", expand=True, padx=5, pady=2)
+comboQuellArt = ttk.Combobox(quellFrame, state="readonly", values=["Quelle", "Weiterlesen bei"])
+comboQuellArt.set("Quelle")
+comboQuellArt.pack(side="right", padx=5, pady=5)
+
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
 tk.Button(artf, text="Fetch cross teaser", command=fetch_crossTeaser).pack(pady=5, side="left")
+tk.Button(artf, text="Copy online article", command=copy_online_article).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
 l2rFrame = tk.Frame(root)

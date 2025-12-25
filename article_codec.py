@@ -38,11 +38,8 @@ def encode(filepath, article: dict):
             f.write("\\end{wrapfigure}")
             f.write("\\vspace{-0.4cm}\n")
             f.write("\n")
-            f.write("Weiterlesen bei: \n")
-            f.write(f"{article['quelle']}")
-            f.write("\n")
-        elif article['quelle']:
-            f.write(f"({article['quelle']})")
+        f.write(f"{article['quellenArt']}: \n")
+        f.write(f"{article['quelle']}")
         f.write("\n")
 
 
