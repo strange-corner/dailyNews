@@ -60,6 +60,9 @@ def save_article():
         return
     if not quelle:
         messagebox.showwarning("Warnung", "Quellenangabe fehlt")
+    if quellenArt == "Weiterlesen bei" and not url:
+        messagebox.showwarning("Fehler", "Link zum Weiterlesen fehlt")
+        return
     if image_url:
         image_filename = download_image(image_url)
 
