@@ -24,6 +24,7 @@ def encode(filepath, article: dict):
         f.write(article['content'] + "\n")
         if article['url']:
             qr_path = f"{filepath}_qr.png"
+            href_begin = f"\\href{{https://{article['url']}}}{{"
             # QR-Code erzeugen TODO auslagern aus codec
             if not os.getenv("GITHUB_ACTIONS"):
                 qr = qrcode.make(article['url'], border=0)
@@ -31,16 +32,17 @@ def encode(filepath, article: dict):
             # In Tex einbinden
             f.write("\\begin{wrapfigure}{r}{0.9cm}\n")
             f.write("\\vspace{-0.3cm}\n")
-            f.write(f"\\href{{https://{article['url']}}}")
-            f.write("{\\includegraphics[width=0.9cm]{")
+            f.write(f"{href_begin}\\includegraphics[width=0.9cm]{{")
             f.write(f"{os.path.basename(qr_path)}")
-            f.write("}}\n")
+            f.write("}}\n")  # href_end
             f.write("\\end{wrapfigure}")
             f.write("\\vspace{-0.4cm}\n")
             f.write("\n")
+        else:
+            href_begin = "{"  # ohne Link
         f.write(f"{article['quellenArt']}: \n")
-        f.write(f"{article['quelle']}")
-        f.write("\n")
+        f.write(f"{href_begin}{article['quelle']}")
+        f.write("}\n")  # href_end
 
 
 def articleFilenameFromTitle(titlefull: str) -> str:
