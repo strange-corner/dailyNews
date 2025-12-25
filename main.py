@@ -22,6 +22,9 @@ import wetterdaten
 
 pageflow = PageFlow()
 
+QUELLENARTEN = {"quelle": "Quelle",
+                "weiterlesen": "Weiterlesen bei"}
+
 def getExistingFolderFromDate():
     """ gibt den Ordner zum Datum zurück, erstellt ihn, falls nötig"""
     date_time = date_entry.get_date()
@@ -60,7 +63,7 @@ def save_article():
         return
     if not quelle:
         messagebox.showwarning("Warnung", "Quellenangabe fehlt")
-    if quellenArt == "Weiterlesen bei" and not url:
+    if quellenArt == QUELLENARTEN['weiterlesen'] and not url:
         messagebox.showwarning("Fehler", "Link zum Weiterlesen fehlt")
         return
     if image_url:
@@ -317,7 +320,7 @@ quellFrame.pack(fill="x")
 tk.Label(quellFrame, text="Quelle / URL:").pack(anchor="w")
 quelle_entry = tk.Entry(quellFrame)
 quelle_entry.pack(side="left", fill="x", expand=True, padx=5, pady=2)
-comboQuellArt = ttk.Combobox(quellFrame, state="readonly", values=["Quelle", "Weiterlesen bei"])
+comboQuellArt = ttk.Combobox(quellFrame, state="readonly", values=list(QUELLENARTEN.values()))
 comboQuellArt.set("Quelle")
 comboQuellArt.pack(side="right", padx=5, pady=5)
 
