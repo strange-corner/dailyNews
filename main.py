@@ -170,11 +170,13 @@ def fetch_crossTeaser():
     article_data["url"] = link
     del(article_data["image"])  # um nicht gegen Copyright zu verstossen
     populate_form_from_dict(article_data)
+    comboQuellArt.set(QUELLENARTEN['weiterlesen'])
 
 def copy_online_article():
     url = article_url.get().strip()
     article_data = online_article.copy_online_article(url)
     populate_form_from_dict(article_data)
+    comboQuellArt.set(QUELLENARTEN['quelle'])
     pass
 
 def move_up():
