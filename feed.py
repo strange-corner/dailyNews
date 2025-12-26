@@ -1,5 +1,6 @@
 import feedparser
 from bs4 import BeautifulSoup
+import logging
 
 feedparser.USER_AGENT = "GuebsenseeNachrichten/1.0 (info@gbsn.ch)"
 
@@ -18,8 +19,13 @@ def parts_from_feed_summary(artikel_html: str):
     return  lead, content, soup.img["src"]
 
 
-def load_rss(feed_url):
+def load_rss(feed_url: str) -> list[dict]:
+    """
+    :return: List of article dictionaries
+    """
     feed = feedparser.parse(feed_url)
+    if feed.status != 200:
+        logging.error("Status %d when fetching feed from url %s", feed.status, feed_url)
     articles = []
     for entry in feed.entries:
         for key in entry:
