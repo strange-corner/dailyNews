@@ -12,7 +12,7 @@ class FeedTest(unittest.TestCase):
 
     def summary_from_file(self, filename, expected_content_lines: int):
 
-        parts = feed.parts_from_feed_summary(self.html_from_file((filename)))
+        parts = feed._parts_from_feed_summary(self.html_from_file((filename)))
 
         for part in parts:
             print(part)
@@ -25,3 +25,4 @@ class FeedTest(unittest.TestCase):
         """ Einfach mal durchlaufen lassen, und es soll nix crashen"""
         self.summary_from_file("testdata/feed_summary_testdata.txt", 72)  # Erfahrungswert
         self.summary_from_file("testdata/feed_summary_testdata2.txt", 72)
+        self.summary_from_file("testdata/feed_a_Kanton_St29.txt", 38)

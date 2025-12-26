@@ -1,11 +1,12 @@
 import feedparser
 from bs4 import BeautifulSoup
 import logging
+import article_codec
 
 feedparser.USER_AGENT = "GuebsenseeNachrichten/1.0 (info@gbsn.ch)"
 
 
-def parts_from_feed_summary(artikel_html: str):
+def _parts_from_feed_summary(artikel_html: str):
     soup = BeautifulSoup(artikel_html, "html.parser")
 
     lead = soup.strong.string
@@ -14,6 +15,8 @@ def parts_from_feed_summary(artikel_html: str):
 
     content = ""
     for paragraph in paragraphs[1:]:
+        for br in paragraph.find_all("br"):
+            br.replace_with("\n\n")
         content += (paragraph.text + '\n\n')
 
     return  lead, content, soup.img["src"]
@@ -31,13 +34,17 @@ def load_rss(feed_url: str) -> list[dict]:
         for key in entry:
             print(key, entry[key])
 
+        entry_title = entry.get("title", "")
         # Im Feed von Kapo SG steht alles in der Summary; kompletter HTML Artikel inkl Bild
         artikel_inhalt_html = entry.get("summary")
 
-        lead, content, imgsrc = parts_from_feed_summary(artikel_inhalt_html)
+        # with open(f"feed_{article_codec.articleFilenameFromTitle(entry_title)}.txt", "w") as f:
+        #    f.write(artikel_inhalt_html)
+
+        lead, content, imgsrc = _parts_from_feed_summary(artikel_inhalt_html)
 
         articles.append({
-            "title": entry.get("title", ""),
+            "title": entry_title,
             "lead": lead,
             "content": content,
             "image": imgsrc,
