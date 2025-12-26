@@ -3,7 +3,7 @@ import subprocess
 import tkinter as tk
 import urllib.parse
 from tkinter import ttk, messagebox
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from tkcalendar import DateEntry
 import locale
@@ -295,7 +295,7 @@ nr_entry = tk.Entry(date_frame)
 nr_entry.pack(side="left")
 tk.Label(date_frame, text="Datum:").pack(side="left")
 date_entry = DateEntry(date_frame, date_pattern="dd.mm.yyyy")
-date_entry.set_date(datetime.now())
+date_entry.set_date(datetime.now() + timedelta(hours=12))
 date_entry.pack(side="left")
 date_entry.bind("<<DateEntrySelected>>", lambda d: refresh_articles())
 
