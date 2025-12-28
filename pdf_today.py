@@ -19,6 +19,7 @@ class PdfToday(object):
         self.nr = nr
         self.datum = datum
         self.pdf_path = None
+        self.pdf_filename = None
 
 
     def generate_pdf(self, outname: str):
@@ -54,6 +55,7 @@ class PdfToday(object):
                     f.write("\\section*{" + ele.ident() + "}\n")
         ausgabe_name = f"Guebsensee_Nachrichten_{self.day_folder}_Nr{self.nr}"
         self.generate_pdf(ausgabe_name)
+        self.pdf_filename = f"{ausgabe_name}.pdf"
         ## PDF zur Anzeige aufrufen:
-        self.pdf_path = os.path.join(self.day_folder, f"{ausgabe_name}.pdf")
+        self.pdf_path = os.path.join(self.day_folder, self.pdf_filename)
         os.system(self.pdf_path)

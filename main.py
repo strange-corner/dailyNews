@@ -4,10 +4,13 @@ import tkinter as tk
 import urllib.parse
 from tkinter import ttk, messagebox
 from datetime import datetime, timedelta
+
+import config
 import myrequests
 from tkcalendar import DateEntry
 import locale
 from urllib.parse import urlparse
+from ftplib import FTP_TLS
 
 import jotform
 import pdf_today
@@ -217,7 +220,17 @@ def generate_today():
 
 
 def upload_today():
-    print(f"Updload file {pdf_ausgabe.pdf_path}")
+    ftp = FTP_TLS(config.ftp_host)
+    ftp.login(user=config.ftp_user, passwd=config.ftp_pw)
+    # IMPORTANT: secure both control & data channels
+    ftp.prot_p()
+
+    with open(pdf_ausgabe.pdf_path, "rb") as file:
+        ftp.storbinary(f"STOR {pdf_ausgabe.pdf_filename}", file)
+
+    ftp.quit()
+    print(f"Updloaded file {pdf_ausgabe.pdf_path}")
+
 
 previous_selection = set()
 
