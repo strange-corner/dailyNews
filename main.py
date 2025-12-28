@@ -10,6 +10,7 @@ import locale
 from urllib.parse import urlparse
 
 import jotform
+import pdf_today
 from feed import load_rss
 
 # --- Konstanten / Konfiguration ---
@@ -204,17 +205,20 @@ def move_down():
     newSel = [i + 1 for i in sel]
     article_listbox.selection_set(min(newSel), max(newSel))
 
+pdf_ausgabe: PdfToday = None
 
 def generate_today():
-    pdf_today = PdfToday(getExistingFolderFromDate(), date_entry.get_date(), nr_entry.get())
+    global pdf_ausgabe
+    pdf_ausgabe = PdfToday(getExistingFolderFromDate(), date_entry.get_date(), nr_entry.get())
     selected_indices = article_listbox.curselection()
     if not selected_indices:
         selected_indices = range(article_listbox.size())
-    pdf_today.generate_today(pageflow, selected_indices)
+    pdf_ausgabe.generate_today(pageflow, selected_indices)
 
 
 def upload_today():
-    pass
+    global pdf_ausgabe
+    print(f"Updload file {pdf_ausgabe.pdf_path}")
 
 previous_selection = set()
 
