@@ -217,7 +217,6 @@ def generate_today():
 
 
 def upload_today():
-    global pdf_ausgabe
     print(f"Updload file {pdf_ausgabe.pdf_path}")
 
 previous_selection = set()
