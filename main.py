@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import requests
 from tkcalendar import DateEntry
 import locale
+from urllib.parse import urlparse
 
 import jotform
 from feed import load_rss
@@ -67,7 +68,10 @@ def save_article():
         messagebox.showwarning("Fehler", "Link zum Weiterlesen fehlt")
         return
     if image_url:
-        image_filename = download_image(image_url)
+        if urlparse(image_url).scheme in ['http', 'https']:
+            image_filename = download_image(image_url)
+        else:
+            image_filename = image_url
 
     # Dateiname sicher machen
     folder = getExistingFolderFromDate()
