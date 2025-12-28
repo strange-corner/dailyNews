@@ -168,7 +168,8 @@ def fetch_crossTeaser():
     article_data["quelle"] = article_data["site_name"]
     link = shortify.create_shortlink_or_get_from_db(article_data["url"], article_data["title"])
     article_data["url"] = link
-    del(article_data["image"])  # um nicht gegen Copyright zu verstossen
+    if "image" in article_data:
+        del(article_data["image"])  # um nicht gegen Copyright zu verstossen
     populate_form_from_dict(article_data)
     comboQuellArt.set(QUELLENARTEN['weiterlesen'])
 
