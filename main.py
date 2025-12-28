@@ -4,7 +4,7 @@ import tkinter as tk
 import urllib.parse
 from tkinter import ttk, messagebox
 from datetime import datetime, timedelta
-import requests
+import myrequests
 from tkcalendar import DateEntry
 import locale
 from urllib.parse import urlparse
@@ -35,7 +35,7 @@ def getExistingFolderFromDate():
 
 
 def download_image(url):
-    image = requests.get(url)
+    image = myrequests.get(url)
     image_name = url.split('/')[-1]
     image_name_unquoted = urllib.parse.unquote(image_name)
     image_path = os.path.join(getExistingFolderFromDate(), image_name_unquoted)

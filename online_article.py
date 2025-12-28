@@ -1,10 +1,9 @@
-import requests
+import myrequests
 from bs4 import BeautifulSoup
 
 
 def fetch_crossteaser_data(url: str) -> dict:
-    headers = {"User-Agent": "GuebsenseeNachrichten/1.0 (info@gbsn.ch)"}
-    r = requests.get(url, headers=headers, timeout=10)
+    r = myrequests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
 
     og_data = {}
@@ -21,8 +20,7 @@ def fetch_crossteaser_data(url: str) -> dict:
 
 def copy_online_article(url: str) -> dict:
     article_data = dict()
-    headers = {"User-Agent": "GuebsenseeNachrichten/1.0 (info@gbsn.ch)"}
-    r = requests.get(url, headers=headers, timeout=10)
+    r = myrequests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
     article_data['title'] = soup.title.string
 

@@ -3,11 +3,10 @@
 import csv
 import os.path
 
-import requests
+import myrequests
 from datetime import datetime, timedelta
 import json
 import time
-from pprint import pprint
 
 url_toc = "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-local-forecasting/items"
 
@@ -36,7 +35,7 @@ def get_toc() -> dict:
         print(f"{toc_file} is {diff_s} s old. Use it")
     else:
         print(f"Downloading {toc_file}")
-        response = requests.get(url_toc)
+        response = myrequests.get(url_toc)
         with open(toc_file, "wb") as f:
             f.write(response.content)
 
@@ -61,7 +60,7 @@ def download_file_if_necessary(url):
     if os.path.exists(filename):
         print(f"File {filename} already exists.")
     else:
-        resp = requests.get(url)
+        resp = myrequests.get(url)
         with open(filename, "wb") as f:
             f.write(resp.content)
     return filename
