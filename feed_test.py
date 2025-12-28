@@ -4,8 +4,8 @@ import feed
 
 class FeedTest(unittest.TestCase):
 
-    def html_from_file(self, filename):
-        with open(filename, "r") as f:
+    def html_from_file(self, filename)-> str:
+        with open(filename, "r", encoding='latin-1') as f:
             summary_html = f.read()
         return summary_html
 
