@@ -20,6 +20,7 @@ import shortify
 from article_codec import articleFilenameFromTitle
 from pageflow import *
 import wetterdaten
+from pdf_today import PdfToday
 
 pageflow = PageFlow()
 
@@ -204,49 +205,16 @@ def move_down():
     article_listbox.selection_set(min(newSel), max(newSel))
 
 
-def generate_pdf(outname: str):
-    folder = getExistingFolderFromDate()
-    for filename in ("template.tex", "impressum.tex"):
-        src_template = os.path.join("template", filename)
-        tgt_template = os.path.join(folder, filename)
-        shutil.copy(src_template, tgt_template)
-    subprocess.run(["pdflatex", f"-jobname={outname}", "template.tex"], cwd=folder)
-
-
 def generate_today():
-    folder = getExistingFolderFromDate()
-    outfolder = folder
-    os.makedirs(outfolder, exist_ok=True)
-    today_path = os.path.join(outfolder, "today.tex")
+    pdf_today = PdfToday(getExistingFolderFromDate(), date_entry.get_date(), nr_entry.get())
+    selected_indices = article_listbox.curselection()
+    if not selected_indices:
+        selected_indices = range(article_listbox.size())
+    pdf_today.generate_today(pageflow, selected_indices)
 
-    with open(today_path, "w", encoding="utf-8") as f:
-        # Nr. Datum
-        date_time = date_entry.get_date()
-        nr = nr_entry.get()
-        if nr == "":
-            messagebox.showwarning("Fehler", "Bitte Nr eingeben .")
-            return
 
-        f.writelines(
-            [f"Nr. {nr} vom " + date_time.strftime("%a %#d. %B %Y KW") + str(date_time.isocalendar()[1]), "\\vspace{1ex}\n", "\\sectionline\n"])
-        # Wetter
-        if os.path.isfile(os.path.join(outfolder, "wetter.tex")):
-            f.write("\\input{wetter.tex}\n")
-        # Artikel
-        selected_indices = article_listbox.curselection()
-        if not selected_indices:
-            selected_indices = range(article_listbox.size())
-        elements = pageflow.elements()
-        for i in selected_indices:
-            ele = elements[i]
-            if type(ele) == Article:
-                f.write("\\input{" + ele.filename + "}\n")
-            elif type(ele) == CategoryMarker:
-                f.write("\\section*{" + ele.ident() + "}\n")
-    ausgabe_name = f"Guebsensee_Nachrichten_{outfolder}_Nr{nr}"
-    generate_pdf(ausgabe_name)
-    os.system(os.path.join(folder, f"{ausgabe_name}.pdf"))
-
+def upload_today():
+    pass
 
 previous_selection = set()
 
@@ -368,6 +336,7 @@ btnf.pack(side="right", fill="y")
 tk.Button(btnf, text="↑", command=move_up).pack(fill="x")
 tk.Button(btnf, text="↓", command=move_down).pack(fill="x")
 tk.Button(btnf, text="Tagesausgabe erzeugen", command=generate_today).pack(pady=10)
+tk.Button(btnf, text="Tagesausgabe hochladen", command=upload_today).pack(pady=10)
 
 # RSS Feed
 rss_frame = tk.LabelFrame(root, text="RSS-Feeds", padx=5, pady=5)
