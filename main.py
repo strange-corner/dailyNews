@@ -11,6 +11,7 @@ from tkcalendar import DateEntry
 import locale
 from urllib.parse import urlparse
 from ftplib import FTP_TLS
+from PIL import Image
 
 import jotform
 import pdf_today
@@ -49,6 +50,20 @@ def download_image(url):
             f.write(chunk)
     return image_name_unquoted
 
+
+def shrink_image(filename: str)-> str:
+    MAXWIDTH = 500
+    image_path = os.path.join(getExistingFolderFromDate(), filename)
+    img = Image.open(image_path)
+    if img.width > MAXWIDTH:
+        scale = MAXWIDTH / img.width
+        img = img.resize((MAXWIDTH, int(img.height * scale)))
+        filename_parts = filename.split('.')
+        new_filename = "".join(filename_parts[:-1]) + "k." + filename_parts[-1]
+        img.save(os.path.join(getExistingFolderFromDate(), new_filename))
+        return new_filename
+    return filename
+
 # --- GUI-Funktionen ---
 
 
@@ -77,6 +92,7 @@ def save_article():
             image_filename = download_image(image_url)
         else:
             image_filename = image_url
+        image_filename = shrink_image(image_filename)
 
     # Dateiname sicher machen
     folder = getExistingFolderFromDate()
