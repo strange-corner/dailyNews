@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import logging
 import article_codec
 
-feedparser.USER_AGENT = "GuebsenseeNachrichten/1.0 (info@gbsn.ch)"
+feedparser.USER_AGENT = "GuebsenseeJournal/1.0 (info@gbsn.ch)"
 
 
 def _parts_from_feed_summary(artikel_html: str):

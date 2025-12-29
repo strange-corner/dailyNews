@@ -3,7 +3,7 @@
 import requests
 from requests import Response
 
-HEADERS = {"User-Agent": "GuebsenseeNachrichten/1.0 (info@gbsn.ch)"}
+HEADERS = {"User-Agent": "GuebsenseeJournal/1.0 (info@gbsn.ch)"}
 
 
 def get(url: str) -> Response:

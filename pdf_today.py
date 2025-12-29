@@ -53,7 +53,7 @@ class PdfToday(object):
                     f.write("\\input{" + ele.filename + "}\n")
                 elif type(ele) == CategoryMarker:
                     f.write("\\section*{" + ele.ident() + "}\n")
-        ausgabe_name = f"Guebsensee_Nachrichten_{self.day_folder}_Nr{self.nr}"
+        ausgabe_name = f"Guebsensee_Journal_{self.day_folder}_Nr{self.nr}"
         self.generate_pdf(ausgabe_name)
         self.pdf_filename = f"{ausgabe_name}.pdf"
         ## PDF zur Anzeige aufrufen:
