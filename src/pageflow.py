@@ -15,6 +15,9 @@ class Article(SeqElem):
     def __init__(self, filename):
         self.filename = filename
 
+    def __eq__(self, other):
+        return self.ident() == other.ident()
+
     def ident(self) -> str:
         return self.filename
 
@@ -38,6 +41,8 @@ class PageFlow:
         return self.seq
 
     def add(self, elem: SeqElem):
+        if elem in self.seq:
+            self.seq.remove(elem)
         self.seq.append(elem)
 
     def refreshArticles(self, folder: str):
