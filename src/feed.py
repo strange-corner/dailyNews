@@ -1,7 +1,6 @@
 import feedparser
 from bs4 import BeautifulSoup
 import logging
-import article_codec
 
 feedparser.USER_AGENT = "GuebsenseeJournal/1.0 (info@gbsn.ch)"
 
