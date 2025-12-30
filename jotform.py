@@ -84,7 +84,11 @@ def generate_text_for_date(events, today: date):
 
             parts.append(", ".join(info))
 
-        lines.append(f"{label}: " + " | ".join(parts))
+        lines.append(f"\\textbf{{{label}:}}\n")
+        lines.append("\\begin{itemize}\n")
+        for p in parts:
+            lines.append("\\item " + p)
+        lines.append("\\end{itemize}")
 
     return "\n".join(lines)
 
