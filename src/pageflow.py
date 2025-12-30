@@ -42,8 +42,11 @@ class PageFlow:
 
     def add(self, elem: SeqElem):
         if elem in self.seq:
+            i = self.seq.index(elem)
             self.seq.remove(elem)
-        self.seq.append(elem)
+            self.seq.insert(i, elem)
+        else:
+            self.seq.append(elem)
 
     def refreshArticles(self, folder: str):
         self.removeArticles()

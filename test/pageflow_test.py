@@ -31,4 +31,5 @@ class Test(unittest.TestCase):
 
         testee.add(Article("a_article1"))
 
-        self.assertEqual(2, len(testee.elements()))
+        self.assertEqual(2, len(testee.elements()), "Anzahl bleibt stabil")
+        self.assertEqual("a_article1", testee.elements()[0].ident(), "Wird an Ort und Stelle ersetzt")
