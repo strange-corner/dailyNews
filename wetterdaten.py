@@ -28,7 +28,10 @@ id_map = {
 
 def get_toc() -> dict:
     toc_file = "toc.csv"
-    filectime = os.path.getmtime(toc_file)
+    if os.path.isfile(toc_file):
+        filectime = os.path.getmtime(toc_file)
+    else:
+        filectime = 0
     timenow = time.time()
     diff_s = timenow - filectime
     if (diff_s < 3600.0):
