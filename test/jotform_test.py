@@ -1,10 +1,14 @@
 import unittest
 from src import jotform
 from datetime import datetime
+from pathlib import Path
+
+TEST_DIR = Path(__file__).parent
+TESTDATA_DIR = TEST_DIR / "testdata"
 
 TESTFILE = (
-    "testdata/jotform_testdata.txt",
-    "testdata/jotform_textdata.txt"
+    TESTDATA_DIR / "jotform_testdata.txt",
+    TESTDATA_DIR / "jotform_textdata.txt"
 )
 
 class JotformText(unittest.TestCase):
