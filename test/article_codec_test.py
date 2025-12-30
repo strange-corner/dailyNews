@@ -1,10 +1,11 @@
 import re
 import unittest
-import article_codec
+from src import article_codec
+
 
 class ArticleTest(unittest.TestCase):
 
-    filepath = "testfile.txt"
+    filepath = "../testfile.txt"
 
     def setUp(self):
         self.article = {"title": "Article Title",

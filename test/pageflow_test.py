@@ -1,5 +1,5 @@
 import unittest
-from pageflow import *
+from src.pageflow import *
 
 
 class Test(unittest.TestCase):

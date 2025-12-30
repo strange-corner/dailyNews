@@ -1,6 +1,7 @@
 import unittest
 
-import feed
+from src import feed
+
 
 class FeedTest(unittest.TestCase):
 

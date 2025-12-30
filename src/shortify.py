@@ -6,7 +6,7 @@ import json
 shortify_domain = "gbsn.ch"
 base_url = f"https://{shortify_domain}"
 api_url = f"{base_url}/wp-json/url-shortify/v1/links/"
-cache_db_file = "shorturl_cache.sqlite"
+cache_db_file = "../shorturl_cache.sqlite"
 
 
 def init_db():

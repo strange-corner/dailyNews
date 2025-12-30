@@ -1,10 +1,11 @@
 import re
 import unittest
-import article_saveload
+from src import article_saveload
+
 
 class ArticleTest(unittest.TestCase):
 
-    filepath = "testfile.txt"
+    filepath = "../testfile.txt"
 
     def setUp(self):
         self.article = {"title": "Article Title",

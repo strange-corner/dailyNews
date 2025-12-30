@@ -27,7 +27,7 @@ id_map = {
 
 
 def get_toc() -> dict:
-    toc_file = "toc.csv"
+    toc_file = "../toc.csv"
     if os.path.isfile(toc_file):
         filectime = os.path.getmtime(toc_file)
     else:
@@ -43,7 +43,7 @@ def get_toc() -> dict:
             f.write(response.content)
 
 def get_latest_url_from_toc(collection_id: str):
-    with open('toc.csv', "r", newline='') as f:
+    with open('../toc.csv', "r", newline='') as f:
         jsondata = json.load(f)
         # pprint(jsondata)
         items = jsondata.get("features", [])
@@ -105,7 +105,7 @@ def get_data_for_day(date: datetime):
 def replace_id_symbol(result_data: dict):
     for day in result_data:
         id = result_data[day]["id_symbol"]
-        with open("wetter_icons.csv", "r", encoding="utf-8") as f:
+        with open("../test/wetter_icons.csv", "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=("id", "val"), delimiter=';')
 
             def inner_loop():

@@ -1,5 +1,3 @@
-import shutil
-import subprocess
 import tkinter as tk
 import urllib.parse
 from tkinter import ttk, messagebox
@@ -14,7 +12,6 @@ from ftplib import FTP_TLS
 from PIL import Image
 
 import jotform
-import pdf_today
 from feed import load_rss
 
 # --- Konstanten / Konfiguration ---

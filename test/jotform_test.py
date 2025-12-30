@@ -1,5 +1,5 @@
 import unittest
-import jotform
+from src import jotform
 from datetime import datetime
 
 TESTFILE = (
