@@ -141,9 +141,11 @@ def save_agenda_block():
     folder = getExistingFolderFromDate()
     date = date_entry.get_date()
 
+    # fetch data
     agenda_text = jotform.download_and_generate_text(date)
     agenda_filename = os.path.join(folder, "a_agenda.tex")  # a_: als Artikel im Pageflow behandeln
     with open(agenda_filename, "w", encoding="utf-8") as f:
+        # encode as article
         f.write(f"\\section{{Agenda}}\n")
         f.write(agenda_text)
         f.write(f"\n\n Event erfassen auf: https://gbsn.ch/agenda\n")
