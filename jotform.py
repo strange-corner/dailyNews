@@ -76,12 +76,12 @@ def generate_text_for_date(events, today: date):
             info = [
                 e["titel"],
                 e["ort"],
-                e["zeit"],
-                e["link"]
+                e["zeit"]
             ]
             # None-Werte entfernen
             info = [str(x) for x in info if x]
-
+            if "link" in e:
+                info.append(f"{{\\urlstyle{{same}}\\url{{{e["link"]}}} }}\n")
             parts.append(", ".join(info))
 
         lines.append(f"\\textbf{{{label}:}}\n")
