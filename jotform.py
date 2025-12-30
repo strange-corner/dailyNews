@@ -47,7 +47,7 @@ def extract_events(content):
             elif name == "veranstaltungsort":
                 event["ort"] = a.get("answer")
 
-            elif name == "linkOder":
+            elif name == "linkFur":
                 event["link"] = a.get("answer")
 
         events.append(event)
@@ -80,7 +80,7 @@ def generate_text_for_date(events, today: date):
             ]
             # None-Werte entfernen
             info = [str(x) for x in info if x]
-            if "link" in e:
+            if e.get("link"):
                 info.append(f"{{\\urlstyle{{same}}\\url{{{e["link"]}}} }}\n")
             parts.append(", ".join(info))
 
