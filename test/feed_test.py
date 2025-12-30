@@ -1,7 +1,10 @@
 import unittest
 
 from src import feed
+from pathlib import Path
 
+TEST_DIR = Path(__file__).parent
+TESTDATA_DIR = TEST_DIR / "testdata"
 
 class FeedTest(unittest.TestCase):
 
@@ -24,6 +27,6 @@ class FeedTest(unittest.TestCase):
 
     def test_all(self):
         """ Einfach mal durchlaufen lassen, und es soll nix crashen"""
-        self.summary_from_file("testdata/feed_summary_testdata.txt", 72)  # Erfahrungswert
-        self.summary_from_file("testdata/feed_summary_testdata2.txt", 72)
-        self.summary_from_file("testdata/feed_a_Kanton_St29.txt", 38)
+        self.summary_from_file(TESTDATA_DIR / "feed_summary_testdata.txt", 72)  # Erfahrungswert
+        self.summary_from_file(TESTDATA_DIR / "feed_summary_testdata2.txt", 72)
+        self.summary_from_file(TESTDATA_DIR / "feed_a_Kanton_St29.txt", 38)
