@@ -105,7 +105,7 @@ def get_data_for_day(date: datetime):
 def replace_id_symbol(result_data: dict):
     for day in result_data:
         id = result_data[day]["id_symbol"]
-        with open("../test/wetter_icons.csv", "r", encoding="utf-8") as f:
+        with open("wetter_icons.csv", "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=("id", "val"), delimiter=';')
 
             def inner_loop():
