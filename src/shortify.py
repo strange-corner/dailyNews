@@ -1,12 +1,15 @@
 import requests
-import config
+from src import config
 import sqlite3
 import json
+from pathlib import Path
 
 shortify_domain = "gbsn.ch"
 base_url = f"https://{shortify_domain}"
 api_url = f"{base_url}/wp-json/url-shortify/v1/links/"
-cache_db_file = "../shorturl_cache.sqlite"
+
+THIS_DIR = Path(__file__).parent
+cache_db_file = THIS_DIR / "shorturl_cache.sqlite"
 
 
 def init_db():
