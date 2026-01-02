@@ -9,7 +9,7 @@ class ShortifyTest(unittest.TestCase):
         TESTURL = "https://schweizerzeit.ch/der-fall-jacques-baud-hoffentlich-ein-augenoeffner/"
         EXP_SLUG = "bts8"
         slug = shortify.get_slug_from_db(TESTURL)
-        self.assertEqual(slug, EXP_SLUG)  # add assertion here
+        self.assertEqual(EXP_SLUG, slug)
 
 
     def test_get_chached_slug_when_shortlink_is_passed(self):
@@ -18,6 +18,14 @@ class ShortifyTest(unittest.TestCase):
         TESTURL = "https://gbsn.ch/bts8"
         EXP_SLUG = "bts8"
         slug = shortify.get_slug_from_db(TESTURL)
-        self.assertEqual(slug, EXP_SLUG)  # add assertion here
+        self.assertEqual(EXP_SLUG, slug)
 
+
+    def test_get_chached_slug_when_shortlink_without_scheme_is_passed(self):
+        """ Wenn ein Artikel erneut gespeichert wird, und bereits der shortlink übergeben wird, soll das erkannt und dieser
+        zurückgegeben werden. """
+        TESTURL = "gbsn.ch/bts8"
+        EXP_SLUG = "bts8"
+        slug = shortify.get_slug_from_db(TESTURL)
+        self.assertEqual(EXP_SLUG, slug)
 

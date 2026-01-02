@@ -51,11 +51,15 @@ def get_slug_from_db(url: str) -> str or None:
     :return: Slug des Shortlinks, wenn in DB vorhanden
     """
     db_con = sqlite3.connect(cache_db_file)
-    purl = urlparse(url)
-    if purl.netloc == shortify_domain:
-        query = f"select slug from shortlink where slug = '{purl.path[1:]}'"  # [1:], um '/' wegzulassen
+    if url.startswith(shortify_domain):
+        query = f"select slug from shortlink where slug = '{url.split('/')[-1]}'"
     else:
-        query = f"select slug from shortlink where url = '{url}'"
+        purl = urlparse(url)
+        if purl.netloc == shortify_domain:
+            query = f"select slug from shortlink where slug = '{purl.path[1:]}'"  # [1:], um '/' wegzulassen
+        else:
+            query = f"select slug from shortlink where url = '{url}'"
+    print(query)
     res = db_con.execute(query)
     result = res.fetchone()
     db_con.close()
@@ -67,7 +71,7 @@ def create_shortlink_or_get_from_db(url: str, title: str) -> str:
     if db_slug:
         result = shortify_domain + "/" + db_slug
     else:
-        slug = create_shortlink(url, title)
+        slug = _create_shortlink(url, title)
         insert_into_db(url, slug)
         result = shortify_domain + "/" + slug
     return result
@@ -84,7 +88,7 @@ def get_list() -> dict:
         print(i)
 
 
-def create_shortlink(url: str, title: str) -> str:
+def _create_shortlink(url: str, title: str) -> str:
     print("Creating new shortlink...")
     body = {
         "url": url,
