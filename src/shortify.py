@@ -1,8 +1,11 @@
 import requests
-from src import config
+import os
+if not os.getenv("GITHUB_ACTIONS"):
+    from src import config
 import sqlite3
 import json
 from pathlib import Path
+from urllib.parse import urlparse
 
 shortify_domain = "gbsn.ch"
 base_url = f"https://{shortify_domain}"
@@ -43,8 +46,17 @@ def dump_db():
 
 
 def get_slug_from_db(url: str) -> str or None:
+    """
+    :param url: Ziel-URL, oder bereits Shortlink
+    :return: Slug des Shortlinks, wenn in DB vorhanden
+    """
     db_con = sqlite3.connect(cache_db_file)
-    res = db_con.execute(f"select slug from shortlink where url = '{url}'")
+    purl = urlparse(url)
+    if purl.netloc == shortify_domain:
+        query = f"select slug from shortlink where slug = '{purl.path[1:]}'"  # [1:], um '/' wegzulassen
+    else:
+        query = f"select slug from shortlink where url = '{url}'"
+    res = db_con.execute(query)
     result = res.fetchone()
     db_con.close()
     return result[0] if result else None
