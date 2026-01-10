@@ -16,13 +16,14 @@ def encode(filepath, article: dict):
         if article[part]:
             article[part] = _encode_special_chars(article[part])
     with open(filepath, "w", encoding="utf-8") as f:
-        f.write(f"\\subsection*{{{article['title']}}}\n")
-        if article['lead']:
+        if 'title' in article and article['title']:  # nicht vorh. in Agenda
+            f.write(f"\\subsection*{{{article['title']}}}\n")
+        if article.get('lead'):
             f.write(f"\\textbf{{{article['lead']}}}\n\n")
         if "image" in article and article["image"]:
             f.write(f"\\begin{{minipage}}{{\\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n\n")
         f.write(article['content'] + "\n")
-        if article['quelle']:
+        if article.get('quelle'):
             if article['url']:
                 qr_path = f"{filepath}_qr.png"
                 href_begin = f"\\href{{https://{article['url']}}}{{"
