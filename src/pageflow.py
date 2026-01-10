@@ -49,14 +49,17 @@ class PageFlow:
             self.seq.append(elem)
 
     def refreshArticles(self, folder: str):
-        self.removeArticles()
+        self.removeAllArticles()
         if os.path.isdir(folder):
             for fname in os.listdir(folder):
                 if fname.endswith(".tex") and fname.startswith("a_"):
                     self.seq.append(Article(fname))
 
-    def removeArticles(self):
+    def removeAllArticles(self):
         self.seq = [ele for ele in self.seq if type(ele) != Article]
+
+    def removeArticle(self, index: int):
+        self.seq = self.seq[:index] + self.seq[index+1:]
 
     def move_up(self, eleset: list[int]):
         for idx in eleset:

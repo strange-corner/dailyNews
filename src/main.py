@@ -96,11 +96,15 @@ def save_article():
     fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
     article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle, "quellenArt": quellenArt}
-    article_saveload.article_save(article_filename + ".json", article_dict)
-    article_codec.encode(article_filename, article_dict)
+    save_as_tex_and_json(article_dict, article_filename)
     pageflow.add(Article(fname))
     refresh_article_ui()
     felder_loeschen()
+
+
+def save_as_tex_and_json(article_dict: dict[str, str | None], article_filename: str):
+    article_saveload.article_save(article_filename + ".json", article_dict)
+    article_codec.encode(article_filename, article_dict)
 
 
 def add_category():
@@ -141,11 +145,9 @@ def save_agenda_block():
     # fetch data
     agenda_text = jotform.download_and_generate_text(date)
     agenda_filename = os.path.join(folder, "a_agenda.tex")  # a_: als Artikel im Pageflow behandeln
-    with open(agenda_filename, "w", encoding="utf-8") as f:
-        # encode as article
-        f.write(f"\\section{{Agenda}}\n")
-        f.write(agenda_text)
-        f.write(f"\n\n Event erfassen auf: https://gbsn.ch/agenda\n")
+    article_dict = dict()
+    article_dict['content'] = f"\\section{{Agenda}}\n" + agenda_text + f"\n\n Event erfassen auf: https://gbsn.ch/agenda\n"
+    save_as_tex_and_json(article_dict, agenda_filename)
     messagebox.showinfo("Agenda gespeichert.", agenda_filename)
     pageflow.add(Article(agenda_filename))
     refresh_articles()
@@ -164,7 +166,8 @@ def refresh_articles():
 
 def populate_form_from_dict(article_dict: dict):
     felder_loeschen()
-    article_title.insert(0, article_dict["title"])
+    if "title" in article_dict:
+        article_title.insert(0, article_dict["title"])
     if "lead" in article_dict:
         article_lead.insert(1.0, article_dict["lead"])
     article_content.insert(1.0, article_dict["content"])
@@ -262,6 +265,15 @@ def article_selected():
             populate_form(element.filename)
     previous_selection = selected_items
 
+
+def delete_selected(event=None):
+    selected = list(article_listbox.curselection())
+    if not selected:
+        return
+    # Wichtig: rückwärts löschen!
+    for index in reversed(selected):
+        pageflow.removeArticle(index)
+        article_listbox.delete(index)
 
 rss_articles: list[dict] = []
 
@@ -362,6 +374,7 @@ self.pack(fill="both", expand=True, padx=10, pady=5)
 article_listbox = tk.Listbox(self, selectmode=tk.MULTIPLE, width=60, height=8)
 article_listbox.pack(side="left", fill="both", expand=True)
 article_listbox.bind("<<ListboxSelect>>", lambda e: article_selected())
+article_listbox.bind("<Delete>", delete_selected)
 btnf = tk.Frame(self)
 btnf.pack(side="right", fill="y")
 tk.Button(btnf, text="↑", command=move_up).pack(fill="x")
