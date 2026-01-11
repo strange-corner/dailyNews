@@ -237,17 +237,18 @@ def generate_today():
     pdf_ausgabe.generate_today(pageflow, selected_indices)
 
 
-def upload_today():
+def upload_today_and_add_to_clipboard(pdfAusgabe: PdfToday, tk: tk.Tk):
     ftp = FTP_TLS(config.ftp_host)
     ftp.login(user=config.ftp_user, passwd=config.ftp_pw)
     # IMPORTANT: secure both control & data channels
     ftp.prot_p()
 
-    with open(pdf_ausgabe.pdf_path, "rb") as file:
-        ftp.storbinary(f"STOR {pdf_ausgabe.pdf_filename}", file)
+    with open(pdfAusgabe.pdf_path, "rb") as file:
+        ftp.storbinary(f"STOR {pdfAusgabe.pdf_filename}", file)
 
     ftp.quit()
-    print(f"Updloaded file {pdf_ausgabe.pdf_path}")
+    print(f"Updloaded file {pdfAusgabe.pdf_path}")
+    tk.clipboard_append(f"https://{config.domain}/ausgaben/{pdfAusgabe.pdf_filename}")
 
 
 previous_selection = set()
@@ -380,7 +381,7 @@ btnf.pack(side="right", fill="y")
 tk.Button(btnf, text="↑", command=move_up).pack(fill="x")
 tk.Button(btnf, text="↓", command=move_down).pack(fill="x")
 tk.Button(btnf, text="Tagesausgabe erzeugen", command=generate_today).pack(pady=10)
-tk.Button(btnf, text="Tagesausgabe hochladen", command=upload_today).pack(pady=10)
+tk.Button(btnf, text="Tagesausgabe hochladen", command=lambda: upload_today_and_add_to_clipboard(pdf_ausgabe, root)).pack(pady=10)
 
 # RSS Feed
 rss_frame = tk.LabelFrame(root, text="RSS-Feeds", padx=5, pady=5)
