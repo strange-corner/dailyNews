@@ -248,7 +248,10 @@ def upload_today_and_add_to_clipboard(pdfAusgabe: PdfToday, tk: tk.Tk):
 
     ftp.quit()
     print(f"Updloaded file {pdfAusgabe.pdf_path}")
+    # Clipboard
+    tk.clipboard_clear()
     tk.clipboard_append(f"https://{config.domain}/ausgaben/{pdfAusgabe.pdf_filename}")
+    messagebox.showinfo("Copied to clipboard", tk.clipboard_get())
 
 
 previous_selection = set()
