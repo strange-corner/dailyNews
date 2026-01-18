@@ -40,7 +40,7 @@ class PdfToday(object):
                 return
 
             f.writelines(
-                [f"Nr. {self.nr} vom " + self.datum.strftime("%a %#d. %B %Y KW") + str(self.datum.isocalendar()[1]),
+                [f"Nr. {self.nr} vom " + self.datum.strftime("%a., %#d. %B %Y, KW ") + str(self.datum.isocalendar()[1]),
                  "\\vspace{1ex}\n", "\\sectionline\n"])
             # Wetter
             if os.path.isfile(os.path.join(self.day_folder, "wetter.tex")):
