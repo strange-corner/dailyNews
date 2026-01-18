@@ -1,5 +1,8 @@
 ﻿\documentclass[a4paper,10pt]{article}
 
+\newcommand{\NewspaperTitle}{Gübsensee Journal}
+\newcommand{\NewspaperSubtitle}{Tageszeitung für Herisau, St. Gallen und Umgebung als E-Papier oder zum selber ausdrucken}
+
 % --- Layout & Typografie ---
 \usepackage[margin=0.9cm]{geometry}
 \usepackage[T1]{fontenc}
@@ -12,7 +15,9 @@
 \usepackage{wrapfig}
 \usepackage{titlesec}
 \usepackage{setspace}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks,
+    pdftitle={\NewspaperTitle},
+    pdfsubject={\NewspaperSubtitle}]{hyperref}
 \usepackage[ngerman]{babel} % deutsche Sprache
 \usepackage[useregional]{datetime2}
 \usepackage{ragged2e}
@@ -29,8 +34,6 @@
 \pagestyle{empty}
 
 % --- Zeitungskopf ---
-\newcommand{\NewspaperTitle}{Gübsensee Journal}
-\newcommand{\NewspaperSubtitle}{Tageszeitung für Herisau, St. Gallen und Umgebung als E-Papier oder zum selber ausdrucken}
 \newcommand{\NewspaperDate}{\today}
 
 % --- Überschriftenstyle ---
