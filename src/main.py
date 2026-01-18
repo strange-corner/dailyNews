@@ -245,6 +245,8 @@ def upload_today_and_add_to_clipboard(pdfAusgabe: PdfToday, tk: tk.Tk):
 
     with open(pdfAusgabe.pdf_path, "rb") as file:
         ftp.storbinary(f"STOR {pdfAusgabe.pdf_filename}", file)
+    with open(pdfAusgabe.pdf_path, "rb") as file:
+        ftp.storbinary(f"STOR aktuelle.pdf", file)
 
     ftp.quit()
     print(f"Updloaded file {pdfAusgabe.pdf_path}")
