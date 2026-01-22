@@ -14,7 +14,7 @@ TESTFILE = (
 class JotformText(unittest.TestCase):
 
     @staticmethod
-    def test_maintenance_downlaod_testdata():
+    def maintenance_downlaod_testdata():
         """ kann einmalig manuell ausgeführt werden, um Testdaten herunterzuladen"""
         content = jotform.download_submissions()
         with open(TESTFILE[-1], "wb") as f:
