@@ -14,10 +14,10 @@ TESTFILE = (
 class JotformText(unittest.TestCase):
 
     @staticmethod
-    def maintenance_downlaod_testdata():
+    def test_maintenance_downlaod_testdata():
         """ kann einmalig manuell ausgeführt werden, um Testdaten herunterzuladen"""
         content = jotform.download_submissions()
-        with open(TESTFILE[-1] + '1', "wb") as f:
+        with open(TESTFILE[-1], "wb") as f:
             f.write(content)
 
     def test_decode(self):

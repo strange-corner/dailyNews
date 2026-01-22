@@ -3,9 +3,14 @@ from datetime import datetime, timedelta, date
 import requests
 import os
 if not os.getenv("GITHUB_ACTIONS"):
-    import config
+    from src import config
 
 def extract_events(content):
+    """
+    Liefert alle erfassten Events.
+    :param content:
+    :return: dict[str, ] mit den Keys: datum[datetime.datetime], zeit, titel, ort, link
+    """
     events = []
 
     content_json = json.loads(content)['content']
@@ -62,11 +67,9 @@ def generate_text_for_date(events, today: date):
 
     lines = []
 
-    for label, day in [("Heute", today), ("Morgen", tomorrow)]:
-        day_events = [
-            e for e in events
-            if e["datum"] and e["datum"].date() == day
-        ]
+    for label, day_events in [("Heute", get_eventDict_for_day(today, events)),
+                              ("Morgen", get_eventDict_for_day(tomorrow, events)),
+                              ("Demnächst", get_eventDict_after_day(tomorrow, events)[:1])]:
 
         if not day_events:
             continue
@@ -86,13 +89,30 @@ def generate_text_for_date(events, today: date):
                 info.append("} }\n")
             parts.append(", ".join(info))
 
-        lines.append(f"\\textbf{{{label}:}}\n")
+        date_short_str = e.get("datum").strftime("%d.%m.%y")
+        lines.append(f"\\textbf{{{label} {date_short_str}:}}\n")
         lines.append("\\begin{itemize}\n")
         for p in parts:
             lines.append("\\item " + p)
         lines.append("\\end{itemize}")
 
     return "\n".join(lines)
+
+
+def get_eventDict_for_day(day: date, events) -> list[dict]:
+    day_events = [
+        e for e in events
+        if e["datum"] and e["datum"].date() == day
+    ]
+    return day_events
+
+
+def get_eventDict_after_day(day: date, events) -> list[dict]:
+    day_events = [
+        e for e in events
+        if e["datum"] and e["datum"].date() > day
+    ]
+    return sorted(day_events, key=lambda e: e["datum"].date())
 
 
 def download_submissions() -> bytes:
