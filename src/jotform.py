@@ -4,6 +4,7 @@ import requests
 import os
 if not os.getenv("GITHUB_ACTIONS"):
     from src import config
+from urllib.parse import urlparse
 
 def extract_events(content):
     """
@@ -59,6 +60,14 @@ def extract_events(content):
 
     return events
 
+
+def ensure_https(url: str) -> str:
+    parsed = urlparse(url)
+    if not parsed.scheme:
+        return "https://" + url
+    return url
+
+
 def generate_text_for_date(events, today: date):
     if today is None:
         today = datetime.today().date()
@@ -103,7 +112,7 @@ def _item_str_from_even_dict(event: dict) -> str:
     # None-Werte entfernen
     info = [str(x) for x in info if x]
     if event.get("link"):
-        info.append("{\\urlstyle{same}\\url{" + f"{event['link']}" + "} }\n")
+        info.append("{\\urlstyle{same}\\href{" + f"{ensure_https(event['link'])}" + "}{" + f"{event['link']}" + "} }\n")
     eventItem = ", ".join(info)
     return eventItem
 
