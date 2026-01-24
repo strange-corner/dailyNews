@@ -18,33 +18,30 @@ def fetch_crossteaser_data(url: str) -> dict:
 
     return og_data
 
+
 def copy_online_article(url: str) -> dict:
-    article_data = dict()
     r = myrequests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
-    article_data['title'] = soup.title.string
-
-    # --- Datum / Vorspann — nehmen wir als den ersten <p>-Absatz nach Titel ---
-    first_paragraph = None
-    content_paragraphs = []
-
-    # print(soup.prettify())
-
-    # Suche nach allen <p> Tags im Artikelbereich
-    all_p = soup.find_all(["p", "h2"])
-    if all_p:
-        # Der zweite Paragraph (nach Titel/Datum) ist typischerweise der Vorspann
-        first_paragraph = all_p[1].get_text(strip=True)
-
-        # Alle weiteren Absätze als „Inhalt“
-        for p in all_p[2:]:
-            text = p.get_text(strip=True)
-            if text:
-                content_paragraphs.append(text + '\n\n')
-
-
-    article_data['lead'] = first_paragraph
-    article_data['content'] = content_paragraphs
+    article_data = article_from_soup_admin_ch(soup)
     article_data['quelle'] = "News Service Bund"
     article_data['url'] = url
     return article_data
+
+
+def article_from_soup_admin_ch(soup):
+    article_dict = dict()
+    article_dict['title'] = soup.h1.string
+    all_p = soup.find_all(["p", "h2"])
+
+    # Der zweite Paragraph (nach Titel/Datum) ist typischerweise der Vorspann
+    article_dict['lead'] = all_p[1].get_text(strip=True)
+    article_dict['content'] = ""
+    for p in all_p[2:]:
+        if p.name == "h2" and p.get_text(strip=True) == "":
+            # nach dem interessanten Inhalt folgt erfahrungsgemäss ein leerer h2
+            break
+        if p.name == "h2":
+            article_dict['content'] += "\\textbf{" + p.get_text(strip=True) + "}\n\n"
+        elif p.name == "p":
+            article_dict['content'] += p.get_text(strip=True) + "\n\n"
+    return article_dict
