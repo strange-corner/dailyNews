@@ -30,5 +30,12 @@ class JotformText(unittest.TestCase):
             text = jotform.generate_text_for_date(events, datetime.strptime("2025-12-30", "%Y-%m-%d").date())
             print(text)
 
+    def test_item_str_from_eventDict(self):
+        testevent = {'titel': 'Sauknapp Party 2026', 'ort': 'Chälblihalle Herisau', 'zeit': '15:00', 'link': 'sauknapp.ch'}
+        exp_result = "Sauknapp Party 2026, Chälblihalle Herisau, 15:00, {\\urlstyle{same}\\url{, sauknapp.ch, } }\n"
+        act_result = jotform._item_str_from_even_dict(testevent)
+        self.assertEqual(act_result, exp_result)
+
+
 
 

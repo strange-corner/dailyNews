@@ -76,18 +76,8 @@ def generate_text_for_date(events, today: date):
 
         parts = []
         for e in day_events:
-            info = [
-                e["titel"],
-                e["ort"],
-                e["zeit"]
-            ]
-            # None-Werte entfernen
-            info = [str(x) for x in info if x]
-            if e.get("link"):
-                info.append("{\\urlstyle{same}\\url{")
-                info.append(f"{e['link']}")
-                info.append("} }\n")
-            parts.append(", ".join(info))
+            eventItem = _item_str_from_even_dict(e)
+            parts.append(eventItem)
 
         date_short_str = e.get("datum").strftime("%d.%m.%y")
         lines.append(f"\\textbf{{{label} {date_short_str}:}}\n")
@@ -97,6 +87,27 @@ def generate_text_for_date(events, today: date):
         lines.append("\\end{itemize}")
 
     return "\n".join(lines)
+
+
+def _item_str_from_even_dict(event: dict) -> str:
+    """
+    Erstellt aus einem Event-Dictionary, den String für ein Event Item
+    :param event: dict
+    :return: String (ohne \\item)
+    """
+    info = [
+        event["titel"],
+        event["ort"],
+        event["zeit"]
+    ]
+    # None-Werte entfernen
+    info = [str(x) for x in info if x]
+    if event.get("link"):
+        info.append("{\\urlstyle{same}\\url{")
+        info.append(f"{event['link']}")
+        info.append("} }\n")
+    eventItem = ", ".join(info)
+    return eventItem
 
 
 def get_eventDict_for_day(day: date, events) -> list[dict]:
