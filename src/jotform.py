@@ -103,9 +103,7 @@ def _item_str_from_even_dict(event: dict) -> str:
     # None-Werte entfernen
     info = [str(x) for x in info if x]
     if event.get("link"):
-        info.append("{\\urlstyle{same}\\url{")
-        info.append(f"{event['link']}")
-        info.append("} }\n")
+        info.append("{\\urlstyle{same}\\url{" + f"{event['link']}" + "} }\n")
     eventItem = ", ".join(info)
     return eventItem
 
