@@ -30,12 +30,25 @@ def copy_online_article(url: str) -> dict:
 
 def article_from_soup_admin_ch(soup):
     article_dict = dict()
-    article_dict['title'] = soup.h1.string
-    all_p = soup.find_all(["p", "h2"])
+    lead_section = soup.find("section", identifier="lead-contentpage")
+    article_dict['title'] = lead_section.h1.string
+    article_dict['lead'] = lead_section.find_all("p")[1].get_text(strip=True)
+    content_section = soup.find("section", identifier="section")
+    soup = None  # nur noch main_div verwenden
+
+    all_p = content_section.find_all(["p", "h2", "div"])
 
     # Der zweite Paragraph (nach Titel/Datum) ist typischerweise der Vorspann
-    article_dict['lead'] = all_p[1].get_text(strip=True)
     article_dict['content'] = ""
+    # Erfahrungsgemäss ist das Bild des Artikels, das erste in der lead_section:
+    images = lead_section.find_all(["img"])
+    if len(images) >= 1:
+        article_dict['image'] = images[0].get("src")
+    else:
+        # sonst schauen wir noch in der content_section
+        images = content_section.find_all(["img"])
+        if len(images) >= 1:
+            article_dict['image'] = images[0].get("src")
     for p in all_p[2:]:
         if p.name == "h2" and p.get_text(strip=True) == "":
             # nach dem interessanten Inhalt folgt erfahrungsgemäss ein leerer h2
@@ -44,4 +57,11 @@ def article_from_soup_admin_ch(soup):
             article_dict['content'] += "\\textbf{" + p.get_text(strip=True) + "}\n\n"
         elif p.name == "p":
             article_dict['content'] += p.get_text(strip=True) + "\n\n"
+        elif p.name == "div":
+            # Erfahrungsgemäss gibt es Tabellenähnliche Angaben in verschachtelten div.
+            cascaded_div = p.find("div")
+            if cascaded_div:
+                for st in cascaded_div.strings:
+                    article_dict['content'] += st + "\n"
+                article_dict['content'] += "\n"
     return article_dict
