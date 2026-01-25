@@ -1,6 +1,6 @@
 import myrequests
 from bs4 import BeautifulSoup
-
+from urllib.parse import urlparse
 
 def fetch_crossteaser_data(url: str) -> dict:
     r = myrequests.get(url)
@@ -22,9 +22,14 @@ def fetch_crossteaser_data(url: str) -> dict:
 def copy_online_article(url: str) -> dict:
     r = myrequests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
-    article_data = article_from_soup_admin_ch(soup)
-    article_data['quelle'] = "News Service Bund"
-    article_data['url'] = url
+    if url.startswith("https://www.news.admin.ch"):
+        article_data = article_from_soup_admin_ch(soup)
+        article_data['quelle'] = "News Service Bund"
+        article_data['url'] = url
+    else:
+        article_data = article_dict_from_soup_default(soup)
+        article_data['quelle'] = urlparse(url).netloc
+        article_data['url'] = url
     return article_data
 
 
@@ -64,4 +69,28 @@ def article_from_soup_admin_ch(soup):
                 for st in cascaded_div.strings:
                     article_dict['content'] += st + "\n"
                 article_dict['content'] += "\n"
+    return article_dict
+
+
+def article_dict_from_soup_default(soup):
+    article_dict = dict()
+    article_dict['title'] = soup.title.string
+
+    # --- Datum / Vorspann — nehmen wir als den ersten <p>-Absatz nach Titel ---
+    first_paragraph = None
+    content_paragraphs = []
+
+    # Suche nach allen <p> Tags im Artikelbereich
+    all_p = soup.find_all(["p", "h2"])
+    if all_p:
+        first_paragraph = all_p[0].get_text(strip=True)
+
+        # Alle weiteren Absätze als „Inhalt“
+        for p in all_p[1:]:
+            text = p.get_text(strip=True)
+            if text:
+                content_paragraphs.append(text + '\n\n')
+
+    article_dict['lead'] = first_paragraph
+    article_dict['content'] = content_paragraphs
     return article_dict
