@@ -45,7 +45,7 @@ def encode(filepath, article: dict):
                 href_begin = "{"  # ohne Link
             f.write(f"{article['quellenArt']}: \n")
             f.write(f"{href_begin}{article['quelle']}")
-            f.write("}\n")  # href_end
+            f.write("}\n\n")  # href_end
 
 
 def articleFilenameFromTitle(titlefull: str) -> str:
