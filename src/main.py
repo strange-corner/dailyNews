@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 import urllib.parse
 from tkinter import ttk, messagebox
@@ -76,9 +77,11 @@ def save_article():
     image_filename = None
     quellenArt = comboQuellArt.get()
 
-    if not title:
-        messagebox.showwarning("Fehler", "Titel ist erforderlich")
-        return
+    if title:
+        fname = articleFilenameFromTitle(title)
+    else:
+        messagebox.showwarning("Warnung", "Titel fehlt.")
+        fname = articleFilenameFromTitle(str(int(time.time())))
     if not quelle:
         messagebox.showwarning("Warnung", "Quellenangabe fehlt")
     if quellenArt == QUELLENARTEN['weiterlesen'] and not url:
@@ -93,7 +96,6 @@ def save_article():
 
     # Dateiname sicher machen
     folder = getExistingFolderFromDate()
-    fname = articleFilenameFromTitle(title)
     article_filename = os.path.join(folder, fname)
     article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle, "quellenArt": quellenArt}
     save_as_tex_and_json(article_dict, article_filename)
