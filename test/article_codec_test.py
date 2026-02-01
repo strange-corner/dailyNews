@@ -12,11 +12,16 @@ class ArticleTest(unittest.TestCase):
                         "lead": "Lead-Text, bzw. Vorspann",
                         "content": "Blah, blah blah",
                         "url": "https://news.ycombinator.com/",
+                        "quellenArt": "Quelle",
                         "quelle": "Kapo AR"}
 
     def test_char_replace(self):
         teststr = "Wir brauchen 5 % mehr"
         self.assertEqual("Wir brauchen 5 \\% mehr", article_codec._encode_special_chars(teststr))
+
+    def test_char_replace(self):
+        teststr = "Chonsch zum C&A?"
+        self.assertEqual("Chonsch zum C\\&A?", article_codec._encode_special_chars(teststr))
 
     def test_char_u2005_replace(self):
         teststr = "CHF 10 000.00"
@@ -34,3 +39,15 @@ class ArticleTest(unittest.TestCase):
             self.assertTrue(self.isValidFilename(article_codec.articleFilenameFromTitle(name)))
         testName("Motion \"Schule")
 
+    def test_encode(self):
+        mock = WriterMock()
+        article_codec.encode("filepath_for_qr", self.article, mock)
+        self.assertTrue(mock.output.strip().endswith("}\\\\"))
+
+class WriterMock:
+
+    def __init__(self):
+        self.output = ""
+
+    def write(self, text):
+        self.output += (text)
