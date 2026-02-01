@@ -21,6 +21,7 @@
 \usepackage[ngerman]{babel} % deutsche Sprache
 \usepackage[useregional]{datetime2}
 \usepackage{ragged2e}
+\usepackage{eso-pic}
 
 \usepackage{wrapfig}
 
@@ -35,6 +36,23 @@
 
 % --- Zeitungskopf ---
 \newcommand{\NewspaperDate}{\today}
+
+\newcommand{\FirstPageOverlay}[2]{%
+  \AddToShipoutPictureFG*{%
+    \AtPageUpperLeft{%
+      \raisebox{-1.2cm}{%
+        \makebox[\paperwidth]{%
+          \hspace{1cm}%
+          \small\itshape
+          #1%
+          \hfill
+          #2%
+          \hspace{1cm}%
+        }%
+      }%
+    }%
+  }%
+}
 
 % --- Überschriftenstyle ---
 \newcommand{\titellinie}{\noindent\rule{\columnwidth}{0.5pt}}
