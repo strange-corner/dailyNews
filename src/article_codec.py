@@ -43,9 +43,15 @@ def encode(filepath, article: dict):
                 f.write("\n")
             else:
                 href_begin = "{"  # ohne Link
-            f.write(f"{article['quellenArt']}: \n")
-            f.write(f"{href_begin}{article['quelle']}")
-            f.write("}\n\n")  # href_end
+            f.write("{\\raggedright\n")
+            f.write(f"{article['quellenArt']}:")
+            if article['url']:
+                f.write("\\\\")  # wenn QR vorhanden, nutzen wir 2 Zeilen
+            else:
+                f.write(" ")
+            f.write(f"\n{href_begin}{article['quelle']}")
+            f.write("}\n")  # href_end
+            f.write("}\\\\\n\n")  # raggedright schliessen, neue Zeile \\ und neue Zeilen im Quellcode \n
 
 
 def articleFilenameFromTitle(titlefull: str) -> str:
