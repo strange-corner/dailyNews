@@ -88,7 +88,7 @@ def generate_text_for_date(events, today: date):
             eventItem = _item_str_from_even_dict(e)
             parts.append(eventItem)
 
-        date_short_str = e.get("datum").strftime("%d.%m.%y")
+        date_short_str = e.get("datum").strftime("%a. %d.%m.%y")
         lines.append(f"\\textbf{{{label} {date_short_str}:}}\n")
         lines.append("\\begin{itemize}\n")
         for p in parts:
@@ -126,6 +126,12 @@ def get_eventDict_for_day(day: date, events) -> list[dict]:
 
 
 def get_eventDict_after_day(day: date, events) -> list[dict]:
+    """
+    Liefert eine Liste der Events am ersten Tag nach day, an dem Events vorkommen
+    :param day: nach diesem Tag, wird der erste Tag gesucht, an dem Events vorkommen
+    :param events: alle events, aus denen die gesuchten genommen werden
+    :return: Liste der Events an diesem Tag
+    """
     day_events = [
         e for e in events
         if e["datum"] and e["datum"].date() > day

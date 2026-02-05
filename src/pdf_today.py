@@ -38,7 +38,7 @@ class PdfToday(object):
             if self.nr == "":
                 messagebox.showwarning("Fehler", "Bitte Nr eingeben .")
                 return
-            date_str = self.datum.strftime("%a., %#d. %B %Y, KW ") + str(self.datum.isocalendar()[1])
+            date_str = self.datum.strftime("%a. %#d. %B %Y, KW ") + str(self.datum.isocalendar()[1])
             f.write(f"\\FirstPageOverlay{{{date_str}}}{{Nr. {self.nr}}}\n")
             # Wetter
             if os.path.isfile(os.path.join(self.day_folder, "wetter.tex")):
