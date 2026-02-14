@@ -110,6 +110,22 @@
   }
 }{\end{list}}
 
+% --- Infobox ---
+\usepackage[most]{tcolorbox}
+\newtcolorbox{infobox}{
+  colback=gray!5,
+  colframe=black,
+  boxrule=0.4pt,
+  arc=0pt,
+  left=4pt,
+  right=4pt,
+  top=4pt,
+  bottom=4pt,
+  before skip=6pt,
+  after skip=6pt,
+  fontupper=\small
+}
+
 \begin{document}
 
 % --- Titelblock ---
@@ -123,6 +139,7 @@
 % --- Dreispaltig ---
 \begin{multicols}{3}
 \setlength{\parindent}{0pt}
+
 \input{today.tex}
 
 % --------------------

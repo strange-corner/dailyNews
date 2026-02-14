@@ -18,6 +18,10 @@ def encode(filepath, article: dict, f):
             article[part] = _encode_special_chars(article[part])
     if 'title' in article and article['title']:  # nicht vorh. in Agenda
         f.write(f"\\subsection*{{{article['title']}}}\n")
+    if article.get('infobox'):
+        f.write("\\begin{infobox}\n")
+        f.write(f"{article['infobox']}\n")
+        f.write("\\end{infobox}\n")
     if article.get('lead'):
         f.write(f"\\textbf{{{article['lead']}}}\n\n")
     if "image" in article and article["image"]:

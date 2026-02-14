@@ -24,8 +24,10 @@ from article_codec import articleFilenameFromTitle
 from pageflow import *
 import wetterdaten
 from pdf_today import PdfToday
+import ui_stuff
 
 pageflow = PageFlow()
+infobox_content = None # Zwischenspeicher, da Editor in anderem Fenster stattfindet.
 
 QUELLENARTEN = {"quelle": "Quelle",
                 "weiterlesen": "Weiterlesen bei"}
@@ -64,8 +66,8 @@ def shrink_image(filename: str)-> str:
 
 # --- GUI-Funktionen ---
 
-
 def save_article():
+    global infobox_content
     title = article_title.get().strip()
     lead = article_lead.get("1.0", "end").strip()
     content = article_content.get("1.0", "end").strip()
@@ -97,7 +99,8 @@ def save_article():
     # Dateiname sicher machen
     folder = getExistingFolderFromDate()
     article_filename = os.path.join(folder, fname)
-    article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url, "quelle": quelle, "quellenArt": quellenArt}
+    article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url,
+                    "quelle": quelle, "quellenArt": quellenArt, "infobox": infobox_content}
     save_as_tex_and_json(article_dict, article_filename)
     pageflow.add(Article(fname))
     refresh_article_ui()
@@ -116,12 +119,14 @@ def add_category():
 
 
 def felder_loeschen():
+    global infobox_content
     article_title.delete(0, "end")
     article_lead.delete(1.0, tk.END)
     article_content.delete(1.0, tk.END)
     article_url.delete(0, "end")
     image_url_entry.delete(0, "end")
     quelle_entry.delete(0, "end")
+    infobox_content = None
 
 
 def save_weather_block():
@@ -168,6 +173,7 @@ def refresh_articles():
 
 
 def populate_form_from_dict(article_dict: dict):
+    global infobox_content
     felder_loeschen()
     if "title" in article_dict:
         article_title.insert(0, article_dict["title"])
@@ -180,6 +186,8 @@ def populate_form_from_dict(article_dict: dict):
         article_url.insert(0, article_dict["url"])
     if "quelle" in article_dict:
         quelle_entry.insert(0, article_dict["quelle"])
+    if "infobox" in article_dict:
+        infobox_content = article_dict["infobox"]
 
 
 def populate_form(article_filename):
@@ -305,6 +313,9 @@ def import_rss_article():
     populate_form_from_dict(article)
     comboQuellArt.set(QUELLENARTEN['quelle'])
 
+def insert_infobox_into_article(content):
+    global infobox_content
+    infobox_content = content
 
 locale.setlocale(locale.LC_TIME, "de_CH.UTF-8")
 
@@ -317,6 +328,7 @@ date_frame = tk.Frame(root)
 date_frame.pack(padx=10, pady=5)
 tk.Label(date_frame, text="Nr.:").pack(side="left")
 nr_entry = tk.Entry(date_frame)
+nr_entry.insert(tk.END, "0")
 nr_entry.pack(side="left")
 tk.Label(date_frame, text="Datum:").pack(side="left")
 date_entry = DateEntry(date_frame, date_pattern="dd.mm.yyyy")
@@ -356,6 +368,7 @@ comboQuellArt.pack(side="right", padx=5, pady=5)
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
 tk.Button(artf, text="Fetch cross teaser", command=fetch_crossTeaser).pack(pady=5, side="left")
 tk.Button(artf, text="Copy online article", command=copy_online_article).pack(pady=5, side="left")
+tk.Button(artf, text="Infobox einfügen", command=(lambda: ui_stuff.open_infobox_popup(root, insert_infobox_into_article))).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
 l2rFrame = tk.Frame(root)
