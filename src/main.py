@@ -67,7 +67,6 @@ def shrink_image(filename: str)-> str:
 # --- GUI-Funktionen ---
 
 def save_article():
-    global infobox_content
     title = article_title.get().strip()
     lead = article_lead.get("1.0", "end").strip()
     content = article_content.get("1.0", "end").strip()
