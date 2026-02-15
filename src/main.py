@@ -367,7 +367,7 @@ comboQuellArt.pack(side="right", padx=5, pady=5)
 tk.Button(artf, text="Artikel speichern", command=save_article).pack(pady=5, side="left")
 tk.Button(artf, text="Fetch cross teaser", command=fetch_crossTeaser).pack(pady=5, side="left")
 tk.Button(artf, text="Copy online article", command=copy_online_article).pack(pady=5, side="left")
-tk.Button(artf, text="Infobox einfügen", command=(lambda: ui_stuff.open_infobox_popup(root, insert_infobox_into_article))).pack(pady=5, side="left")
+tk.Button(artf, text="Infobox einfügen", command=(lambda: ui_stuff.open_infobox_popup(root, insert_infobox_into_article, infobox_content))).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
 l2rFrame = tk.Frame(root)
