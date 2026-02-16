@@ -36,6 +36,7 @@ def load_rss(feed_url: str) -> list[dict]:
         entry_title = entry.get("title", "")
         # Im Feed von Kapo SG steht alles in der Summary; kompletter HTML Artikel inkl Bild
         artikel_inhalt_html = entry.get("summary")
+        published = entry.get("published")
 
         # with open(f"feed_{article_codec.articleFilenameFromTitle(entry_title)}.txt", "w") as f:
         #    f.write(artikel_inhalt_html)
@@ -47,6 +48,7 @@ def load_rss(feed_url: str) -> list[dict]:
             "lead": lead,
             "content": content,
             "image": imgsrc,
+            "published": published,
             "quelle" : "Kapo SG"  # TODO: falls weitere Feed-Quellen kommen
         })
     return articles

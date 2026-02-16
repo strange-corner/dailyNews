@@ -298,7 +298,7 @@ def load_rss_clicked():
     rss_articles = load_rss(rss_url_entry.get())
     rss_listbox.delete(0, tk.END)
     for a in rss_articles:
-        rss_listbox.insert(tk.END, a["title"])
+        rss_listbox.insert(tk.END, a["published"] + " " + a["title"])
 
 
 def import_rss_article():
