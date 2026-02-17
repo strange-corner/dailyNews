@@ -35,18 +35,16 @@ def encode(filepath, article: dict, f):
             if not os.getenv("GITHUB_ACTIONS"):
                 qr = qrcode.make(article['url'], border=0)
                 qr.save(qr_path)
-            # In Tex einbinden
-            f.write("\\begin{wrapfigure}{r}{0.9cm}\n")
-            f.write("\\vspace{-0.3cm}\n")
+            # QR in Tex einbinden
+            f.write("\\begin{flushright}\n")
             f.write(f"{href_begin}\\includegraphics[width=0.9cm]{{")
             f.write(f"{os.path.basename(qr_path)}")
             f.write("}}\n")  # href_end
-            f.write("\\end{wrapfigure}")
-            f.write("\\vspace{-0.4cm}\n")
+            f.write("\\end{flushright}")
+            f.write("\\vspace{-1.2cm}\n")
             f.write("\n")
         else:
             href_begin = "{"  # ohne Link
-        f.write("{\\raggedright\n")
         f.write(f"{article['quellenArt']}:")
         if article['url']:
             f.write("\\\\")  # wenn QR vorhanden, nutzen wir 2 Zeilen
@@ -54,7 +52,7 @@ def encode(filepath, article: dict, f):
             f.write(" ")
         f.write(f"\n{href_begin}{article['quelle']}")
         f.write("}\n")  # href_end
-        f.write("}\\\\\n\n")  # raggedright schliessen, neue Zeile \\ und neue Zeilen im Quellcode \n
+        f.write("\\\\\n\n")  # neue Zeile \\ und neue Zeilen im Quellcode \n
 
 
 def articleFilenameFromTitle(titlefull: str) -> str:
