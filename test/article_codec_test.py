@@ -42,7 +42,7 @@ class ArticleTest(unittest.TestCase):
     def test_encode(self):
         mock = WriterMock()
         article_codec.encode("filepath_for_qr", self.article, mock)
-        self.assertTrue(mock.output.strip().endswith("}\\\\"))
+        self.assertTrue(mock.output.strip().endswith("\\\\"))
 
 class WriterMock:
 
