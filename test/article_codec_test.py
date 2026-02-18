@@ -19,9 +19,14 @@ class ArticleTest(unittest.TestCase):
         teststr = "Wir brauchen 5 % mehr"
         self.assertEqual("Wir brauchen 5 \\% mehr", article_codec._encode_special_chars(teststr))
 
-    def test_char_replace(self):
+    def test_char_ampersand_replace(self):
         teststr = "Chonsch zum C&A?"
         self.assertEqual("Chonsch zum C\\&A?", article_codec._encode_special_chars(teststr))
+
+    def test_char_underscore_replace(self):
+        """ Underscore ist ein Sonderzeichen für den Mathe-Modus. """
+        teststr = "Underscore_undWeiter"
+        self.assertEqual("Underscore\\_undWeiter", article_codec._encode_special_chars(teststr))
 
     def test_char_u2005_replace(self):
         teststr = "CHF 10 000.00"
