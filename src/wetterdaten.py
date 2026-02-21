@@ -18,6 +18,7 @@ id_map = {
     # daily data
     "id_temp_min": "tre200pn",
     "id_temp_max": "tre200px",
+    "id_temp_hourly_mean": "tre200h0",
 
     # hourly data
     # "id_sunshine_dur": "sre000h0", noch unklar wie zu interpretieren
@@ -63,6 +64,7 @@ def download_file_if_necessary(url):
     if os.path.exists(filename):
         print(f"File {filename} already exists.")
     else:
+        print(f"Downloading {filename}")
         resp = myrequests.get(url)
         with open(filename, "wb") as f:
             f.write(resp.content)
@@ -82,10 +84,12 @@ def get_val_of_date(csvfile: str, date: datetime):
     with open(csvfile, newline='', encoding="utf-8") as f:
         collection_id = csvfile.split('.')[-2]
         reader = csv.DictReader(f, delimiter=';')
-        datestr = date.strftime("%Y%m%d0000")
+        datestr = date.strftime("%Y%m%d")
+        list_of_values = []
         for row in reader:
-            if row['point_id'] == str(point_id) and row['Date'] == datestr:
-                return row[collection_id]  # Wert steht zuletzt im dict
+            if row['point_id'] == str(point_id) and row['Date'].startswith(datestr):
+                list_of_values.append(row[collection_id])  # Wert steht zuletzt im dict
+        return list_of_values
 
 
 def get_data_for_day(date: datetime):
@@ -104,7 +108,7 @@ def get_data_for_day(date: datetime):
 
 def replace_id_symbol(result_data: dict):
     for day in result_data:
-        id = result_data[day]["id_symbol"]
+        id = result_data[day]["id_symbol"][0]
         with open("wetter_icons.csv", "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=("id", "val"), delimiter=';')
 
@@ -117,6 +121,11 @@ def replace_id_symbol(result_data: dict):
             inner_loop()
 
 
+
+
 if __name__ == "__main__":
-    result = get_data_for_day(datetime.now())
+    today = datetime.now()
+    result = get_data_for_day(today)
+    print(str(result))
+    print(result["Heute"]["id_temp_hourly_mean"])
     print(result)

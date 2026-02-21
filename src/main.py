@@ -25,6 +25,7 @@ from pageflow import *
 import wetterdaten
 from pdf_today import PdfToday
 import ui_stuff
+from src import wetter_diagram_temperature
 
 pageflow = PageFlow()
 infobox_content = None # Zwischenspeicher, da Editor in anderem Fenster stattfindet.
@@ -140,7 +141,10 @@ def save_weather_block():
         f.write(f"\\section{{Wetter}}\n")
         for day in weather:
             d = weather[day]
-            f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min']}°C, max. {d['id_temp_max']}°C, Niederschlag {d['id_niederschlag']}mm\\\\ \n")
+            f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min'][0]}°C, max. {d['id_temp_max'][0]}°C, Niederschlag {d['id_niederschlag'][0]}mm\\\\ \n\n")
+            diagram_filename = f"{day}.png"
+            wetter_diagram_temperature.generate(d['id_temp_hourly_mean'], f"{folder}/{diagram_filename}")
+            f.write("\\includegraphics[width =\\columnwidth]{" + diagram_filename + "}\n\n")
         f.write(f" (Quelle: MeteoSchweiz)\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)
     refresh_articles()
