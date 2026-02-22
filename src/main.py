@@ -142,9 +142,9 @@ def save_weather_block():
         for day in weather:
             d = weather[day]
             f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min'][0]}°C, max. {d['id_temp_max'][0]}°C, Niederschlag {d['id_niederschlag'][0]}mm\\\\ \n\n")
-            diagram_filename = f"{day}.png"
-            wetter_diagram_temperature.generate(d['id_temp_hourly_mean'], f"{folder}/{diagram_filename}")
-            f.write("\\includegraphics[width =\\columnwidth]{" + diagram_filename + "}\n\n")
+            diagram_filename = f"{day}.pgf"
+            image_tex = wetter_diagram_temperature.generate_image_and_get_insertiontext(d['id_temp_hourly_mean'], folder, diagram_filename)
+            f.write(image_tex + "\n")
         f.write(f" (Quelle: MeteoSchweiz)\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)
     refresh_articles()

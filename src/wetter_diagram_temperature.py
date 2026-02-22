@@ -1,11 +1,11 @@
 import matplotlib
 import matplotlib.pyplot as plt
 
-def generate(temps_str: list, filename: str):
+def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename: str):
     """
     :param temps_str: list of temp values
     :param filename: e.g. temp_260219.png
-    :return:
+    :return: TeX, das direkt im Dokument eingefügt werden kann.
     """
 
     # LaTeX-Schriften verwenden
@@ -32,14 +32,16 @@ def generate(temps_str: list, filename: str):
     ax.grid(True)
 
     # Speichern als PGF
-    plt.savefig(filename, bbox_inches="tight", pad_inches=0)
+    plt.savefig(f"{folder}/{filename}", bbox_inches="tight", pad_inches=0)
     plt.close(fig)
+
+    return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
 if __name__ == "__main__":
     # Gegebene Daten
     temps_str = ['2.7', '2.5', '2.7', '2.7', '2.8', '3.0', '3.2', '3.4',
                  '3.7', '4.0', '4.2', '4.6', '4.9', '5.2', '5.5', '5.7',
                  '5.9', '5.9', '5.8', '5.6', '5.4', '5.2', '5.0', '4.9']
-    generate(temps_str, "temperaturverlauf.png")
+    generate_image_and_get_insertiontext(temps_str, ".", "temperaturverlauf.png")
 
 
