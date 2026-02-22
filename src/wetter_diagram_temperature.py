@@ -37,6 +37,47 @@ def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename:
 
     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
+
+def generate_tikz(temps_str: list):
+
+    part1 = r"""
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth,
+    height=0.5\columnwidth,
+    enlargelimits=true,
+    tick label style={font=\tiny},
+    label style={font=\tiny},
+    title style={font=\tiny},
+    xlabel={Stunde},
+    ylabel={Temp. °C},
+    xtick={0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22},
+    grid=major,
+    axis lines=left,
+    clip=true,
+    trim axis left,
+    trim axis right
+]
+
+\addplot[
+    thick,
+    color=blue
+] coordinates {
+"""
+
+    coords = ""
+    for i, p in enumerate(temps_str):
+        coords = coords + f"({i}, {p})\n"
+
+    part3 = r"""
+    };
+
+\end{axis}
+\end{tikzpicture}"""
+
+    return part1 + coords + part3
+
+
 if __name__ == "__main__":
     # Gegebene Daten
     temps_str = ['2.7', '2.5', '2.7', '2.7', '2.8', '3.0', '3.2', '3.4',

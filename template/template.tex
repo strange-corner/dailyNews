@@ -22,6 +22,8 @@
 \usepackage[useregional]{datetime2}
 \usepackage{ragged2e}
 \usepackage{eso-pic}
+\usepackage{pgfplots}  % wheather graphics
+\pgfplotsset{compat=1.18}
 
 \usepackage[utf8]{inputenc}
 \DeclareUnicodeCharacter{00B2}{\ensuremath{{}^2}}
@@ -54,7 +56,6 @@
 
 % --- Überschriftenstyle ---
 \newcommand{\titellinie}{\noindent\rule{\columnwidth}{0.5pt}}
-
 
 \titleformat{\section}[block]
   {\normalfont\Large\bfseries\scshape}
