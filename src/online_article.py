@@ -1,3 +1,5 @@
+from urllib3.util import url
+
 import myrequests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -21,17 +23,34 @@ def fetch_crossteaser_data(url: str) -> dict:
 
 def copy_online_article(url: str) -> dict:
     r = myrequests.get(url)
+    r.encoding = r.apparent_encoding  # ← wichtig!
     soup = BeautifulSoup(r.text, "html.parser")
     if url.startswith("https://www.news.admin.ch"):
         article_data = article_from_soup_admin_ch(soup)
         article_data['quelle'] = "News Service Bund"
         article_data['url'] = url
+    elif url.startswith("https://www.stadt.sg.ch"):
+        print(soup)
+        article_data = article_from_soup_stadt_sg_ch(soup)
+        article_data['quelle'] = urlparse(url).netloc
+        article_data['image'] = urlparse(url).scheme + "://" + urlparse(url).netloc + article_data['image']
+        if "stadtpolizei" in url:
+            article_data['quelle'] = "Stadtpolizei"
     else:
         article_data = article_dict_from_soup_default(soup)
         article_data['quelle'] = urlparse(url).netloc
         article_data['url'] = url
     return article_data
 
+def article_from_soup_stadt_sg_ch(soup):
+    article_dict = dict()
+    article_dict['title'] = soup.select_one("#content h1").get_text(strip=True)
+    article_dict['lead'] = soup.find("p", class_="lead-paragraph").text
+    article_dict['content'] = soup.find("div", class_="content-paragraph").text
+    img = soup.select_one(".news-detail-img img")
+    if img:
+        article_dict['image'] = img["src"]
+    return article_dict
 
 def article_from_soup_admin_ch(soup):
     article_dict = dict()
