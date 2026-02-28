@@ -319,7 +319,7 @@ def insert_infobox_into_article(content):
     global infobox_content
     infobox_content = content
 
-locale.setlocale(locale.LC_TIME, "de_CH.UTF-8")
+locale.setlocale(locale.LC_TIME, "de_CH")
 
 # --- GUI Setup ---
 root = tk.Tk()
