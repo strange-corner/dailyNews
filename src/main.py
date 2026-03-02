@@ -31,7 +31,8 @@ pageflow = PageFlow()
 infobox_content = None # Zwischenspeicher, da Editor in anderem Fenster stattfindet.
 
 QUELLENARTEN = {"quelle": "Quelle",
-                "weiterlesen": "Weiterlesen bei"}
+                "weiterlesen": "Weiterlesen bei",
+                "infolink": "Link für Infos"}
 
 def getExistingFolderFromDate():
     """ gibt den Ordner zum Datum zurück, erstellt ihn, falls nötig"""
