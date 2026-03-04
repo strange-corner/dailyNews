@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, date
 import requests
 import os
 if not os.getenv("GITHUB_ACTIONS"):
-    from src import config
+    import config
 from urllib.parse import urlparse
 
 def extract_events(content):

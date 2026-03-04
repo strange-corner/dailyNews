@@ -25,7 +25,7 @@ from pageflow import *
 import wetterdaten
 from pdf_today import PdfToday
 import ui_stuff
-from src import wetter_diagram_temperature
+import wetter_diagram_temperature
 
 pageflow = PageFlow()
 infobox_content = None # Zwischenspeicher, da Editor in anderem Fenster stattfindet.
