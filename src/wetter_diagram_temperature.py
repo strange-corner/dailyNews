@@ -80,8 +80,8 @@ def generate_tikz(temps_str: list, ymin, ymax):
     for i, p in enumerate(temps_str):
         coords = coords + f"({i}, {p})\n"
     coords = coords + "}\n"
-    coords = coords + f"node[pos={tmin_pos}, above{' right' if tmin_pos < 0.05 else ''}, font=\\tiny, color=black]{{{tmin}°}}\n"
-    coords = coords + f"node[pos={tmax_pos}, below{' left' if tmin_pos > 0.95 else ''}, font=\\tiny, color=black]{{{tmax}°}}\n;\n"
+    coords = coords + f"node[pos={tmin_pos}, above{' right' if tmin_pos < 0.05 else ' left' if tmin_pos > 0.95 else ''}, font=\\tiny, color=black]{{{tmin}°}}\n"
+    coords = coords + f"node[pos={tmax_pos}, below{' right' if tmax_pos < 0.05 else ' left' if tmax_pos > 0.95 else ''}, font=\\tiny, color=black]{{{tmax}°}}\n;\n"
 
     part3 = r"""
 
