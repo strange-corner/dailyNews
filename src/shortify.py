@@ -1,7 +1,7 @@
 import requests
 import os
 if not os.getenv("GITHUB_ACTIONS"):
-    import config
+   from src import config
 import sqlite3
 import json
 from pathlib import Path
