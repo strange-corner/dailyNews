@@ -3,7 +3,7 @@
 import csv
 import os.path
 
-from . import myrequests
+from src import myrequests
 from datetime import datetime, timedelta
 import json
 import time
