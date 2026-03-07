@@ -38,7 +38,15 @@ def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename:
     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
 
-def generate_tikz(temps_str: list, tmin: float, tmax: float):
+def generate_tikz(temps_str: list, ymin, ymax):
+    tempf = list(map(float, temps_str))
+    tmin = min(tempf)
+    tmin_idx = tempf.index(tmin)
+    tmin_pos = tmin_idx / 23
+    tmax = max(tempf)
+    tmax_idx = tempf.index(tmax)
+    tmax_pos = tmax_idx / 23
+
 
     part1 = r"""
 \begin{tikzpicture}
@@ -58,7 +66,7 @@ def generate_tikz(temps_str: list, tmin: float, tmax: float):
     trim axis left,
     trim axis right,
     """ + \
-    f"ymin={tmin},ymax={tmax}," + \
+    f"ymin={ymin},ymax={ymax}," + \
     r"""
 ]
 
@@ -71,9 +79,11 @@ def generate_tikz(temps_str: list, tmin: float, tmax: float):
     coords = ""
     for i, p in enumerate(temps_str):
         coords = coords + f"({i}, {p})\n"
+    coords = coords + "}\n"
+    coords = coords + f"node[pos={tmin_pos}, above{' right' if tmin_pos < 0.05 else ''}, font=\\tiny, color=black]{{{tmin}°}}\n"
+    coords = coords + f"node[pos={tmax_pos}, below{' left' if tmin_pos > 0.95 else ''}, font=\\tiny, color=black]{{{tmax}°}}\n;\n"
 
     part3 = r"""
-    };
 
 \end{axis}
 \end{tikzpicture}"""
