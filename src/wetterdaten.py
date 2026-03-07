@@ -44,19 +44,28 @@ def get_toc() -> dict:
             f.write(response.content)
 
 def get_latest_url_from_toc(collection_id: str):
+    """
+
+    :param collection_id: z.B. tre200px
+    :return:
+    """
     with open('../toc.csv', "r", newline='') as f:
         jsondata = json.load(f)
         # pprint(jsondata)
         items = jsondata.get("features", [])
         # Sortieren nach Zeit: wir nehmen das "datetime"-Feld im Item
-        items_sorted = sorted(items, key=lambda it: it["properties"]["datetime"], reverse=True)
-        for it in items_sorted:
+        features_sorted = sorted(items, key=lambda it: it["properties"]["datetime"], reverse=True)
+        for it in features_sorted:
             assets = it.get("assets", {})
+            if len(assets) == 0:
+                # oft ist schon der nächste Tag vorhanden, ohne assets
+                continue
+            assets_sorted = sorted(assets, reverse=True)  # sortiert nach Dateiname
             # Schau, ob der Tre-200px-Asset da ist
-            for name, asset in assets.items():
+            for name in assets_sorted:
                 # Je nachdem wie der Parameter genau heißt (z. B. "tre200px" oder ähnlich)
                 if collection_id in name:
-                    return asset["href"], it["properties"]["datetime"]
+                    return assets[name]["href"], it["properties"]["datetime"]
 
 
 def download_file_if_necessary(url):
