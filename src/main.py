@@ -150,7 +150,6 @@ def save_weather_block():
             f.write(image_tex + "\n")
         f.write(f" (Quelle: MeteoSchweiz)\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)
-    refresh_articles()
 
 def save_agenda_block():
     folder = getExistingFolderFromDate()
