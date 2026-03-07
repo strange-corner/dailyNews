@@ -9,6 +9,7 @@ import json
 import time
 
 url_toc = "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-local-forecasting/items"
+tocfilepath = "toc.json"
 
 # Station nehmen wir St.Gallen, da im Meteoschweiz auch die Daten davon genommen werden, wenn man Herisau eingibt.
 point_id = 56
@@ -28,19 +29,18 @@ id_map = {
 
 
 def get_toc() -> dict:
-    toc_file = "../toc.csv"
-    if os.path.isfile(toc_file):
-        filectime = os.path.getmtime(toc_file)
+    if os.path.isfile(tocfilepath):
+        filectime = os.path.getmtime(tocfilepath)
     else:
         filectime = 0
     timenow = time.time()
     diff_s = timenow - filectime
     if (diff_s < 3600.0):
-        print(f"{toc_file} is {diff_s} s old. Use it")
+        print(f"{tocfilepath} is {diff_s} s old. Use it")
     else:
-        print(f"Downloading {toc_file}")
+        print(f"Downloading {tocfilepath}")
         response = myrequests.get(url_toc)
-        with open(toc_file, "wb") as f:
+        with open(tocfilepath, "wb") as f:
             f.write(response.content)
 
 def get_latest_url_from_toc(collection_id: str):
@@ -49,7 +49,7 @@ def get_latest_url_from_toc(collection_id: str):
     :param collection_id: z.B. tre200px
     :return:
     """
-    with open('../toc.csv', "r", newline='') as f:
+    with open(tocfilepath, "r", newline='') as f:
         jsondata = json.load(f)
         # pprint(jsondata)
         items = jsondata.get("features", [])
