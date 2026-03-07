@@ -38,7 +38,7 @@ def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename:
     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
 
-def generate_tikz(temps_str: list):
+def generate_tikz(temps_str: list, tmin: float, tmax: float):
 
     part1 = r"""
 \begin{tikzpicture}
@@ -56,7 +56,10 @@ def generate_tikz(temps_str: list):
     axis lines=left,
     clip=true,
     trim axis left,
-    trim axis right
+    trim axis right,
+    """ + \
+    f"ymin={tmin},ymax={tmax}," + \
+    r"""
 ]
 
 \addplot[

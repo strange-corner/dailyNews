@@ -137,13 +137,16 @@ def save_weather_block():
     # hole Wetter für heute und morgen
     weather = wetterdaten.get_data_for_day(date)
 
+    # min. und max. Temp. aller Tage für Diagramm-Y-Achse ermitteln
+    tmin, tmax = wetterdaten.getMinMaxTemp(weather)
+
     weather_filename = os.path.join(folder, "wetter.tex")
     with open(weather_filename, "w", encoding="utf-8") as f:
         f.write(f"\\section{{Wetter}}\n")
         for day in weather:
             d = weather[day]
             f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min'][0]}°C, max. {d['id_temp_max'][0]}°C, Niederschlag {d['id_niederschlag'][0]}mm\\\\ \n\n")
-            image_tex = wetter_diagram_temperature.generate_tikz(d['id_temp_hourly_mean']) #, folder, diagram_filename)
+            image_tex = wetter_diagram_temperature.generate_tikz(d['id_temp_hourly_mean'], tmin, tmax) #, folder, diagram_filename)
             f.write(image_tex + "\n")
         f.write(f" (Quelle: MeteoSchweiz)\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)

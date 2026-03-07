@@ -80,7 +80,13 @@ def filter_csv_by_value(path, column_name, value):
                 pass
 
 
-def get_val_of_date(csvfile: str, date: datetime):
+def get_val_of_date(csvfile: str, date: datetime) -> list:
+    """
+    List of values for our location point_id
+    :param csvfile: a data file
+    :param date: Date (Day) we want to extract from csvfile
+    :return: List of values of the requested date
+    """
     with open(csvfile, newline='', encoding="utf-8") as f:
         collection_id = csvfile.split('.')[-2]
         reader = csv.DictReader(f, delimiter=';')
@@ -121,6 +127,19 @@ def replace_id_symbol(result_data: dict):
             inner_loop()
 
 
+def getMinMaxTemp(weather: dict) -> tuple[float, float]:
+    """
+    :param weather: Dict aus Key=Tagen mit Value=Ergebnis von get_data_for_day
+    :return:
+    """
+    minTemp = float("inf")
+    maxTemp = float("-inf")
+    for dayWeather in weather:
+        temp = weather[dayWeather]["id_temp_hourly_mean"]
+        tempf = list(map(float, temp))
+        minTemp = min(minTemp, min(tempf))
+        maxTemp = max(maxTemp, max(tempf))
+    return (minTemp, maxTemp)
 
 
 if __name__ == "__main__":
