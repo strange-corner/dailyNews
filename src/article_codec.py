@@ -10,6 +10,7 @@ def _encode_special_chars(text: str):
     text = text.replace("_", "\\_")
     text = text.replace("\u2005", " ")  # spezielles Leerzeichen Four-Per-Em Space (verwendet auf admin.ch für Zahlen: 10 000)
     text = text.replace("\u0080", "")  # Lückenfüller-Zeichen. gesehen auf sg.ch; https://www.sg.ch/news/sgch_kantonspolizei/2025/12/wald-schoenengrund--verkehrsunfall-zwischen-bagger-und-auto---au.html
+    text = text.replace("\u200B", "")  # Zero Width Space (ZWSP). Kommt oft vor bei Stadtpolizei St.Gallen
     return text
 
 

@@ -32,6 +32,10 @@ class ArticleTest(unittest.TestCase):
         teststr = "CHF 10 000.00"
         self.assertEqual("CHF 10 000.00", article_codec._encode_special_chars(teststr))
 
+    def test_char_u200B_remove(self):
+        teststr = "​Strolchenfahrt"
+        self.assertEqual("Strolchenfahrt", article_codec._encode_special_chars(teststr))
+
     def isValidFilename(self, filename) -> bool:
         ## Check for invalid characters
         invalid_chars = r'[<>:"/\\|?*] '
