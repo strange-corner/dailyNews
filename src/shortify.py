@@ -94,9 +94,10 @@ def _create_shortlink(url: str, title: str) -> str:
         "url": url,
         "title": title
     }
-    headers = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
     resp = requests.post(api_url, json=body, headers=headers, auth=(config.shortify_key["user"], config.shortify_key["pass"]))
     print(resp)
+    print(resp.text)
     print(resp.status_code, resp.json())
     shortlink = resp.json()["data"]["short_url"]
     result = shortlink.split("/")[-1]
