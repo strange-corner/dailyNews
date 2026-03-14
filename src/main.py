@@ -137,6 +137,9 @@ def save_weather_block():
     # hole Wetter für heute und morgen
     weather = wetterdaten.get_data_for_day(date)
 
+    # alles zu float machen
+    weather = wetterdaten.make_all_float(weather)
+
     # min. und max. Temp. aller Tage für Diagramm-Y-Achse ermitteln
     tmin, tmax = wetterdaten.getMinMax(weather, 'id_temp_hourly_mean')
     pmin, pmax = wetterdaten.getMinMax(weather, 'id_precip_hourly_total')

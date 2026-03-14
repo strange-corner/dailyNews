@@ -21,6 +21,8 @@ id_map = {
     "id_temp_max": "tre200px",
     "id_temp_hourly_mean": "tre200h0",
     "id_precip_hourly_total": "rre150h0",
+    "id_precip_hourly_quant10": "rreq10h0",
+    "id_precip_hourly_quant90": "rreq90h0",
 
     # hourly data
     # "id_sunshine_dur": "sre000h0", noch unklar wie zu interpretieren
@@ -145,16 +147,25 @@ def getMinMax(weather: dict, key: str) -> tuple[float, float]:
     minTemp = float("inf")
     maxTemp = float("-inf")
     for dayWeather in weather:
-        temp = weather[dayWeather][key]
-        tempf = list(map(float, temp))
+        tempf = weather[dayWeather][key]
         minTemp = min(minTemp, min(tempf))
         maxTemp = max(maxTemp, max(tempf))
     return (minTemp, maxTemp)
+
+
+def make_all_float(weather: dict) -> dict[str, dict]:
+    for day in weather:
+        for key in weather[day]:
+            if key == "id_symbol":
+                continue  # ist nicht numerisch
+            data = weather[day][key]
+            weather[day][key] = list(map(float, data))
+    return weather
 
 
 if __name__ == "__main__":
     today = datetime.now()
     result = get_data_for_day(today)
     print(str(result))
-    print(result["Heute"]["id_precip_hourly_total"])
+    print(result["Heute"]["id_precip_hourly_quant10"])
     print(result)

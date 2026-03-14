@@ -17,6 +17,7 @@ class Test(unittest.TestCase):
         resultdict["id_temp_hourly_mean"] = data
         tagedict = dict()
         tagedict["heute"] = resultdict
+        tagedict = wetterdaten.make_all_float(tagedict)
 
         min, max = wetterdaten.getMinMax(tagedict, "id_temp_hourly_mean")
         print(min, max)

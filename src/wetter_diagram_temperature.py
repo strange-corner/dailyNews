@@ -37,11 +37,11 @@ def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename:
 
     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
-def generate_precip_part(precip_str: list, pmax) -> str:
+def _generate_precip_part(precip_d: list, pmax) -> str:
     """ Gibt den String für das Balkendiagramm zurück. Wenn es keinen Niederschlag gibt, dann Leerstring"""
     doGenerate = False
     precip_coords = ""
-    for i, p in enumerate(precip_str):
+    for i, p in enumerate(precip_d):
         precip_coords = precip_coords + f"({i}, {p})\n"
         if p != '0.0':
             doGenerate = True
@@ -85,7 +85,7 @@ def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
 
     part1 = r"""
 \begin{tikzpicture}
-""" + generate_precip_part(precip_str, pmax) + r"""
+""" + _generate_precip_part(precip_str, pmax) + r"""
 
 \begin{axis}[
     width=\columnwidth,
@@ -103,8 +103,8 @@ def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
     trim axis left,
     trim axis right,
     """ + \
-    f"ymin={ymin},ymax={ymax}," + \
-    r"""
+            f"ymin={ymin},ymax={ymax}," + \
+            r"""
 ]
 
 \addplot[
