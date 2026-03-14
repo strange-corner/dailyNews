@@ -322,6 +322,10 @@ def insert_infobox_into_article(content):
     global infobox_content
     infobox_content = content
 
+def on_closing():
+    pageflow.save_pageflow(getExistingFolderFromDate())
+    root.destroy()
+
 locale.setlocale(locale.LC_TIME, "de_CH")
 
 # --- GUI Setup ---
@@ -426,5 +430,7 @@ tk.Button(root, text="Artikel übernehmen", command=import_rss_article).pack(pad
 
 # Beim Start vorhandene Artikel laden
 refresh_articles()
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 root.mainloop()

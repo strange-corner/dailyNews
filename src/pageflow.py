@@ -73,3 +73,11 @@ class PageFlow:
             if idx < len(self.seq):
                 self.seq.insert(idx + 1, self.seq.pop(idx))
 
+    def save_pageflow(self, folder):
+        """ saves the order of elements of the pageflow in a file pageflow.txt """
+        with open(f"{folder}/pageflow.txt", "w", encoding="utf-8") as f:
+            for elem in self.seq:
+                ident = elem.ident()
+                print("saving " + ident)
+                f.write(ident)
+                f.write("\n")
