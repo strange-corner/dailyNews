@@ -37,24 +37,18 @@ def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename:
 
     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
-
-def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
-    tempf = list(map(float, temps_str))
-    tmin = min(tempf)
-    tmin_idx = tempf.index(tmin)
-    tmin_pos = tmin_idx / 23
-    tmax = max(tempf)
-    tmax_idx = tempf.index(tmax)
-    tmax_pos = tmax_idx / 23
-
+def generate_precip_part(precip_str: list, pmax) -> str:
+    """ Gibt den String für das Balkendiagramm zurück. Wenn es keinen Niederschlag gibt, dann Leerstring"""
+    doGenerate = False
     precip_coords = ""
     for i, p in enumerate(precip_str):
         precip_coords = precip_coords + f"({i}, {p})\n"
-
-    part1 = r"""
-\begin{tikzpicture}
-
-% Rechte Achse (Balkendiagramm)
+        if p != '0.0':
+            doGenerate = True
+    if doGenerate:
+        result = r"""
+    
+    % Rechte Achse (Balkendiagramm)
 \begin{axis}[
     width=\columnwidth,
     height=0.5\columnwidth,
@@ -74,7 +68,24 @@ def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
 """ + precip_coords + r"""
 };
 
-\end{axis}
+\end{axis}"""
+    else:
+        result = ""
+    return result
+
+def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
+    tempf = list(map(float, temps_str))
+    tmin = min(tempf)
+    tmin_idx = tempf.index(tmin)
+    tmin_pos = tmin_idx / 23
+    tmax = max(tempf)
+    tmax_idx = tempf.index(tmax)
+    tmax_pos = tmax_idx / 23
+
+
+    part1 = r"""
+\begin{tikzpicture}
+""" + generate_precip_part(precip_str, pmax) + r"""
 
 \begin{axis}[
     width=\columnwidth,
