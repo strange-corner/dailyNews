@@ -37,12 +37,12 @@ def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename:
 
     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
-def _generate_precip_part(precip_d: list, pmax) -> str:
+def _generate_precip_part(precip_d: list, pmax, precip_quant10: list, precip_quant90: list) -> str:
     """ Gibt den String für das Balkendiagramm zurück. Wenn es keinen Niederschlag gibt, dann Leerstring"""
     doGenerate = False
     precip_coords = ""
     for i, p in enumerate(precip_d):
-        precip_coords = precip_coords + f"({i}, {p})\n"
+        precip_coords = precip_coords + f"({i}, {p}) -= (0, {p - precip_quant10[i]}) += (0, {precip_quant90[i] - p})\n"
         if p != '0.0':
             doGenerate = True
     if doGenerate:
@@ -64,7 +64,11 @@ def _generate_precip_part(precip_d: list, pmax) -> str:
     bar width=3pt,
 ]
 
-\addplot[red, fill=red!40] coordinates {
+\addplot[red, fill=red!40,
+error bars/.cd,
+    y dir=both,
+    y explicit
+] coordinates {
 """ + precip_coords + r"""
 };
 
@@ -73,8 +77,7 @@ def _generate_precip_part(precip_d: list, pmax) -> str:
         result = ""
     return result
 
-def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
-    tempf = list(map(float, temps_str))
+def generate_tikz(tempf: list, ymin, ymax, precip_str: list, pmax, precip_quant10: list, precip_quant90: list):
     tmin = min(tempf)
     tmin_idx = tempf.index(tmin)
     tmin_pos = tmin_idx / 23
@@ -85,7 +88,7 @@ def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
 
     part1 = r"""
 \begin{tikzpicture}
-""" + _generate_precip_part(precip_str, pmax) + r"""
+""" + _generate_precip_part(precip_str, pmax, precip_quant10, precip_quant90) + r"""
 
 \begin{axis}[
     width=\columnwidth,
@@ -114,7 +117,7 @@ def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
 """
 
     coords = ""
-    for i, p in enumerate(temps_str):
+    for i, p in enumerate(tempf):
         coords = coords + f"({i}, {p})\n"
     coords = coords + "}\n"
     coords = coords + f"node[pos={tmin_pos}, above{' right' if tmin_pos < 0.05 else ' left' if tmin_pos > 0.95 else ''}, font=\\tiny, color=black]{{{tmin}°}}\n"

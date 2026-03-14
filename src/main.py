@@ -143,7 +143,9 @@ def save_weather_block():
     # min. und max. Temp. aller Tage für Diagramm-Y-Achse ermitteln
     tmin, tmax = wetterdaten.getMinMax(weather, 'id_temp_hourly_mean')
     pmin, pmax = wetterdaten.getMinMax(weather, 'id_precip_hourly_total')
-    pmax = max(pmax, 5)  # don't zoom too much
+    p10min, p10max = wetterdaten.getMinMax(weather, 'id_precip_hourly_quant10')
+    p90min, p90max = wetterdaten.getMinMax(weather, 'id_precip_hourly_quant90')
+    pmax = max(pmax, p10max, p90max, 5)  # don't zoom too much
 
     weather_filename = os.path.join(folder, "wetter.tex")
     with open(weather_filename, "w", encoding="utf-8") as f:
@@ -151,7 +153,7 @@ def save_weather_block():
         for day in weather:
             d = weather[day]
             f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min'][0]}°C, max. {d['id_temp_max'][0]}°C, Niederschlag {d['id_niederschlag'][0]}mm\\\\ \n\n")
-            image_tex = wetter_diagram_temperature.generate_tikz(d['id_temp_hourly_mean'], tmin, tmax, d['id_precip_hourly_total'], pmax)
+            image_tex = wetter_diagram_temperature.generate_tikz(d['id_temp_hourly_mean'], tmin, tmax, d['id_precip_hourly_total'], pmax, d['id_precip_hourly_quant10'], d['id_precip_hourly_quant90'])
             f.write(image_tex + "\n")
         f.write(f" (Quelle: MeteoSchweiz)\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)
