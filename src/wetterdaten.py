@@ -20,6 +20,7 @@ id_map = {
     "id_temp_min": "tre200pn",
     "id_temp_max": "tre200px",
     "id_temp_hourly_mean": "tre200h0",
+    "id_precip_hourly_total": "rre150h0",
 
     # hourly data
     # "id_sunshine_dur": "sre000h0", noch unklar wie zu interpretieren
@@ -136,7 +137,7 @@ def replace_id_symbol(result_data: dict):
             inner_loop()
 
 
-def getMinMaxTemp(weather: dict) -> tuple[float, float]:
+def getMinMax(weather: dict, key: str) -> tuple[float, float]:
     """
     :param weather: Dict aus Key=Tagen mit Value=Ergebnis von get_data_for_day
     :return:
@@ -144,7 +145,7 @@ def getMinMaxTemp(weather: dict) -> tuple[float, float]:
     minTemp = float("inf")
     maxTemp = float("-inf")
     for dayWeather in weather:
-        temp = weather[dayWeather]["id_temp_hourly_mean"]
+        temp = weather[dayWeather][key]
         tempf = list(map(float, temp))
         minTemp = min(minTemp, min(tempf))
         maxTemp = max(maxTemp, max(tempf))
@@ -155,5 +156,5 @@ if __name__ == "__main__":
     today = datetime.now()
     result = get_data_for_day(today)
     print(str(result))
-    print(result["Heute"]["id_temp_hourly_mean"])
+    print(result["Heute"]["id_precip_hourly_total"])
     print(result)

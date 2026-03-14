@@ -38,7 +38,7 @@ def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename:
     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
 
-def generate_tikz(temps_str: list, ymin, ymax):
+def generate_tikz(temps_str: list, ymin, ymax, precip_str: list, pmax):
     tempf = list(map(float, temps_str))
     tmin = min(tempf)
     tmin_idx = tempf.index(tmin)
@@ -47,9 +47,35 @@ def generate_tikz(temps_str: list, ymin, ymax):
     tmax_idx = tempf.index(tmax)
     tmax_pos = tmax_idx / 23
 
+    precip_coords = ""
+    for i, p in enumerate(precip_str):
+        precip_coords = precip_coords + f"({i}, {p})\n"
 
     part1 = r"""
 \begin{tikzpicture}
+
+% Rechte Achse (Balkendiagramm)
+\begin{axis}[
+    width=\columnwidth,
+    height=0.5\columnwidth,
+    axis y line*=right,
+    axis x line=none,
+    tick label style={font=\tiny},
+    label style={font=\tiny},
+    ylabel={Niedersch. mm},
+    ymin=0,
+    ymax=""" + f"{pmax}," + r"""
+    ybar,
+    xmin=0, xmax=23,
+    bar width=3pt,
+]
+
+\addplot[red, fill=red!40] coordinates {
+""" + precip_coords + r"""
+};
+
+\end{axis}
+
 \begin{axis}[
     width=\columnwidth,
     height=0.5\columnwidth,
