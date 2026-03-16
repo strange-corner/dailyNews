@@ -155,7 +155,7 @@ def save_weather_block():
             f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min'][0]}°C, max. {d['id_temp_max'][0]}°C, Niederschlag {d['id_niederschlag'][0]}mm\\\\ \n\n")
             image_tex = wetter_diagram_temperature.generate_tikz(d['id_temp_hourly_mean'], tmin, tmax, d['id_precip_hourly_total'], pmax, d['id_precip_hourly_quant10'], d['id_precip_hourly_quant90'])
             f.write(image_tex + "\n")
-        f.write(f" (Quelle: MeteoSchweiz)\n")
+        f.write(" (Quelle: \\href{https://www.meteoschweiz.admin.ch/service-und-publikationen/service.html}{MeteoSchweiz})\n")
     messagebox.showinfo("Wetter gespeichert", weather_filename)
 
 def save_agenda_block():
