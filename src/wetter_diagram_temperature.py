@@ -43,7 +43,7 @@ def _generate_precip_part(precip_d: list, pmax, precip_quant10: list, precip_qua
     precip_coords = ""
     for i, p in enumerate(precip_d):
         precip_coords = precip_coords + f"({i}, {p}) -= (0, {p - precip_quant10[i]}) += (0, {precip_quant90[i] - p})\n"
-        if p != '0.0':
+        if precip_quant90[i] > 0:
             doGenerate = True
     if doGenerate:
         result = r"""
