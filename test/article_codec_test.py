@@ -41,12 +41,13 @@ class ArticleTest(unittest.TestCase):
         invalid_chars = r'[<>:"/\\|?*] '
         if re.search(invalid_chars, filename):
             return False
-        return True
+        return filename.isprintable()  # um auf Zeichen wie NBSP zu testen
 
     def test_FilnameFromTitle(self):
         def testName(name):
             self.assertTrue(self.isValidFilename(article_codec.articleFilenameFromTitle(name)))
         testName("Motion \"Schule")
+        testName("\u0080Autofahrer")
 
     def test_encode(self):
         mock = WriterMock()

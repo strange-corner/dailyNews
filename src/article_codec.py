@@ -1,5 +1,4 @@
 import os
-import re
 if not os.getenv("GITHUB_ACTIONS"):
     import qrcode
 
@@ -8,6 +7,11 @@ def _encode_special_chars(text: str):
     text = text.replace("%", "\\%")
     text = text.replace("&", "\\&")
     text = text.replace("_", "\\_")
+    text = _replace_unwanted_unicode_characters(text)
+    return text
+
+
+def _replace_unwanted_unicode_characters(text: str) -> str:
     text = text.replace("\u2005", " ")  # spezielles Leerzeichen Four-Per-Em Space (verwendet auf admin.ch für Zahlen: 10 000)
     text = text.replace("\u0080", "")  # Lückenfüller-Zeichen. gesehen auf sg.ch; https://www.sg.ch/news/sgch_kantonspolizei/2025/12/wald-schoenengrund--verkehrsunfall-zwischen-bagger-und-auto---au.html
     text = text.replace("\u200B", "")  # Zero Width Space (ZWSP). Kommt oft vor bei Stadtpolizei St.Gallen
@@ -59,6 +63,7 @@ def encode(filepath, article: dict, f):
 
 def articleFilenameFromTitle(titlefull: str) -> str:
     title = titlefull[:9]
+    title = _replace_unwanted_unicode_characters(title)
     title = title.replace('"', '_')
     title = title.replace('[', '_')
     title = title.replace(']', '_')
