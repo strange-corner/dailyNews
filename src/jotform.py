@@ -72,13 +72,19 @@ def generate_text_for_date(events, today: date):
     if today is None:
         today = datetime.today().date()
 
+
     tomorrow = today + timedelta(days=1)
+    daylist = [("Heute", get_eventDict_for_day(today, events)),
+               ("Morgen", get_eventDict_for_day(tomorrow, events))]
+    for d in range(2, 8):
+        day = today + timedelta(days=d)
+        for_day = get_eventDict_for_day(day, events)
+        if len(for_day) > 0:
+            daylist.append(("", for_day))
 
     lines = []
 
-    for label, day_events in [("Heute", get_eventDict_for_day(today, events)),
-                              ("Morgen", get_eventDict_for_day(tomorrow, events)),
-                              ("Demnächst", get_eventDict_after_day(tomorrow, events)[:1])]:
+    for label, day_events in daylist:
 
         if not day_events:
             continue
@@ -90,7 +96,8 @@ def generate_text_for_date(events, today: date):
 
         date_short_str = e.get("datum").strftime("%a. %d.%m.%y")
         lines.append(f"\\textbf{{{label} {date_short_str}:}}\n")
-        lines.append("\\begin{itemize}\n")
+        lines.append("\\begin{itemize}[leftmargin=1em]\n")
+        lines.append("\\raggedright\n")
         for p in parts:
             lines.append("\\item " + p)
         lines.append("\\end{itemize}")
