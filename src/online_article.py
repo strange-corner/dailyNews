@@ -1,6 +1,6 @@
 from urllib3.util import url
 
-import myrequests
+from src import myrequests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
@@ -22,25 +22,46 @@ def fetch_crossteaser_data(url: str) -> dict:
 
 
 def copy_online_article(url: str) -> dict:
-    r = myrequests.get(url)
-    r.encoding = r.apparent_encoding  # ← wichtig!
-    soup = BeautifulSoup(r.text, "html.parser")
+    soup = fetch_soup(url)
     if url.startswith("https://www.news.admin.ch"):
         article_data = article_from_soup_admin_ch(soup)
         article_data['quelle'] = "News Service Bund"
         article_data['url'] = url
     elif url.startswith("https://www.stadt.sg.ch"):
-        print(soup)
         article_data = article_from_soup_stadt_sg_ch(soup)
         article_data['quelle'] = urlparse(url).netloc
         article_data['image'] = urlparse(url).scheme + "://" + urlparse(url).netloc + article_data['image']
         if "stadtpolizei" in url:
             article_data['quelle'] = "Stadtpolizei"
+    elif url.startswith("https://ar.ch/verwaltung/departement-inneres-und-sicherheit/kantonspolizei/"):
+        article_data = article_from_soup_kapo_ar(soup)
     else:
         article_data = article_dict_from_soup_default(soup)
         article_data['quelle'] = urlparse(url).netloc
         article_data['url'] = url
     return article_data
+
+
+def fetch_soup(url: str) -> BeautifulSoup:
+    r = myrequests.get(url)
+    r.encoding = r.apparent_encoding  # ← wichtig!
+    soup = BeautifulSoup(r.text, "html.parser")
+    return soup
+
+
+def article_from_soup_kapo_ar(soup):
+    souproot = soup.find("section", id="Content")
+    article_dict = dict()
+    article_dict['title'] = souproot.find("h2", itemprop="headline").text
+    article_dict['lead'] = souproot.find("div", class_="teaser-text").text
+    article_dict['content'] = souproot.find("div", class_="news-text-wrap").text
+    img = souproot.select_one("img")
+    if img:
+        article_dict['image'] = "https://ar.ch" + img["src"]
+        print("Bidlbescheibung: " + img["alt"])
+    article_dict['quelle'] = "Kapo AR"
+    return article_dict
+
 
 def article_from_soup_stadt_sg_ch(soup):
     article_dict = dict()
