@@ -33,6 +33,10 @@ def copy_online_article(url: str) -> dict:
         article_data['image'] = urlparse(url).scheme + "://" + urlparse(url).netloc + article_data['image']
         if "stadtpolizei" in url:
             article_data['quelle'] = "Stadtpolizei"
+    elif url.startswith("https://www.sg.ch"):
+        article_data = article_from_soup_sg_ch(soup)
+        article_data['quelle'] = "Kanton SG"
+
     elif url.startswith("https://ar.ch/verwaltung/departement-inneres-und-sicherheit/kantonspolizei/"):
         article_data = article_from_soup_kapo_ar(soup)
     else:
@@ -47,6 +51,18 @@ def fetch_soup(url: str) -> BeautifulSoup:
     r.encoding = r.apparent_encoding  # ← wichtig!
     soup = BeautifulSoup(r.text, "html.parser")
     return soup
+
+
+def article_from_soup_sg_ch(soup: BeautifulSoup) -> dict:
+    article_dict = dict()
+    article_dict['title'] = soup.find("h1").text  #find_all("div", class_="page-header").find("h1").get_text(strip=True)
+    article_dict['lead'] = soup.find("div", class_="lead-paragraph").text.strip()
+    article_dict['content'] = soup.find("div", class_="content-paragraph").text
+    img = soup.select_one(".news-detail-img img")
+    if img:
+        article_dict['image'] = img["src"]
+        print("Bidlbescheibung: " + img["alt"])
+    return article_dict
 
 
 def article_from_soup_kapo_ar(soup):
