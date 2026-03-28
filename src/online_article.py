@@ -1,5 +1,5 @@
 from src import myrequests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag, ResultSet
 from urllib.parse import urlparse
 
 def fetch_crossteaser_data(url: str) -> dict:
@@ -38,7 +38,8 @@ def article_from_soup(soup: BeautifulSoup, url: str) -> dict[str, str] | dict:
     elif url.startswith("https://www.sg.ch"):
         article_data = article_from_soup_sg_ch(soup)
         article_data['quelle'] = "Kanton SG"
-
+    elif url.startswith("https://www.svp.ch"):
+        article_data = article_from_soup_svp_ch(soup)
     elif url.startswith("https://ar.ch/verwaltung/departement-inneres-und-sicherheit/kantonspolizei/"):
         article_data = article_from_soup_kapo_ar(soup)
     else:
@@ -46,6 +47,69 @@ def article_from_soup(soup: BeautifulSoup, url: str) -> dict[str, str] | dict:
         article_data['quelle'] = urlparse(url).netloc
         article_data['url'] = url
     return article_data
+
+
+def article_from_soup_svp_ch(soup: BeautifulSoup) -> dict[str, str]:
+    print("article_from_soup_svp_ch")
+    article_dict = dict()
+    article_dict['title'] = soup.find("h1").text.strip()
+    lead_div = soup.find("div", class_="uk-text-large")
+    article_dict['lead'] = lead_div.text.strip()
+    lead_div.decompose() # we don't want it in content again
+    content_soup = soup.find("div", class_="singleContent")
+    content_node = content_soup.find_all(["p", "ul"])
+    article_dict['content'] = convert_node(content_node)
+    img = content_soup.select_one("img")
+    if img:
+        article_dict['image'] = img["src"]
+    article_dict['quelle'] = "SVP Schweiz"
+    return article_dict
+
+
+def convert_node(node) -> str:
+    """Recursively convert HTML node to LaTeX."""
+
+    if isinstance(node, ResultSet):
+        arr = [convert_node(n) for n in node]
+        return ' '.join(arr)
+
+    # Text node
+    if isinstance(node, NavigableString):
+        return str(node)
+
+    # Tag node
+    if isinstance(node, Tag):
+        name = node.name.lower()
+
+        # Fett
+        if name in ["b", "strong"]:
+            content = "".join(convert_node(c) for c in node.children)
+            return r"\textbf{" + content + "}"
+
+        # Absatz
+        elif name == "p":
+            content = "".join(convert_node(c) for c in node.children)
+            return content + "\n\n"
+
+        # Unordered list
+        elif name == "ul":
+            items = "".join(convert_node(c) for c in node.children)
+            return "\\begin{itemize}\n" + items + "\\end{itemize}\n"
+
+        # List item
+        elif name == "li":
+            content = "".join(convert_node(c) for c in node.children)
+            return f"  \\item {content}\n"
+
+        # Line break
+        elif name == "br":
+            return "\\\\\n"
+
+        # Default: einfach Inhalt durchreichen
+        else:
+            return "".join(convert_node(c) for c in node.children)
+
+    return ""
 
 
 def fetch_soup(url: str) -> BeautifulSoup:
