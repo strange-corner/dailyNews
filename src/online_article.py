@@ -1,5 +1,3 @@
-from urllib3.util import url
-
 from src import myrequests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -23,6 +21,10 @@ def fetch_crossteaser_data(url: str) -> dict:
 
 def copy_online_article(url: str) -> dict:
     soup = fetch_soup(url)
+    return article_from_soup(soup, url)
+
+
+def article_from_soup(soup: BeautifulSoup, url: str) -> dict[str, str] | dict:
     if url.startswith("https://www.news.admin.ch"):
         article_data = article_from_soup_admin_ch(soup)
         article_data['quelle'] = "News Service Bund"
@@ -54,18 +56,27 @@ def fetch_soup(url: str) -> BeautifulSoup:
 
 
 def article_from_soup_sg_ch(soup: BeautifulSoup) -> dict:
+    print("article_from_soup_sg_ch")
     article_dict = dict()
     article_dict['title'] = soup.find("h1").text  #find_all("div", class_="page-header").find("h1").get_text(strip=True)
     article_dict['lead'] = soup.find("div", class_="lead-paragraph").text.strip()
-    article_dict['content'] = soup.find("div", class_="content-paragraph").text
+    content_parapgraphs = soup.find("div", class_="content-paragraph")
+    article_dict['content'] = ""
+    for parapgraph in content_parapgraphs.find_all("p"):
+        if parapgraph.find_all("b"):
+            article_dict['content'] += "\\textbf"
+        article_dict['content'] += "{"
+        article_dict['content'] += parapgraph.text
+        article_dict['content'] += "}\n\n"
     img = soup.select_one(".news-detail-img img")
     if img:
-        article_dict['image'] = img["src"]
+        article_dict['image'] = "https://sg.ch" + img["src"]
         print("Bidlbescheibung: " + img["alt"])
     return article_dict
 
 
 def article_from_soup_kapo_ar(soup):
+    print("article_from_soup_kapo_ar")
     souproot = soup.find("section", id="Content")
     article_dict = dict()
     article_dict['title'] = souproot.find("h2", itemprop="headline").text
@@ -80,6 +91,7 @@ def article_from_soup_kapo_ar(soup):
 
 
 def article_from_soup_stadt_sg_ch(soup):
+    print("article_from_soup_stadt_sg_ch")
     article_dict = dict()
     article_dict['title'] = soup.select_one("#content h1").get_text(strip=True)
     article_dict['lead'] = soup.find("p", class_="lead-paragraph").text
@@ -90,6 +102,7 @@ def article_from_soup_stadt_sg_ch(soup):
     return article_dict
 
 def article_from_soup_admin_ch(soup):
+    print("article_from_soup_admin_ch")
     article_dict = dict()
     lead_section = soup.find("section", identifier="lead-contentpage")
     article_dict['title'] = lead_section.h1.string
@@ -129,6 +142,7 @@ def article_from_soup_admin_ch(soup):
 
 
 def article_dict_from_soup_default(soup):
+    print("article_dict_from_soup_default")
     article_dict = dict()
     article_dict['title'] = soup.title.string
 
