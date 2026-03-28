@@ -55,17 +55,19 @@ class PageFlow:
                 if fname.endswith(".tex") and fname.startswith("a_"):
                     filenameset.add(fname)
         self.removeAllArticles()
-        with open(f"{folder}/pageflow.txt", "r", encoding="utf-8") as f:
-            for stripline in (line.strip() for line in f):
-                if stripline in filenameset:
-                    filenameset.remove(stripline)
-                    if stripline.endswith(".tex") and stripline.startswith("a_"):
-                        print("adding " + stripline)
-                        self.seq.append(Article(stripline))
-                else:
-                    self.seq.append(CategoryMarker(stripline))
-            for neue in filenameset:  # falls es neue hat, die noch nicht im pageflow.txt sind
-                self.seq.append(Article(neue))
+        fname = f"{folder}/pageflow.txt"
+        if os.path.exists(fname):
+            with open(fname, "r", encoding="utf-8") as f:
+                for stripline in (line.strip() for line in f):
+                    if stripline in filenameset:
+                        filenameset.remove(stripline)
+                        if stripline.endswith(".tex") and stripline.startswith("a_"):
+                            print("adding " + stripline)
+                            self.seq.append(Article(stripline))
+                    else:
+                        self.seq.append(CategoryMarker(stripline))
+        for neue in filenameset:  # falls es neue hat, die noch nicht im pageflow.txt sind
+            self.seq.append(Article(neue))
 
     def removeAllArticles(self):
         self.seq = [ele for ele in self.seq if type(ele) != Article]
