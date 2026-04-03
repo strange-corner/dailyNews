@@ -46,7 +46,7 @@ def article_from_soup(soup: BeautifulSoup, url: str) -> dict[str, str] | dict:
     elif url.startswith("https://www.svp.ch"):
         article_data = article_from_soup_svp_ch(soup)
     elif url.startswith("https://ar.ch/"):
-        article_data = article_from_soup_kapo_ar(soup)
+        article_data = article_from_soup_ar_ch(soup)
     else:
         article_data = article_dict_from_soup_default(soup)
         article_data['quelle'] = urlparse(url).netloc
@@ -144,8 +144,8 @@ def article_from_soup_sg_ch(soup: BeautifulSoup) -> dict:
     return article_dict
 
 
-def article_from_soup_kapo_ar(soup):
-    print("article_from_soup_kapo_ar")
+def article_from_soup_ar_ch(soup):
+    print("article_from_soup_ar_ch")
     souproot = soup.find("section", id="Content")
     article_dict = dict()
     article_dict['title'] = souproot.find("h2", itemprop="headline").text
