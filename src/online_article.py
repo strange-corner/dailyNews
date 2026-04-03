@@ -6,16 +6,21 @@ def fetch_crossteaser_data(url: str) -> dict:
     r = myrequests.get(url)
     soup = BeautifulSoup(r.text, "html.parser")
 
-    og_data = {}
-    for tag in soup.find_all("meta"):
-        prop = tag.get("property", "")
-        if prop.startswith("og:"):
-            og_data[prop[3:]] = tag.get("content", "")
+    og_data = extract_og_data(soup)
 
     # Änderungswünsche der Urheber
     if 'site_name' in og_data and og_data['site_name'] == "Schweizerzeit Verlags AG":
         og_data['site_name'] = "www.schweizerzeit.ch"
 
+    return og_data
+
+
+def extract_og_data(soup: BeautifulSoup) -> dict[str, str]:
+    og_data = {}
+    for tag in soup.find_all("meta"):
+        prop = tag.get("property", "")
+        if prop.startswith("og:"):
+            og_data[prop[3:]] = tag.get("content", "")
     return og_data
 
 
@@ -40,7 +45,7 @@ def article_from_soup(soup: BeautifulSoup, url: str) -> dict[str, str] | dict:
         article_data['quelle'] = "Kanton SG"
     elif url.startswith("https://www.svp.ch"):
         article_data = article_from_soup_svp_ch(soup)
-    elif url.startswith("https://ar.ch/verwaltung/departement-inneres-und-sicherheit/kantonspolizei/"):
+    elif url.startswith("https://ar.ch/"):
         article_data = article_from_soup_kapo_ar(soup)
     else:
         article_data = article_dict_from_soup_default(soup)
@@ -150,7 +155,10 @@ def article_from_soup_kapo_ar(soup):
     if img:
         article_dict['image'] = "https://ar.ch" + img["src"]
         print("Bidlbescheibung: " + img["alt"])
-    article_dict['quelle'] = "Kapo AR"
+    if "kantonspolizei" in extract_og_data(soup)['url']:
+        article_dict['quelle'] = "Kapo AR"
+    else:
+        article_dict['quelle'] = "Kanton AR"
     return article_dict
 
 

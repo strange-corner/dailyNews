@@ -9,6 +9,8 @@ class Test(unittest.TestCase):
 
     def save_html_if_not_exist(self, url):
         filename = url.split("/")[-1]
+        if filename == "":
+            filename = url.split("/")[-2]
         if not os.path.exists(filename):
             response = myrequests.get(url)
             with open(filename, "wb") as f:
@@ -23,6 +25,7 @@ class Test(unittest.TestCase):
         article = parser(test_soup, url)
         for key in article.keys():
             print(key, article[key])
+        return article
 
     # def test_sg_ch(self):
     #     url = "https://www.sg.ch/news/sgch_allgemein/2026/03/ein-modernes-volksschulgesetz-fuer-st-gallen-.html"
@@ -31,3 +34,11 @@ class Test(unittest.TestCase):
     # def test_svp_ch(self):
     #     url = "https://www.svp.ch/aktuell/publikationen/medienmitteilungen/zuwanderung-ausser-rand-und-band-und-wir-sollen-dafuer-auch-noch-bezahlen-jetzt-zuwanderung-bremsen"
     #     self.teiltest(url, online_article.article_from_soup)
+
+    # def test_kapo_ar(self):
+    #     url = "https://ar.ch/verwaltung/departement-inneres-und-sicherheit/kantonspolizei/medienmitteilungen-der-kantonspolizei/detail/news/juengstes-teammitglied-der-kapo-ar/"
+    #     article = self.teiltest(url, online_article.article_from_soup)
+    #     self.assertEqual(article['quelle'], "Kapo AR")
+    #     url = "https://ar.ch/schnellzugriff/medienmitteilungen-der-kantonalen-verwaltung/detail/news/engere-zusammenarbeit-der-kantone-bei-der-gemeinsamen-vermarktung-des-tourismus-appenzellerland/"
+    #     article = self.teiltest(url, online_article.article_from_soup)
+    #     self.assertEqual(article['quelle'], "Kanton AR")
