@@ -26,6 +26,7 @@ import wetterdaten
 from pdf_today import PdfToday
 import ui_stuff
 import wetter_diagram_temperature
+from util import *
 
 pageflow = PageFlow()
 infobox_content = None # Zwischenspeicher, da Editor in anderem Fenster stattfindet.
@@ -35,12 +36,7 @@ QUELLENARTEN = {"quelle": "Quelle",
                 "infolink": "Link für Infos"}
 
 def getExistingFolderFromDate():
-    """ gibt den Ordner zum Datum zurück, erstellt ihn, falls nötig"""
-    date_time = date_entry.get_date()
-    folder = date_time.strftime("%y%m_%d")
-    os.makedirs(folder, exist_ok=True)
-    return folder
-
+    return getCreateFolderFromDate(date_entry.get_date())
 
 def download_image(url):
     image = myrequests.get(url)
