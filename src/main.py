@@ -1,16 +1,11 @@
 import time
 import tkinter as tk
-import urllib.parse
 from tkinter import ttk, messagebox
-from datetime import datetime, timedelta
 
 import config
-import myrequests
 from tkcalendar import DateEntry
 import locale
-from urllib.parse import urlparse
 from ftplib import FTP_TLS
-from PIL import Image
 
 import jotform
 from feed import load_rss
@@ -38,30 +33,6 @@ QUELLENARTEN = {"quelle": "Quelle",
 def getExistingFolderFromDate():
     return getCreateFolderFromDate(date_entry.get_date())
 
-def download_image(url):
-    image = myrequests.get(url)
-    image_name = url.split('/')[-1]
-    image_name_unquoted = urllib.parse.unquote(image_name)
-    image_path = os.path.join(getExistingFolderFromDate(), image_name_unquoted)
-    with open(image_path, 'wb') as f:
-        for chunk in image.iter_content():
-            f.write(chunk)
-    return image_name_unquoted
-
-
-def shrink_image(filename: str)-> str:
-    MAXWIDTH = 500
-    image_path = os.path.join(getExistingFolderFromDate(), filename)
-    img = Image.open(image_path)
-    if img.width > MAXWIDTH:
-        scale = MAXWIDTH / img.width
-        img = img.resize((MAXWIDTH, int(img.height * scale)))
-        filename_parts = filename.split('.')
-        new_filename = "".join(filename_parts[:-1]) + "k." + filename_parts[-1]
-        img.save(os.path.join(getExistingFolderFromDate(), new_filename))
-        return new_filename
-    return filename
-
 # --- GUI-Funktionen ---
 
 def save_article():
@@ -86,18 +57,13 @@ def save_article():
     if quellenArt == QUELLENARTEN['weiterlesen'] and not url:
         messagebox.showwarning("Fehler", "Link zum Weiterlesen fehlt")
         return
-    if image_url:
-        if urlparse(image_url).scheme in ['http', 'https']:
-            image_filename = download_image(image_url)
-        else:
-            image_filename = image_url
-        image_filename = shrink_image(image_filename)
 
     # Dateiname sicher machen
     folder = getExistingFolderFromDate()
     article_filename = os.path.join(folder, fname)
-    article_dict = {"title": title, "lead": lead, "image": image_filename, "content": content, "url": url,
+    article_dict = {"title": title, "lead": lead, "image": image_url, "content": content, "url": url,
                     "quelle": quelle, "quellenArt": quellenArt, "infobox": infobox_content}
+    replace_image_url_with_download_image(article_dict)
     save_as_tex_and_json(article_dict, article_filename)
     pageflow.add(Article(fname))
     refresh_article_ui()

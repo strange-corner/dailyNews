@@ -17,6 +17,7 @@ def list_feed_entries(feed_url: str) -> list[dict]:
     articles = load_rss(feed_url)
     articles = filter_articles_older_than(articles, timedelta(days=2))
     for article in articles:
+        replace_image_url_with_download_image(article)
         save_article(article)
         print(article)
 
