@@ -16,7 +16,7 @@ import jotform
 from feed import load_rss
 
 # --- Konstanten / Konfiguration ---
-import article_codec
+from articles import *
 import article_saveload
 import online_article
 import shortify
@@ -102,12 +102,6 @@ def save_article():
     pageflow.add(Article(fname))
     refresh_article_ui()
     felder_loeschen()
-
-
-def save_as_tex_and_json(article_dict: dict[str, str | None], article_filename: str):
-    article_saveload.article_save(article_filename + ".json", article_dict)
-    with open(article_filename, "w", encoding="utf-8") as f:
-        article_codec.encode(article_filename, article_dict, f)
 
 
 def add_category():

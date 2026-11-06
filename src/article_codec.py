@@ -34,7 +34,7 @@ def encode(filepath, article: dict, f):
         f.write(f"\\begin{{minipage}}{{\\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n\n")
     f.write(article['content'] + "\n")
     if article.get('quelle'):
-        if article['url']:
+        if 'url' in article and article['url']:
             qr_path = f"{filepath}_qr.png"
             href_begin = f"\\href{{https://{article['url']}}}{{"
             # QR-Code erzeugen TODO auslagern aus codec
@@ -52,7 +52,7 @@ def encode(filepath, article: dict, f):
         else:
             href_begin = "{"  # ohne Link
         f.write(f"{article['quellenArt']}:")
-        if article['url']:
+        if 'url' in article and article['url']:
             f.write("\\\\")  # wenn QR vorhanden, nutzen wir 2 Zeilen
         else:
             f.write(" ")
