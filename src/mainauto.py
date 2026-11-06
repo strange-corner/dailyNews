@@ -13,7 +13,7 @@ def parseConfig() -> dict[str, Any]:
         config = tomllib.load(f)
     return config
 
-def list_feed_entries(feed_url: str) -> list[dict]:
+def fetch_feed_articles(feed_url: str) -> list[dict]:
     articles = load_rss(feed_url)
     articles = filter_articles_older_than(articles, timedelta(days=2))
     for article in articles:
@@ -36,4 +36,4 @@ if __name__ == "__main__":
     config = parseConfig()
     rssfeed1 = config["Feeds"]["rss"][0]
     print("rssfeed1 is: " + str(rssfeed1))
-    list_feed_entries(rssfeed1)
+    fetch_feed_articles(rssfeed1)

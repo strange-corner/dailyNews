@@ -49,7 +49,7 @@ def load_rss(feed_url: str) -> list[dict]:
             "content": content,
             "image": imgsrc,
             "published": published,
-            "quellenArt": "quelle",
+            "quellenArt": "Quelle",
             "quelle" : "Kapo SG"  # TODO: falls weitere Feed-Quellen kommen
         })
     return articles
