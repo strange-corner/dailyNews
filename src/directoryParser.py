@@ -1,7 +1,8 @@
-from urllib.parse import urljoin
-
 from bs4 import BeautifulSoup
 from datetime import datetime
+
+from src import online_article
+
 
 def parse_article_directory(html: str) -> list[dict]:
     """ Liefert eine Liste von Artikel-Referenzen aus einer HTML-Seite"""
@@ -48,3 +49,10 @@ def filter_articles_published_after(articles: list[dict], min_published_date: da
         for article in articles
         if _parse_published_date(article["published"]) >= min_published_date
     ]
+
+
+def fetch_content_of_articles(articles: list[dict]) -> list[dict]:
+    for article in articles:
+        fetched = online_article.copy_online_article(article["article_url"])
+        article.update(fetched)
+    return articles
