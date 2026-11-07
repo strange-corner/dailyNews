@@ -12,36 +12,41 @@ class DirectoryParserTest(unittest.TestCase):
         testdata = self._read_testdata()
         self.assertIsInstance(directoryParser.parse_article_directory(testdata), list)
 
-    def test_9_articles(self):
-        testdata = self._read_testdata("test/testdata/directoryParserTestdata_kapoAR.html")
-        articlelist = directoryParser.parse_article_directory(testdata)
-        self.assertEqual(len(articlelist), 9)
+    def test_article_count_parametrized(self):
+        cases = [
+            ("test/testdata/directoryParserTestdata_kapoAR.html", 9),
+            (testdatafile, 251),
+        ]
+        for filename, expected in cases:
+            with self.subTest(filename=filename, expected=expected):
+                testdata = self._read_testdata(filename)
+                articlelist = directoryParser.parse_article_directory(testdata)
+                self.assertEqual(expected, len(articlelist))
 
-    def test_251_articles_herisauCh(self):
-        testdata = self._read_testdata()
-        articlelist = directoryParser.parse_article_directory(testdata)
-        self.assertEqual(251, len(articlelist))
-
-    def test_first_article_details(self):
-        testdata = self._read_testdata("test/testdata/directoryParserTestdata_kapoAR.html")
-        articlelist = directoryParser.parse_article_directory(testdata)
-        testarticle = articlelist[0]
-        self.assertEqual("Unfall zwischen Auto und Roller", testarticle["title"])
-        self.assertEqual("06.11.2026", testarticle["published"])
-
-    def test_first_article_details_herisau_ch(self):
-        testdata = self._read_testdata()
-        articlelist = directoryParser.parse_article_directory(testdata)
-        testarticle = articlelist[0]
-        self.assertEqual("Ja zu Bahnhof-Vorlagen sorgt für Erleichterung", testarticle["title"])
-        self.assertEqual("27.09.2020", testarticle["published"])
+    def test_first_article_details_parametrized(self):
+        cases = [
+            ("test/testdata/directoryParserTestdata_kapoAR.html", "Unfall zwischen Auto und Roller", "06.11.2026"),
+            (testdatafile, "Ja zu Bahnhof-Vorlagen sorgt für Erleichterung", "27.09.2020"),
+        ]
+        for filename, exp_title, exp_published in cases:
+            with self.subTest(filename=filename):
+                testdata = self._read_testdata(filename)
+                articlelist = directoryParser.parse_article_directory(testdata)
+                testarticle = articlelist[0]
+                self.assertEqual(exp_title, testarticle["title"])
+                self.assertEqual(exp_published, testarticle["published"])
 
     def test_filter_by_date(self):
-        testdata = self._read_testdata()
-        articlelist = directoryParser.parse_article_directory(testdata)
-        testdate = datetime.strptime("2026-11-03", "%Y-%m-%d")
-        filtered_list = directoryParser.filter_articles_published_after(articlelist, testdate)
-        self.assertEqual(len(filtered_list), 3)
+        cases = [
+            ("test/testdata/directoryParserTestdata_kapoAR.html", 3),
+            (testdatafile, 8),
+        ]
+        for filename, exp_count in cases:
+            testdata = self._read_testdata(filename)
+            articlelist = directoryParser.parse_article_directory(testdata)
+            testdate = datetime.strptime("2026-11-03", "%Y-%m-%d")
+            filtered_list = directoryParser.filter_articles_published_after(articlelist, testdate)
+            self.assertEqual(exp_count, len(filtered_list))
 
     def _read_testdata(self, filename=testdatafile):
         with open(filename) as f:
