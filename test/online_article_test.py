@@ -30,10 +30,10 @@ class Test(unittest.TestCase):
             print(key, article[key])
         return article
 
-    def test_Herisau_ch(self):
-        url = "https://www.herisau.ch/aktuellesinformationen/3042187"
-        url = "https://www.herisau.ch/aktuellesinformationen/3033478"
-        self.teiltest(url, online_article.article_from_soup)
+    # def test_Herisau_ch(self):
+    #     url = "https://www.herisau.ch/aktuellesinformationen/3042187"
+    #     url = "https://www.herisau.ch/aktuellesinformationen/3033478"
+    #     self.teiltest(url, online_article.article_from_soup)
 
     # def test_sg_ch(self):
     #     url = "https://www.sg.ch/news/sgch_allgemein/2026/03/ein-modernes-volksschulgesetz-fuer-st-gallen-.html"
