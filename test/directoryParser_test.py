@@ -1,8 +1,9 @@
 from datetime import datetime
 import unittest
-
-from src import directoryParser
-from src import myrequests
+import sys
+sys.path.append("src")
+import directoryParser
+import myrequests
 
 testdatafile = "test/testdata/directoryParserTestdata_HerisauCh.html"
 
