@@ -37,7 +37,8 @@ def fetch_web_articles(url: str):
         article_content = online_article.copy_online_article(netloc + article["article_url"])
         article.update(article_content)
         article["quellenArt"] = "Quelle"
-        replace_image_url_with_download_image(article)
+        if "image" in article:
+            replace_image_url_with_download_image(article)
         save_article(article)
 
 

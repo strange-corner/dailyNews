@@ -1,4 +1,4 @@
-from src import myrequests
+import myrequests
 from bs4 import BeautifulSoup, NavigableString, Tag, ResultSet
 from urllib.parse import urlparse
 
@@ -47,6 +47,8 @@ def article_from_soup(soup: BeautifulSoup, url: str) -> dict[str, str] | dict:
         article_data = article_from_soup_svp_ch(soup)
     elif url.startswith("https://ar.ch/"):
         article_data = article_from_soup_ar_ch(soup)
+    elif url.startswith("https://www.herisau.ch/"):
+        article_data = article_from_soup_herisau_ch(soup)
     else:
         article_data = article_dict_from_soup_default(soup)
         article_data['quelle'] = urlparse(url).netloc
@@ -172,6 +174,24 @@ def article_from_soup_stadt_sg_ch(soup):
     if img:
         article_dict['image'] = img["src"]
     return article_dict
+
+
+def article_from_soup_herisau_ch(soup):
+    print("article_from_soup_herisau_ch")
+    article_dict = dict()
+    article_dict['title'] = soup.select_one("h1.contentTitle").get_text(strip=True)
+    leadsoup = soup.find("div", class_="icms-lead-container")
+    leadsoupdiv = leadsoup.find("div", class_="icms-wysiwyg")
+    if leadsoupdiv:
+        article_dict['lead'] = leadsoupdiv.text
+    contentsoup = soup.find("div", class_="icms-text-container")
+    article_dict['content'] = '\n'.join([f.text for f in contentsoup.find_all("p", class_="icmsPContent")])
+    article_dict['quelle'] = "Gde. Herisau"
+    img = soup.select_one(".news-detail-img img")  # TODO
+    if img:
+        article_dict['image'] = img["src"]
+    return article_dict
+
 
 def article_from_soup_admin_ch(soup):
     print("article_from_soup_admin_ch")

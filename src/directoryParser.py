@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from src import online_article
+import online_article
 
 
 class BaseArticleDirectoryParser(ABC):
