@@ -42,7 +42,7 @@ def shrink_image(filename: str)-> str:
         scale = MAXWIDTH / img.width
         img = img.resize((MAXWIDTH, int(img.height * scale)))
         filename_parts = filename.split('.')
-        new_filename = "".join(filename_parts[:-1]) + "k." + filename_parts[-1]
+        new_filename = "".join(filename_parts[:-1]) + "k.jpg"
         img.save(os.path.join(getCreateFolderFromDate(), new_filename))
         return new_filename
     return filename

@@ -187,9 +187,11 @@ def article_from_soup_herisau_ch(soup):
     contentsoup = soup.find("div", class_="icms-text-container")
     article_dict['content'] = '\n'.join([f.text for f in contentsoup.find_all("p", class_="icmsPContent")])
     article_dict['quelle'] = "Gde. Herisau"
-    img = soup.select_one(".news-detail-img img")  # TODO
+    img = soup.find("div", class_="icms-picture-container")
     if img:
-        article_dict['image'] = img["src"]
+        img = img.find("img")
+        if img:
+            article_dict['image'] = img["src"]
     return article_dict
 
 
