@@ -1,3 +1,4 @@
+from datetime import datetime
 import unittest
 
 from src import directoryParser
@@ -22,6 +23,13 @@ class DirectoryParserTest(unittest.TestCase):
         testarticle = articlelist[0]
         self.assertEqual("Unfall zwischen Auto und Roller", testarticle["title"])
         self.assertEqual("06.11.2026", testarticle["published"])
+
+    def test_filter_by_date(self):
+        testdata = self._read_testdata()
+        articlelist = directoryParser.parse_article_directory(testdata)
+        testdate = datetime.strptime("2026-11-03", "%Y-%m-%d")
+        filtered_list = directoryParser.filter_articles_published_after(articlelist, testdate)
+        self.assertEqual(len(filtered_list), 3)
 
     def _read_testdata(self):
         with open(testdatafile) as f:
