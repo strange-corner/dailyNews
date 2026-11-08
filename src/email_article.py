@@ -33,6 +33,12 @@ class Article:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
+    def zumAussortieren(self):
+        return any(x in self.title for x in [
+            "Einladung zur Medienorientierung",
+            "Medieneinladung",
+        ])
+
 
 # Global, in-memory registry of sender-specific section rules.
 # Keys are regex patterns matched against the sender string (quelle).
@@ -209,63 +215,51 @@ def quelle_from_from(from_: str) -> str:
 
 def title_from_subject(email: Mapping[str, Any]) -> str:
     subject = str(email.get("subject")).strip()
-    title = subject.strip("Medienmitteilung:").strip()
+    title = subject.removeprefix("Medienmitteilung:").strip()
     return title
 
 
 def vorspann_entfernen(text: str, pattern: str) -> str:
     """
-    Entfernt den Vorspann bis einschließlich eines gegebenen Musters.
+    Entfernt den Vorspann bis einschließlich einer Zeile, die ein gegebenes Muster enthält.
     Das Muster wird im Text gesucht, wobei Punktuationszeichen, Bindestriche, Leerzeichen usw.
     ignoriert werden (es wird nur alphanumerisch, case-insensitive verglichen).
     Zusätzlich wird eine Trennlinie aus Dashes (z. B. '-----' oder '———') als alternatives Muster
-    akzeptiert. Es wird bis zum frühesten Treffer (Pattern oder Trennlinie) abgeschnitten.
+    akzeptiert. Es wird bis zum frühesten Treffer (Pattern-Zeile oder Trennlinie) abgeschnitten.
     Falls kein Treffer gefunden wird, bleibt der Text unverändert.
-
-    Beispiel:
-      text="ABC--- Einleitung: Hallo\nInhalt"
-      pattern="Einleitung:"
-      -> Rückgabe " Hallo\nInhalt" (alles bis inkl. 'Einleitung:' entfernt)
     """
     if not text:
         return text
 
-    def _normalize_keep_alnum_with_map(s: str) -> tuple[str, list[int]]:
-        norm_chars: list[str] = []
-        idx_map: list[int] = []
-        for i, ch in enumerate(s):
-            if ch.isalnum():
-                norm_chars.append(ch.lower())
-                idx_map.append(i)
-        return "".join(norm_chars), idx_map
-
     def _normalize_keep_alnum(s: str) -> str:
         return "".join(ch.lower() for ch in s if ch.isalnum())
 
-    # 1) Versuche, das übergebene Pattern (interpunktionstolerant) zu finden
-    cut_after_pat: Optional[int] = None
-    norm_text, idx_map = _normalize_keep_alnum_with_map(text)
     norm_pat = _normalize_keep_alnum(pattern) if pattern else ""
-    if norm_pat:
-        pos = norm_text.find(norm_pat)
-        if pos != -1:
-            last_norm_idx = pos + len(norm_pat) - 1
-            cut_after_pat = idx_map[last_norm_idx] + 1  # inkl. Pattern abschneiden
-
-    # 2) Suche nach einer Trennlinie aus Dashes als alternatives Muster
     dash_chars = set("-–—")  # ASCII minus, en dash, em dash
-    cut_after_dash: Optional[int] = None
+
+    cut_positions: list[int] = []
+
+    # Zeilenweise durchlaufen und sowohl Pattern-Zeilen als auch Dash-Linien suchen
     cursor = 0
     for line in text.splitlines(keepends=True):
         stripped = line.strip()
+
+        # 1) Trennlinie aus Dashes?
         if stripped and len(stripped) >= 3 and all(ch in dash_chars for ch in stripped):
-            cut_after_dash = cursor + len(line)
-            break
+            cut_positions.append(cursor + len(line))
+
+        # 2) Pattern-Zeile? (interpunktionstolerant)
+        if norm_pat:
+            norm_line = _normalize_keep_alnum(line)
+            if norm_pat and norm_pat in norm_line:
+                # gesamte Zeile entfernen
+                cut_positions.append(cursor + len(line))
+
         cursor += len(line)
 
-    if cut_after_pat is None and cut_after_dash is None:
+    if not cut_positions:
         return text
 
-    cut_after = max(x for x in (cut_after_pat, cut_after_dash) if x is not None)
+    # Bis zum frühesten gefundenen Treffer abschneiden
+    cut_after = min(cut_positions)
     return text[cut_after:]
-    
