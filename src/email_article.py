@@ -153,9 +153,7 @@ def _extract_section_by_markers(text: str, start_res: list[re.Pattern[str]],
 def parse_email_to_article(
     email: Mapping[str, Any],
     *,
-    sender_patterns: Optional[Mapping[str, Mapping[str, Any]]] = None,
-    default_title: str = "(ohne Betreff)",
-) -> Article:
+    sender_patterns: Optional[Mapping[str, Mapping[str, Any]]] = None) -> Article:
     """
     Parse an email-like mapping into an Article.
 
@@ -183,8 +181,8 @@ def parse_email_to_article(
     Returns:
     - Article instance.
     """
-    title = str(email.get("subject") or default_title)
-    quelle = str(email.get("from") or email.get("sender") or "").strip()
+    title = title_from_subject(email)
+    quelle = quelle_from_from(email.get("from") or email.get("sender"))
     raw_date = email.get("date")
     date_obj: Optional[datetime]
     if isinstance(raw_date, datetime) or raw_date is None:
@@ -194,9 +192,67 @@ def parse_email_to_article(
         date_obj = None
 
     body_text = str(email.get("body_text") or "")
+
+    body_text = vorspann_entfernen(body_text, title)
+
     merged_rules = _merge_sender_patterns(sender_patterns)
     start_res, end_res = _select_rule_for_sender(quelle, merged_rules)
 
     content = _extract_section_by_markers(body_text, start_res, end_res) if (start_res or end_res) else body_text.strip()
 
     return Article(title=title.strip(), content=content, quelle=quelle, date=date_obj)
+
+
+def quelle_from_from(from_: str) -> str:
+    return from_.split("<")[0].strip("\"\t\n\r")
+
+
+def title_from_subject(email: Mapping[str, Any]) -> str:
+    subject = str(email.get("subject")).strip()
+    title = subject.strip("Medienmitteilung:").strip()
+    return title
+
+
+def vorspann_entfernen(text: str, pattern: str) -> str:
+    """
+    Entfernt den Vorspann bis einschließlich eines gegebenen Musters.
+    Das Muster wird im Text gesucht, wobei Punktuationszeichen, Bindestriche, Leerzeichen usw.
+    ignoriert werden (es wird nur alphanumerisch, case-insensitive verglichen).
+    Falls kein Treffer gefunden wird, bleibt der Text unverändert.
+
+    Beispiel:
+      text="ABC--- Einleitung: Hallo\nInhalt"
+      pattern="Einleitung:"
+      -> Rückgabe " Hallo\nInhalt" (alles bis inkl. 'Einleitung:' entfernt)
+    """
+    if not text or not pattern:
+        return text
+
+    def _normalize_keep_alnum_with_map(s: str) -> tuple[str, list[int]]:
+        norm_chars: list[str] = []
+        idx_map: list[int] = []
+        for i, ch in enumerate(s):
+            if ch.isalnum():
+                norm_chars.append(ch.lower())
+                idx_map.append(i)
+        return "".join(norm_chars), idx_map
+
+    def _normalize_keep_alnum(s: str) -> str:
+        return "".join(ch.lower() for ch in s if ch.isalnum())
+
+    norm_text, idx_map = _normalize_keep_alnum_with_map(text)
+    norm_pat = _normalize_keep_alnum(pattern)
+
+    if not norm_pat:
+        # Leeres Muster nach Normalisierung -> nichts zu tun
+        return text
+
+    pos = norm_text.find(norm_pat)
+    if pos == -1:
+        return text
+
+    # Index des letzten gematchten Zeichens im Originaltext bestimmen
+    last_norm_idx = pos + len(norm_pat) - 1
+    cut_after = idx_map[last_norm_idx] + 1  # +1, um inkl. Pattern abzuschneiden
+    return text[cut_after:]
+    
