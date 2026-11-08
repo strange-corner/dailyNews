@@ -55,9 +55,11 @@ SENDER_SECTION_START_RULES: list[str] = [
 ]
 SENDER_SECTION_END_RULES: list[str] = [
     "Impressum\n",
-    "Kontakt\n",
+    "** Kontakt",
     "Weitere Informationen",
-    "Medienmitteilung als PDF"
+    "Medienmitteilung als PDF",
+    "Für Rückfragen:",
+    "Weitere Auskünfte erteilt ",
 ]
 SENDER_SECTION_RULES: dict[str, dict[str, list[str]]] = {}
 
