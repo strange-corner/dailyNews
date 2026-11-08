@@ -8,7 +8,6 @@ from typing import Any, Mapping, MutableMapping, Optional, Sequence
 __all__ = [
     "Article",
     "parse_email_to_article",
-    "register_sender_section_rule",
     "SENDER_SECTION_RULES",
 ]
 
@@ -42,34 +41,25 @@ class Article:
 
 # Global, in-memory registry of sender-specific section rules.
 # Keys are regex patterns matched against the sender string (quelle).
-# Values:
-#   { "start": [regex, ...], "end": [regex, ...] }
+#
+# Internally we keep separate mappings for start/end rules per sender:
+#   SENDER_SECTION_START_RULES[sender_regex] -> [regex, ...]
+#   SENDER_SECTION_END_RULES[sender_regex]   -> [regex, ...]
+#
+# For backwards-compatibility, SENDER_SECTION_RULES exposes a combined
+# view:
+#   SENDER_SECTION_RULES[sender_regex] -> { "start": [...], "end": [...] }
+SENDER_SECTION_START_RULES: list[str] = [
+    "View this post on the web at",
+    "Sehr geehrte Medienschaffende"
+]
+SENDER_SECTION_END_RULES: list[str] = [
+    "Impressum\n",
+    "Kontakt\n",
+    "Weitere Informationen",
+    "Medienmitteilung als PDF"
+]
 SENDER_SECTION_RULES: dict[str, dict[str, list[str]]] = {}
-
-
-def register_sender_section_rule(
-    sender_regex: str, *, start: Sequence[str] | None = None, end: Sequence[str] | None = None,
-    append: bool = False,
-) -> None:
-    """
-    Register or update section extraction rules for a given sender (regex).
-
-    Parameters:
-    - sender_regex: Regular expression to match against the sender string (quelle).
-    - start: One or more regex patterns; first matching line denotes the start marker (excluded).
-    - end: One or more regex patterns; first matching line denotes the end marker (excluded).
-    - append: If True, extend existing rules; otherwise replace them.
-    """
-    s_patterns = list(start) if start else []
-    e_patterns = list(end) if end else []
-    if sender_regex in SENDER_SECTION_RULES and append:
-        entry = SENDER_SECTION_RULES[sender_regex]
-        entry.setdefault("start", [])
-        entry.setdefault("end", [])
-        entry["start"].extend(s_patterns)
-        entry["end"].extend(e_patterns)
-    else:
-        SENDER_SECTION_RULES[sender_regex] = {"start": s_patterns, "end": e_patterns}
 
 
 def _normalize_patterns(val: Any) -> list[str]:
@@ -83,59 +73,15 @@ def _normalize_patterns(val: Any) -> list[str]:
         return [str(val)]
 
 
-def _merge_sender_patterns(
-    local_overrides: Optional[Mapping[str, Mapping[str, Any]]],
-) -> dict[str, dict[str, list[str]]]:
-    """
-    Merge global SENDER_SECTION_RULES with per-call overrides.
-    Per-call overrides take precedence if the same key exists.
-    """
-    merged: dict[str, dict[str, list[str]]] = {}
-    # Preserve insertion order: first globals, then overrides to keep caller's order last
-    for k, v in SENDER_SECTION_RULES.items():
-        merged[k] = {
-            "start": list(v.get("start", [])),
-            "end": list(v.get("end", [])),
-        }
-    if local_overrides:
-        for k, v in local_overrides.items():
-            merged[k] = {
-                "start": _normalize_patterns(v.get("start")),
-                "end": _normalize_patterns(v.get("end")),
-            }
-    return merged
-
-
-def _select_rule_for_sender(
-    quelle: str, rules: Mapping[str, Mapping[str, Sequence[str] | str]],
-) -> tuple[list[re.Pattern[str]], list[re.Pattern[str]]]:
-    """
-    Return compiled (start_patterns, end_patterns) for the first matching sender rule.
-    If none matches, both lists are empty.
-    """
-    for sender_regex, spec in rules.items():
-        if re.search(sender_regex, quelle or "", flags=re.IGNORECASE):
-            starts = _normalize_patterns(spec.get("start"))
-            ends = _normalize_patterns(spec.get("end"))
-            start_res = [re.compile(p, re.IGNORECASE) for p in starts if p]
-            end_res = [re.compile(p, re.IGNORECASE) for p in ends if p]
-            return start_res, end_res
-    return [], []
-
-
-def _first_match_index(lines: list[str], patterns: list[re.Pattern[str]], start_at: int = 0) -> int:
-    if not patterns:
-        return -1
+def _first_match_index(lines: list[str], pattern: str, start_at: int = 0) -> int:
     for i in range(start_at, len(lines)):
         line = lines[i]
-        for rx in patterns:
-            if rx.search(line):
-                return i
+        if pattern in line:
+            return i
     return -1
 
 
-def _extract_section_by_markers(text: str, start_res: list[re.Pattern[str]],
-                                end_res: list[re.Pattern[str]]) -> str:
+def _extract_section_by_markers(text: str) -> str:
     """
     Extract text between the first matching start marker (excluded) and the first subsequent end
     marker (excluded). If no start is found, extraction starts at the beginning. If no end is
@@ -143,14 +89,18 @@ def _extract_section_by_markers(text: str, start_res: list[re.Pattern[str]],
     """
     lines = text.splitlines()
     start_idx = 0
-    if start_res:
+    for start_res in SENDER_SECTION_START_RULES:
         i = _first_match_index(lines, start_res, 0)
-        start_idx = (i + 1) if i >= 0 else 0
+        if i >= 0:
+            start_idx = i + 1
+            break
 
     end_idx = len(lines)
-    if end_res:
+    for end_res in SENDER_SECTION_END_RULES:
         j = _first_match_index(lines, end_res, start_idx)
-        end_idx = j if j >= 0 else len(lines)
+        if j >= 0:
+            end_idx = j
+            break
 
     sliced = lines[start_idx:end_idx]
     return "\n".join(sliced).strip()
@@ -201,10 +151,7 @@ def parse_email_to_article(
 
     body_text = vorspann_entfernen(body_text, title)
 
-    merged_rules = _merge_sender_patterns(sender_patterns)
-    start_res, end_res = _select_rule_for_sender(quelle, merged_rules)
-
-    content = _extract_section_by_markers(body_text, start_res, end_res) if (start_res or end_res) else body_text.strip()
+    content = _extract_section_by_markers(body_text)
 
     return Article(title=title.strip(), content=content, quelle=quelle, date=date_obj)
 
