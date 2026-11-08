@@ -1,4 +1,6 @@
+# Codiert einen Artikel zu einer Tex-Datei
 import os
+import re
 if not os.getenv("GITHUB_ACTIONS"):
     import qrcode
 
@@ -18,6 +20,44 @@ def _replace_unwanted_unicode_characters(text: str) -> str:
     return text
 
 
+def _strip_scheme(url: str) -> str:
+    return re.sub(r'(?i)^(?:[a-z][a-z0-9+.\-]*://)', "", url)
+
+
+def _shorten_visible_links(text: str, max_visible_len: int = 20) -> str:
+    """
+    Shorten visible link text in content:
+    - For \\href{url}{text}, replace text with [link] if url length > max_visible_len.
+    - For plain URLs, replace the visible URL with [link] if its length > max_visible_len.
+      (We do not wrap plain URLs into \\href to keep escaping consistent after earlier encoding.)
+    """
+    if not text:
+        return text
+
+    url_re = re.compile(r'(?i)\b(?:https?://|www\.)\S+')
+
+    out: list[str] = []
+    last_end = 0
+
+    for m_url in url_re.finditer(text):
+        # append text before the match
+        out.append(text[last_end:m_url.start()])
+
+        url_full = m_url.group(0)
+        core = url_full.rstrip('.,);:!?]\'"')
+        if len(_strip_scheme(core)) > max_visible_len:
+            out.append("\\href{" + url_full + "}{link}")
+        else:
+            out.append(url_full)
+
+        last_end = m_url.end()
+
+    # append the remainder after the last match
+    out.append(text[last_end:])
+
+    return "".join(out)
+
+
 def encode(filepath, article: dict, f):
     for part in article:
         if article[part]:
@@ -32,7 +72,8 @@ def encode(filepath, article: dict, f):
         f.write(f"\\textbf{{{article['lead']}}}\n\n")
     if "image" in article and article["image"]:
         f.write(f"\\begin{{minipage}}{{\\columnwidth}}\n\\includegraphics[width =\\columnwidth]{{{article['image']}}}\n\\end{{minipage}}\n\n")
-    f.write(article['content'] + "\n")
+    content = _shorten_visible_links(article['content'])
+    f.write(content + "\n")
     if article.get('quelle'):
         if 'url' in article and article['url']:
             qr_path = f"{filepath}_qr.png"
