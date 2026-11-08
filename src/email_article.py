@@ -204,7 +204,7 @@ def parse_email_to_article(
 
 
 def quelle_from_from(from_: str) -> str:
-    return from_.split("<")[0].strip("\"\t\n\r")
+    return from_.split("<")[0].strip(" \"\t\n\r")
 
 
 def title_from_subject(email: Mapping[str, Any]) -> str:
@@ -218,6 +218,8 @@ def vorspann_entfernen(text: str, pattern: str) -> str:
     Entfernt den Vorspann bis einschließlich eines gegebenen Musters.
     Das Muster wird im Text gesucht, wobei Punktuationszeichen, Bindestriche, Leerzeichen usw.
     ignoriert werden (es wird nur alphanumerisch, case-insensitive verglichen).
+    Zusätzlich wird eine Trennlinie aus Dashes (z. B. '-----' oder '———') als alternatives Muster
+    akzeptiert. Es wird bis zum frühesten Treffer (Pattern oder Trennlinie) abgeschnitten.
     Falls kein Treffer gefunden wird, bleibt der Text unverändert.
 
     Beispiel:
@@ -225,7 +227,7 @@ def vorspann_entfernen(text: str, pattern: str) -> str:
       pattern="Einleitung:"
       -> Rückgabe " Hallo\nInhalt" (alles bis inkl. 'Einleitung:' entfernt)
     """
-    if not text or not pattern:
+    if not text:
         return text
 
     def _normalize_keep_alnum_with_map(s: str) -> tuple[str, list[int]]:
@@ -240,19 +242,30 @@ def vorspann_entfernen(text: str, pattern: str) -> str:
     def _normalize_keep_alnum(s: str) -> str:
         return "".join(ch.lower() for ch in s if ch.isalnum())
 
+    # 1) Versuche, das übergebene Pattern (interpunktionstolerant) zu finden
+    cut_after_pat: Optional[int] = None
     norm_text, idx_map = _normalize_keep_alnum_with_map(text)
-    norm_pat = _normalize_keep_alnum(pattern)
+    norm_pat = _normalize_keep_alnum(pattern) if pattern else ""
+    if norm_pat:
+        pos = norm_text.find(norm_pat)
+        if pos != -1:
+            last_norm_idx = pos + len(norm_pat) - 1
+            cut_after_pat = idx_map[last_norm_idx] + 1  # inkl. Pattern abschneiden
 
-    if not norm_pat:
-        # Leeres Muster nach Normalisierung -> nichts zu tun
+    # 2) Suche nach einer Trennlinie aus Dashes als alternatives Muster
+    dash_chars = set("-–—")  # ASCII minus, en dash, em dash
+    cut_after_dash: Optional[int] = None
+    cursor = 0
+    for line in text.splitlines(keepends=True):
+        stripped = line.strip()
+        if stripped and len(stripped) >= 3 and all(ch in dash_chars for ch in stripped):
+            cut_after_dash = cursor + len(line)
+            break
+        cursor += len(line)
+
+    if cut_after_pat is None and cut_after_dash is None:
         return text
 
-    pos = norm_text.find(norm_pat)
-    if pos == -1:
-        return text
-
-    # Index des letzten gematchten Zeichens im Originaltext bestimmen
-    last_norm_idx = pos + len(norm_pat) - 1
-    cut_after = idx_map[last_norm_idx] + 1  # +1, um inkl. Pattern abzuschneiden
+    cut_after = max(x for x in (cut_after_pat, cut_after_dash) if x is not None)
     return text[cut_after:]
     
