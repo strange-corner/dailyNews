@@ -3,7 +3,8 @@ from zoneinfo import ZoneInfo
 import os
 import myrequests
 import urllib.parse
-from PIL import Image
+if not os.getenv("GITHUB_ACTIONS"):
+    from PIL import Image
 
 
 def getCreateFolderFromDate(date_time = datetime.now() + timedelta(hours=12)):
