@@ -200,6 +200,13 @@ def _collect_image_attachments(msg: Message, include_data: bool = False) -> list
     return attachments
 
 
+def _skip_this_from(from_, subject: str):
+    if "MM Kapo AR:" in subject:
+        print(subject + "  wird mit Feed bearbeitet")
+        return True
+    return False
+
+
 def fetch_emails_imap(
     host: str,
     username: str,
@@ -277,7 +284,7 @@ def fetch_emails_imap(
         results: list[dict[str, Any]] = []
         for uid in ids:
             # BODY.PEEK[] avoids setting \\Seen on fetch
-            typ, msg_data = imap.fetch(uid, "(BODY.PEEK[] FLAGS)")
+            typ, msg_data = imap.fetch(uid, "(BODY.PEEK[] FLAGS)")  # TODO ohne peek
             if typ != "OK" or not msg_data:
                 continue
 
@@ -293,6 +300,8 @@ def fetch_emails_imap(
 
             subject = _decode_header_value(msg["Subject"])
             from_ = _decode_header_value(msg["From"])
+            if _skip_this_from(from_, subject):
+                continue
             to_ = _decode_header_value(msg["To"])
 
             date_hdr = msg.get("Date")
