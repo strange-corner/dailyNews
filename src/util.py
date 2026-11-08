@@ -19,8 +19,14 @@ def datetime_from_published_str(published_str: str) -> datetime:
     return date
 
 
-def filter_articles_older_than(articles: list[dict[str, str]], delta: timedelta) -> list[dict[str, str]]:
-    return [d for d in articles if datetime.now(ZoneInfo("Europe/Berlin")) - datetime_from_published_str(d['published']) < delta]
+def filter_articles_older_than(articles: list[dict[str, str]], since: datetime) -> list[dict[str, str]]:
+    # Falls since kein tzinfo hat, auf lokale Zeitzone (z.B. Europe/Zurich) setzen
+    if since.tzinfo is None:
+        since = since.replace(tzinfo=ZoneInfo("Europe/Zurich"))
+    return [
+        d for d in articles
+        if since <= datetime_from_published_str(d["published"])
+    ]
 
 
 def download_image(url):
