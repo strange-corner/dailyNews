@@ -18,7 +18,7 @@ def parseConfig(toml_file) -> dict[str, Any]:
 
 def fetch_feed_articles(feed_url: str) -> list[dict]:
     articles = load_rss(feed_url)
-    articles = filter_articles_older_than(articles, timedelta(days=2))
+    articles = filter_articles_older_than(articles, getSinceDate())
     for article in articles:
         replace_image_url_with_download_image(article)
         save_article(article)
@@ -28,7 +28,7 @@ def fetch_feed_articles(feed_url: str) -> list[dict]:
 def fetch_web_articles(url: str):
     htmltext = myrequests.get(url).text
     articles = parse_article_directory(htmltext)
-    articles = filter_articles_published_after(articles, datetime.now() - timedelta(days=2))
+    articles = filter_articles_published_after(articles, getSinceDate())
 
     parsed_uri = urlparse(url)
     netloc = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
@@ -45,12 +45,21 @@ def fetch_web_articles(url: str):
 
 def create_articles_from_mail():
     secret = parseConfig("config/secret.toml")
-    emails = email_fetcher.fetch_emails_imap(secret["imap"]["server"], secret["imap"]["user"], secret["imap"]["password"])
+    since = getSinceDate()
+    emails = email_fetcher.fetch_emails_imap(secret["imap"]["server"], secret["imap"]["user"], secret["imap"]["password"],
+                                             since=since)
     for email in emails:
         article = parse_email_to_article(email)
-        # articles = filter_articles_published_after(articles, datetime.now() - timedelta(days=2))
-        save_article(article.to_dict())
+        if not article.zumAussortieren():
+            # articles = filter_articles_published_after(articles, datetime.now() - timedelta(days=2))
+            save_article(article.to_dict())
 
+
+def getSinceDate() -> datetime:
+    now = datetime.now()
+    days_back = 1 if now.weekday() == 6 else 2
+    since = now - timedelta(days=days_back)
+    return since
 
 
 def save_article(article: dict[str, str]):
@@ -67,12 +76,12 @@ if __name__ == "__main__":
     config = parseConfig("config/config.toml")
 
     create_articles_from_mail()
-    exit(0)
 
     web_article_directories = config["Feeds"]["web"]
     for web_article_directory_url in web_article_directories:
         fetch_web_articles(web_article_directory_url)
 
-    rssfeed1 = config["Feeds"]["rss"][0]
-    print("rssfeed1 is: " + str(rssfeed1))
-    fetch_feed_articles(rssfeed1)
+    feeds = config["Feeds"]["rss"]
+    for rssfeed1 in feeds:
+        print("rssfeed1 is: " + str(rssfeed1))
+        fetch_feed_articles(rssfeed1)
