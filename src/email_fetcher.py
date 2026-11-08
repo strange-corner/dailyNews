@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import imaplib
 import socket
+import mimetypes
+import re
+from pathlib import Path
 from datetime import datetime, date
 from email import message_from_bytes
 from email.header import decode_header
@@ -12,7 +15,7 @@ from typing import Any, Iterable, Tuple, Optional
 from bs4 import BeautifulSoup
 
 
-__all__ = ["fetch_emails_imap"]
+__all__ = ["fetch_emails_imap", "download_image_attachments_imap"]
 
 
 def _decode_header_value(value: Optional[str]) -> str:
@@ -102,6 +105,101 @@ def _format_since_arg(since: datetime | date) -> Tuple[str, str]:
     return "SINCE", d.strftime("%d-%b-%Y")
 
 
+def _safe_filename(name: str, fallback: str = "attachment") -> str:
+    """
+    Sanitize a filename for safe saving on most filesystems.
+    """
+    if not name:
+        name = fallback
+    # Remove NULLs and strip whitespace
+    name = name.replace("\x00", "").strip()
+    # Replace path separators
+    name = name.replace("/", "_").replace("\\", "_").replace(":", "_")
+    # Replace disallowed characters
+    name = re.sub(r'[^A-Za-z0-9._ \-\(\)\[\]]', "_", name)
+    # Avoid empty names
+    if not name:
+        name = fallback
+    # Limit typical filename length
+    if len(name) > 200:
+        stem, dot, ext = name.rpartition(".")
+        if not dot:
+            name = name[:200]
+        else:
+            avail = 200 - len(ext) - 1
+            stem = stem[:max(1, avail)]
+            name = f"{stem}.{ext}"
+    return name
+
+
+def _ensure_unique_path(path: Path) -> Path:
+    """
+    If path exists, append -N before extension to make it unique.
+    """
+    if not path.exists():
+        return path
+    stem = path.stem
+    suffix = path.suffix
+    parent = path.parent
+    i = 1
+    while True:
+        candidate = parent / f"{stem}-{i}{suffix}"
+        if not candidate.exists():
+            return candidate
+        i += 1
+
+
+def _collect_image_attachments(msg: Message, include_data: bool = False) -> list[dict[str, Any]]:
+    """
+    Extract image attachments (including inline images) from a Message.
+
+    Returns a list of dicts:
+      filename, content_type, size, content_id, is_inline[, data if include_data=True]
+    """
+    attachments: list[dict[str, Any]] = []
+    counter = 0
+    for part in msg.walk():
+        # Skip container parts
+        if part.is_multipart():
+            continue
+
+        ctype = (part.get_content_type() or "").lower()
+        if not ctype.startswith("image/"):
+            continue
+
+        disp = (part.get_content_disposition() or "").lower()
+        is_inline = disp == "inline"
+        is_attach_like = disp in ("inline", "attachment", "")
+        if not is_attach_like:
+            continue
+
+        raw_name = part.get_filename()
+        fname = _decode_header_value(raw_name) if raw_name else ""
+        subtype = part.get_content_subtype() or "octet-stream"
+        guessed_ext = mimetypes.guess_extension(ctype) or f".{subtype}"
+        if not guessed_ext.startswith("."):
+            guessed_ext = f".{guessed_ext}"
+        if not fname:
+            counter += 1
+            fname = f"image-{counter}{guessed_ext}"
+
+        data = part.get_payload(decode=True) or b""
+        cid = part.get("Content-ID") or ""
+        cid = cid.strip("<>") if cid else ""
+
+        info: dict[str, Any] = {
+            "filename": fname,
+            "content_type": ctype,
+            "size": len(data),
+            "content_id": cid,
+            "is_inline": is_inline,
+        }
+        if include_data:
+            info["data"] = data
+        attachments.append(info)
+    return attachments
+
+
 def fetch_emails_imap(
     host: str,
     username: str,
@@ -133,7 +231,7 @@ def fetch_emails_imap(
 
     Returns:
     - List of dicts with fields:
-      id, subject, from, to, date, body_text, body_html
+      id, subject, from, to, date, body_text, body_html, image_attachments
     """
     old_timeout = socket.getdefaulttimeout()
     if timeout is not None:
@@ -198,26 +296,22 @@ def fetch_emails_imap(
             to_ = _decode_header_value(msg["To"])
 
             date_hdr = msg.get("Date")
-            try:
-                dt = parsedate_to_datetime(date_hdr) if date_hdr else None
-                if dt and dt.tzinfo is None:
-                    # Assume naive is in local time; keep as-is
-                    pass
-            except Exception:
-                dt = None
 
             text_body, html_body = _extract_bodies(msg)
             if not text_body and html_body:
                 text_body = _html_to_text(html_body)
+
+            images_meta = _collect_image_attachments(msg, include_data=False)
 
             mail_dict: dict[str, Any] = {
                 "id": uid.decode(errors="ignore"),
                 "subject": subject,
                 "from": from_,
                 "to": to_,
-                "date": dt,
+                "date": date_hdr,
                 "body_text": text_body,
                 "body_html": html_body,
+                "image_attachments": images_meta,
             }
 
             if mark_seen:
@@ -230,6 +324,90 @@ def fetch_emails_imap(
             results.append(mail_dict)
 
         return results
+    finally:
+        try:
+            if imap is not None:
+                imap.logout()
+        except Exception:
+            pass
+        if timeout is not None:
+            socket.setdefaulttimeout(old_timeout)
+
+
+def download_image_attachments_imap(
+    host: str,
+    username: str,
+    password: str,
+    uid: str | bytes,
+    dest_dir: str | Path,
+    *,
+    port: int = 993,
+    folder: str = "INBOX",
+    use_ssl: bool = True,
+    overwrite: bool = False,
+    timeout: Optional[float] = None,
+) -> list[str]:
+    """
+    Download image attachments (including inline images) from a single email to dest_dir.
+
+    Parameters:
+    - uid: The message id as returned by fetch_emails_imap()["id"].
+           Note: This is the message sequence number in the current mailbox view.
+    - dest_dir: Destination directory (created if missing).
+    - overwrite: If True, overwrite existing files. If False, create unique filenames.
+
+    Returns:
+    - List of saved file paths (as strings).
+    """
+    old_timeout = socket.getdefaulttimeout()
+    if timeout is not None:
+        socket.setdefaulttimeout(timeout)
+
+    imap: imaplib.IMAP4 | imaplib.IMAP4_SSL | None = None
+    try:
+        if use_ssl:
+            imap = imaplib.IMAP4_SSL(host, port)
+        else:
+            imap = imaplib.IMAP4(host, port)
+
+        imap.login(username, password)
+
+        typ, _ = imap.select(folder, readonly=True)
+        if typ != "OK":
+            raise RuntimeError(f"Failed to select folder {folder!r}")
+
+        # BODY.PEEK[] to avoid side effects
+        typ, msg_data = imap.fetch(uid, "(BODY.PEEK[])")
+        if typ != "OK" or not msg_data:
+            return []
+
+        raw_bytes = None
+        for part in msg_data:
+            if isinstance(part, tuple) and part[1]:
+                raw_bytes = part[1]
+                break
+        if raw_bytes is None:
+            return []
+
+        msg: Message = message_from_bytes(raw_bytes)
+        images = _collect_image_attachments(msg, include_data=True)
+
+        out_dir = Path(dest_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        saved_paths: list[str] = []
+        for img in images:
+            fname = _safe_filename(img.get("filename") or "image")
+            target = out_dir / fname
+            if not overwrite:
+                target = _ensure_unique_path(target)
+
+            data = img.get("data", b"")
+            with open(target, "wb") as fh:
+                fh.write(data)
+            saved_paths.append(str(target))
+
+        return saved_paths
     finally:
         try:
             if imap is not None:

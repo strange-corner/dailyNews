@@ -1,17 +1,18 @@
 from typing import Any
 import tomllib
+
+import email_fetcher
 from article_codec import *
 from articles import *
 from directoryParser import *
 from urllib.parse import urlparse
 
+from src.email_article import parse_email_to_article
 from util import *
 from feed import *
 
-def parseConfig() -> dict[str, Any]:
-    CONFIG_FILE = "config/config.toml"
-
-    with open(CONFIG_FILE, "rb") as f:
+def parseConfig(toml_file) -> dict[str, Any]:
+    with open(toml_file, "rb") as f:
         config = tomllib.load(f)
     return config
 
@@ -42,6 +43,16 @@ def fetch_web_articles(url: str):
         save_article(article)
 
 
+def create_articles_from_mail():
+    secret = parseConfig("config/secret.toml")
+    emails = email_fetcher.fetch_emails_imap(secret["imap"]["server"], secret["imap"]["user"], secret["imap"]["password"])
+    for email in emails:
+        article = parse_email_to_article(email)
+        # articles = filter_articles_published_after(articles, datetime.now() - timedelta(days=2))
+        save_article(article.to_dict())
+
+
+
 def save_article(article: dict[str, str]):
     fname = articleFilenameFromTitle(article["title"])
     folder = getCreateFolderFromDate()
@@ -53,7 +64,10 @@ if __name__ == "__main__":
     print("Hello Daily Newspaper.")
     workdir = getCreateFolderFromDate()
     print("Working directory is: " + workdir)
-    config = parseConfig()
+    config = parseConfig("config/config.toml")
+
+    create_articles_from_mail()
+    exit(0)
 
     web_article_directories = config["Feeds"]["web"]
     for web_article_directory_url in web_article_directories:
