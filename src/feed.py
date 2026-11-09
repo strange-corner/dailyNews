@@ -8,9 +8,12 @@ feedparser.USER_AGENT = "GuebsenseeJournal/1.0 (info@gbsn.ch)"
 def _parts_from_feed_summary(artikel_html: str):
     soup = BeautifulSoup(artikel_html, "html.parser")
 
-    lead = soup.strong.string
-
     paragraphs = soup.find_all(["p", "li"])
+
+    if soup.strong:
+        lead = soup.strong.string
+    else:
+        lead = paragraphs[0].text
 
     content = ""
     for paragraph in paragraphs[1:]:
@@ -18,7 +21,12 @@ def _parts_from_feed_summary(artikel_html: str):
             br.replace_with("\n\n")
         content += (paragraph.text + '\n\n')
 
-    return  lead, content, soup.img["src"]
+    if soup.img:
+        imgsrc = soup.img["src"]
+    else:
+        imgsrc = None
+
+    return  lead, content, imgsrc
 
 
 def load_rss(feed_url: str) -> list[dict]:
