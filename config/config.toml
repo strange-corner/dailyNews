@@ -1,9 +1,17 @@
 [Feeds]
-rss = [
-    "https://www.sg.ch/sicherheit/kantonspolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf",
-    "https://www.stadt.sg.ch/home/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf",
-    "https://www.stadt.sg.ch/home/verwaltung-politik/direktionen/soziales-sicherheit/stadtpolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
-]
+
+# RSS feeds as array-of-tables so each entry carries its 'url' and 'quelle'
+[[Feeds.rss]]
+url = "https://www.sg.ch/sicherheit/kantonspolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
+quelle = "Kapo SG"
+
+[[Feeds.rss]]
+url = "https://www.stadt.sg.ch/home/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
+quelle = "Kanton St. Gallen"
+
+[[Feeds.rss]]
+url = "https://www.stadt.sg.ch/home/verwaltung-politik/direktionen/soziales-sicherheit/stadtpolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
+quelle = "Stadtpolizei St. Gallen"
 
 # "https://gruene.ch/kategorie/medienmitteilungen/feed"
 

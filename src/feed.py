@@ -29,13 +29,13 @@ def _parts_from_feed_summary(artikel_html: str):
     return  lead, content, imgsrc
 
 
-def load_rss(feed_url: str) -> list[dict]:
+def load_rss(feed_src: dict[str, str]) -> list[dict]:
     """
     :return: List of article dictionaries
     """
-    feed = feedparser.parse(feed_url)
+    feed = feedparser.parse(feed_src["url"])
     if feed.status != 200:
-        logging.error("Status %d when fetching feed from url %s", feed.status, feed_url)
+        logging.error("Status %d when fetching feed from url %s", feed.status, feed_src)
     articles = []
     for entry in feed.entries:
         for key in entry:
@@ -58,6 +58,6 @@ def load_rss(feed_url: str) -> list[dict]:
             "image": imgsrc,
             "published": published,
             "quellenArt": "Quelle",
-            "quelle" : "Kapo SG"  # TODO: falls weitere Feed-Quellen kommen
+            "quelle" : feed_src["quelle"]
         })
     return articles

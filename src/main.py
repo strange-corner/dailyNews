@@ -264,7 +264,8 @@ rss_articles: list[dict] = []
 
 def load_rss_clicked():
     global rss_articles
-    rss_articles = load_rss(rss_url_entry.get())
+    feed_src = {"url": rss_url_entry.get(), "quelle": "RSS Feed"}
+    rss_articles = load_rss(feed_src)
     rss_listbox.delete(0, tk.END)
     for a in rss_articles:
         rss_listbox.insert(tk.END, a["published"] + " " + a["title"])

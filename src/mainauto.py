@@ -16,8 +16,8 @@ def parseConfig(toml_file) -> dict[str, Any]:
         config = tomllib.load(f)
     return config
 
-def fetch_feed_articles(feed_url: str) -> list[dict]:
-    articles = load_rss(feed_url)
+def fetch_feed_articles(feed: dict[str, str]) -> list[dict]:
+    articles = load_rss(feed)
     articles = filter_articles_older_than(articles, getSinceDate())
     for article in articles:
         replace_image_url_with_download_image(article)
