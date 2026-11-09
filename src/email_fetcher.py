@@ -206,6 +206,10 @@ def _skip_this_from(from_, subject: str):
         return True
     if "Kommunikation Stadt St.Gallen" in from_:
         print(subject, from_, "  wird mit Feed bearbeitet")
+        return True
+    if "Kommunikation DSSI_STAPO" in from_:
+        print(subject, from_, "  wird mit Feed bearbeitet")
+        return True
     return False
 
 
