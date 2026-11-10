@@ -3,9 +3,6 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-# C extensions
-*.so
-
 # Distribution / packaging
 .Python
 build/
@@ -208,3 +205,7 @@ __marimo__/
 
 /2*_*/
 toc.json
+
+# Secrets
+/config/secret.toml
+email_fetcher_test.py
