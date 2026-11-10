@@ -1,5 +1,3 @@
-[Feeds]
-
 # RSS feeds as array-of-tables so each entry carries its 'url' and 'quelle'
 [[Feeds.rss]]
 url = "https://www.sg.ch/sicherheit/kantonspolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
@@ -15,6 +13,7 @@ quelle = "Stadtpolizei St. Gallen"
 
 # "https://gruene.ch/kategorie/medienmitteilungen/feed"
 
+[Feeds]
 web = [
     "https://ar.ch/verwaltung/departement-inneres-und-sicherheit/kantonspolizei/medienmitteilungen-der-kantonspolizei/",
     "https://www.herisau.ch/aktuellesinformationen"
