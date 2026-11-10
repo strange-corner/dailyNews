@@ -6,6 +6,8 @@ from article_codec import *
 from articles import *
 from directoryParser import *
 from urllib.parse import urlparse
+from multiprocessing import Process
+
 
 from src import wetter_fetcher_and_article
 from src.email_article import parse_email_to_article
@@ -76,6 +78,9 @@ if __name__ == "__main__":
     print("Working directory is: " + workdir)
     config = parseConfig("config/config.toml")
 
+    wetter_process = Process(target=wetter_fetcher_and_article.fetch_weather_and_save)
+    wetter_process.start()
+
     create_articles_from_mail()
 
     web_article_directories = config["Feeds"]["web"]
@@ -87,4 +92,4 @@ if __name__ == "__main__":
         print("rssfeed1 is: " + str(rssfeed1))
         fetch_feed_articles(rssfeed1)
 
-    wetter_fetcher_and_article.fetch_weather_and_save()
+    wetter_process.join()
