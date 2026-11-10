@@ -6,8 +6,10 @@ import urllib.parse
 if not os.getenv("GITHUB_ACTIONS"):
     from PIL import Image
 
+def get_default_issue_date_time() -> datetime:
+    return datetime.now() + timedelta(hours=12)
 
-def getCreateFolderFromDate(date_time = datetime.now() + timedelta(hours=12)):
+def getCreateFolderFromDate(date_time = get_default_issue_date_time()):
     """ gibt den Ordner zum Datum zurück, erstellt ihn, falls nötig"""
     folder = date_time.strftime("%y%m_%d")
     os.makedirs(folder, exist_ok=True)

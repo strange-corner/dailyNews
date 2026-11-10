@@ -17,10 +17,9 @@ import online_article
 import shortify
 from article_codec import articleFilenameFromTitle
 from pageflow import *
-import wetterdaten
 from pdf_today import PdfToday
 import ui_stuff
-import wetter_diagram_temperature
+from src import wetter_fetcher_and_article
 from util import *
 
 pageflow = PageFlow()
@@ -87,32 +86,10 @@ def felder_loeschen():
 
 
 def save_weather_block():
-    folder = getExistingFolderFromDate()
     date = date_entry.get_date()
-
-    # hole Wetter für heute und morgen
-    weather = wetterdaten.get_data_for_day(date)
-
-    # alles zu float machen
-    weather = wetterdaten.make_all_float(weather)
-
-    # min. und max. Temp. aller Tage für Diagramm-Y-Achse ermitteln
-    tmin, tmax = wetterdaten.getMinMax(weather, 'id_temp_hourly_mean')
-    pmin, pmax = wetterdaten.getMinMax(weather, 'id_precip_hourly_total')
-    p10min, p10max = wetterdaten.getMinMax(weather, 'id_precip_hourly_quant10')
-    p90min, p90max = wetterdaten.getMinMax(weather, 'id_precip_hourly_quant90')
-    pmax = max(pmax, p10max, p90max, 5)  # don't zoom too much
-
-    weather_filename = os.path.join(folder, "wetter.tex")
-    with open(weather_filename, "w", encoding="utf-8") as f:
-        f.write(f"\\section{{Wetter}}\n")
-        for day in weather:
-            d = weather[day]
-            f.write(f"\\textbf{{{day}}} {d['id_symbol']}, min. {d['id_temp_min'][0]}°C, max. {d['id_temp_max'][0]}°C, Niederschlag {d['id_niederschlag'][0]}mm\\\\ \n\n")
-            image_tex = wetter_diagram_temperature.generate_tikz(d['id_temp_hourly_mean'], tmin, tmax, d['id_precip_hourly_total'], pmax, d['id_precip_hourly_quant10'], d['id_precip_hourly_quant90'])
-            f.write(image_tex + "\n")
-        f.write(" (Quelle: \\href{https://www.meteoschweiz.admin.ch/service-und-publikationen/service.html}{MeteoSchweiz})\n")
+    weather_filename = wetter_fetcher_and_article.fetch_weather_and_save(date)
     messagebox.showinfo("Wetter gespeichert", weather_filename)
+
 
 def save_agenda_block():
     folder = getExistingFolderFromDate()
