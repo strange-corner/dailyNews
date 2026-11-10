@@ -204,6 +204,9 @@ def _skip_this_from(from_, subject: str):
     if "MM Kapo AR:" in subject:
         print(subject + "  wird mit Feed bearbeitet")
         return True
+    if "MM der Kapo AR:" in subject:
+        print(subject + "  wird mit Feed bearbeitet")
+        return True
     if "Kommunikation Stadt St.Gallen" in from_:
         print(subject, from_, "  wird mit Feed bearbeitet")
         return True
