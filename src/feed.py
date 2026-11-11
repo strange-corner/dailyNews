@@ -12,8 +12,10 @@ def _parts_from_feed_summary(artikel_html: str):
 
     if soup.strong:
         lead = soup.strong.string
-    else:
+    elif paragraphs:
         lead = paragraphs[0].text
+    else:
+        lead = None
 
     content = ""
     for paragraph in paragraphs[1:]:
@@ -46,16 +48,20 @@ def load_rss(feed_src: dict[str, str]) -> list[dict]:
         artikel_inhalt_html = entry.get("summary")
         published = entry.get("published")
 
-        # with open(f"feed_{article_codec.articleFilenameFromTitle(entry_title)}.txt", "w") as f:
-        #    f.write(artikel_inhalt_html)
-
+        # Dies liefert die 3 Teile bei Kapo SG
         lead, content, imgsrc = _parts_from_feed_summary(artikel_inhalt_html)
+        # ansonsten (z.B. News Service Bund) übernehmen wir die Teile direkt.
+        if lead is None:
+            lead = artikel_inhalt_html
+            content = entry.get("summary_detail")  # Überlappungen mit lead. Aber hier nur für das UI
+
 
         articles.append({
             "title": entry_title,
             "lead": lead,
             "content": content,
             "image": imgsrc,
+            "article_url": entry.get("link"),
             "published": published,
             "quellenArt": "Quelle",
             "quelle" : feed_src["quelle"]
