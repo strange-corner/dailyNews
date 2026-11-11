@@ -30,7 +30,7 @@ def copy_online_article(url: str) -> dict:
 
 
 def article_from_soup(soup: BeautifulSoup, url: str) -> dict[str, str] | dict:
-    if url.startswith("https://www.news.admin.ch"):
+    if url.startswith("https://www.news.admin.ch") or url.startswith("https://www.admin.ch/"):
         article_data = article_from_soup_admin_ch(soup)
         article_data['quelle'] = "News Service Bund"
         article_data['url'] = url
