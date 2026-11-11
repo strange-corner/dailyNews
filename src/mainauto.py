@@ -4,7 +4,7 @@ import tomllib
 import email_fetcher
 from article_codec import *
 from articles import *
-from directoryParser import *
+from web_directoryParser import *
 from urllib.parse import urlparse
 from multiprocessing import Process
 
