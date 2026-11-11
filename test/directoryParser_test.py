@@ -2,7 +2,7 @@ from datetime import datetime
 import unittest
 import sys
 sys.path.append("src")
-import directoryParser
+import web_directoryParser
 import myrequests
 
 testdatafile = "test/testdata/directoryParserTestdata_HerisauCh.html"
@@ -11,7 +11,7 @@ class DirectoryParserTest(unittest.TestCase):
 
     def test_is_list(self):
         testdata = self._read_testdata()
-        self.assertIsInstance(directoryParser.parse_article_directory(testdata), list)
+        self.assertIsInstance(web_directoryParser.parse_article_directory(testdata), list)
 
     def test_article_count_parametrized(self):
         cases = [
@@ -21,7 +21,7 @@ class DirectoryParserTest(unittest.TestCase):
         for filename, expected in cases:
             with self.subTest(filename=filename, expected=expected):
                 testdata = self._read_testdata(filename)
-                articlelist = directoryParser.parse_article_directory(testdata)
+                articlelist = web_directoryParser.parse_article_directory(testdata)
                 self.assertEqual(expected, len(articlelist))
 
     def test_first_article_details_parametrized(self):
@@ -32,7 +32,7 @@ class DirectoryParserTest(unittest.TestCase):
         for filename, exp_title, exp_published in cases:
             with self.subTest(filename=filename):
                 testdata = self._read_testdata(filename)
-                articlelist = directoryParser.parse_article_directory(testdata)
+                articlelist = web_directoryParser.parse_article_directory(testdata)
                 testarticle = articlelist[0]
                 self.assertEqual(exp_title, testarticle["title"])
                 self.assertEqual(exp_published, testarticle["published"])
@@ -44,9 +44,9 @@ class DirectoryParserTest(unittest.TestCase):
         ]
         for filename, exp_count in cases:
             testdata = self._read_testdata(filename)
-            articlelist = directoryParser.parse_article_directory(testdata)
+            articlelist = web_directoryParser.parse_article_directory(testdata)
             testdate = datetime.strptime("2026-11-03", "%Y-%m-%d")
-            filtered_list = directoryParser.filter_articles_published_after(articlelist, testdate)
+            filtered_list = web_directoryParser.filter_articles_published_after(articlelist, testdate)
             self.assertEqual(exp_count, len(filtered_list))
 
     def _read_testdata(self, filename=testdatafile):
