@@ -21,7 +21,8 @@ def replace_image_url_with_download_image(article_dict: dict[str, str]):
 
 def _delete_symbolbilder_from_article(article_dict: dict[str, str]):
     patterns_lowercase = [
-        "symbolbild"
+        "symbolbild",
+        "_symb_"
     ]
     for pattern in patterns_lowercase:
         if pattern in article_dict['image'].lower():
