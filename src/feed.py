@@ -61,7 +61,7 @@ def load_rss(feed_src: dict[str, str]) -> list[dict]:
             "lead": lead,
             "content": content,
             "image": imgsrc,
-            "article_url": entry.get("link"),
+            "url": entry.get("link"),
             "published": published,
             "quellenArt": "Quelle",
             "quelle" : feed_src["quelle"]

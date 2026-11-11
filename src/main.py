@@ -308,7 +308,7 @@ image_url_entry.pack(fill="x", padx=5, pady=2)
 # Quellen / Links / Weiterlesen
 quellFrame = tk.Frame(artf)
 quellFrame.pack(fill="x")
-tk.Label(quellFrame, text="Quelle / URL:").pack(anchor="w")
+tk.Label(quellFrame, text="Angezeigte Quelle / URL:").pack(anchor="w")
 quelle_entry = tk.Entry(quellFrame)
 quelle_entry.pack(side="left", fill="x", expand=True, padx=5, pady=2)
 comboQuellArt = ttk.Combobox(quellFrame, state="readonly", values=list(QUELLENARTEN.values()))
