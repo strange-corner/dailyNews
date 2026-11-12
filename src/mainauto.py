@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from multiprocessing import Process
 
 
-from src import wetter_fetcher_and_article
+from src import wetter_fetcher_and_article, jotform
 from src.email_article import parse_email_to_article
 from util import *
 from feed import *
@@ -80,6 +80,8 @@ if __name__ == "__main__":
 
     wetter_process = Process(target=wetter_fetcher_and_article.fetch_weather_and_save)
     wetter_process.start()
+
+    jotform.download_and_save_agenda_as_article(datetime.now().date())
 
     create_articles_from_mail()
 

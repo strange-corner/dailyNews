@@ -6,6 +6,9 @@ if not os.getenv("GITHUB_ACTIONS"):
     from src import config
 from urllib.parse import urlparse
 
+from util import *
+import articles
+
 def extract_events(content):
     """
     Liefert alle erfassten Events.
@@ -146,12 +149,29 @@ def get_eventDict_after_day(day: date, events) -> list[dict]:
     return sorted(day_events, key=lambda e: e["datum"].date())
 
 
-def download_submissions() -> bytes:
+def _download_submissions() -> bytes:
     submissions_request = f"https://api.jotform.com/form/{config.jotform_formId}/submissions?apikey={config.jotform_apikey}"
     return requests.get(submissions_request).content
 
-def download_and_generate_text(datum: date):
-    submissions = download_submissions()
+
+def download_and_save_agenda_as_article(datum: date):
+    agenda_article_dict = _download_and_generate_as_article(datum)
+    folder = getCreateFolderFromDate(datum)
+    agenda_filename = os.path.join(folder, "a_agenda.tex")  # a_: als Artikel im Pageflow behandeln
+    articles.save_as_tex_and_json(agenda_article_dict, agenda_filename)
+    return agenda_filename
+
+
+def _download_and_generate_as_article(datum: date):
+    agenda_text = _download_and_generate_text(datum)
+    article_dict = dict()
+    article_dict['content'] = f"\\section{{Agenda}}\n" + agenda_text + f"\n\n Event erfassen auf: https://gbsn.ch/agenda\n"
+    return article_dict
+
+
+def _download_and_generate_text(datum: date):
+    submissions = _download_submissions()
     events = extract_events(submissions)
     text = generate_text_for_date(events, datum)
     return text
+

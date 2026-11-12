@@ -92,15 +92,11 @@ def save_weather_block():
 
 
 def save_agenda_block():
-    folder = getExistingFolderFromDate()
     date = date_entry.get_date()
 
     # fetch data
-    agenda_text = jotform.download_and_generate_text(date)
-    agenda_filename = os.path.join(folder, "a_agenda.tex")  # a_: als Artikel im Pageflow behandeln
-    article_dict = dict()
-    article_dict['content'] = f"\\section{{Agenda}}\n" + agenda_text + f"\n\n Event erfassen auf: https://gbsn.ch/agenda\n"
-    save_as_tex_and_json(article_dict, agenda_filename)
+    agenda_filename = jotform.download_and_save_agenda_as_article(date)
+
     messagebox.showinfo("Agenda gespeichert.", agenda_filename)
     pageflow.add(Article(agenda_filename))
     refresh_articles()
