@@ -50,9 +50,17 @@ def shrink_image(filename: str)-> str:
     if img.width > MAXWIDTH:
         scale = MAXWIDTH / img.width
         img = img.resize((MAXWIDTH, int(img.height * scale)))
-        filename_parts = filename.split('.')
-        new_filename = "".join(filename_parts[:-1]) + "k." + filename_parts[-1]  # Todo hier stimmt noch was nicht, wenn die File-Endung fehlt
+        new_filename = _get_image_new_filename_with_suitable_ending(filename)
         img.save(os.path.join(getCreateFolderFromDate(), new_filename))
         return new_filename
     return filename
+
+def _get_image_new_filename_with_suitable_ending(filename: str) -> str:
+    filename_parts = filename.split('.')
+    extension = filename_parts[-1]
+    if len(extension) < 3 or len(extension) > 4:
+        # bei speziellen Filenamen, z.B. von herisau.ch, wird einfach eine Endung angehängt
+        return filename + ".png"
+    else:
+        return "".join(filename_parts[:-1]) + "k." + extension
 
