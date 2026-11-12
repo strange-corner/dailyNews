@@ -4,6 +4,7 @@ import sys
 sys.path.append("src")
 import web_directoryParser
 import myrequests
+import articles
 
 testdatafile = "test/testdata/directoryParserTestdata_HerisauCh.html"
 
@@ -46,7 +47,7 @@ class DirectoryParserTest(unittest.TestCase):
             testdata = self._read_testdata(filename)
             articlelist = web_directoryParser.parse_article_directory(testdata)
             testdate = datetime.strptime("2026-11-03", "%Y-%m-%d")
-            filtered_list = web_directoryParser.filter_articles_published_after(articlelist, testdate)
+            filtered_list = articles.filter_articles_published_after(articlelist, testdate)
             self.assertEqual(exp_count, len(filtered_list))
 
     def _read_testdata(self, filename=testdatafile):

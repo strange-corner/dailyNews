@@ -1,3 +1,5 @@
+import sys
+sys.path.append("src")
 import article_saveload
 import article_codec
 from urllib.parse import urlparse
@@ -28,4 +30,24 @@ def _delete_symbolbilder_from_article(article_dict: dict[str, str]):
         if pattern in article_dict['image'].lower():
             article_dict['image'] = None
             return
+
+def filter_articles_published_after(articles: list[dict], min_published_date: datetime,) -> list[dict]:
+    """
+    Filtert Artikel und gibt nur jene zurück, deren 'published'-Datum
+    NACH dem gegebenen Datum liegt.
+    Erwartete Datumsformate in 'published': 'dd.mm.yyyy' (z.B. '06.11.2026') oder 'yyyy-mm-dd' (z.B. '2026-11-12').
+    """
+
+    def _parse_published_date(published_str: str) -> datetime:
+        s = published_str.strip()
+        try:
+            return datetime.strptime(s, "%d.%m.%Y")
+        except ValueError:
+            return datetime.strptime(s, "%Y-%m-%d")
+
+    return [
+        article
+        for article in articles
+        if _parse_published_date(article["published"]) >= min_published_date
+    ]
 

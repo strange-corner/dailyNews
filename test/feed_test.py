@@ -1,11 +1,13 @@
+import datetime
 import unittest
 import sys
 
 import feedparser
 
 sys.path.append("..")
-from src import feed, myrequests
+from src import feed, myrequests, articles
 from pathlib import Path
+
 
 TEST_DIR = Path(__file__).parent
 TESTDATA_DIR = TEST_DIR / "testdata"
@@ -45,10 +47,12 @@ class FeedTest(unittest.TestCase):
     def test_admin_ch_directory(self):
         with open(TESTDATA_DIR / "feed_summary_admin_ch.txt", "rb") as f:
             feedo = feedparser.parse(f)
-        articles = feed.articles_from_feed_entries(feedo, {"url": "https://www.newsd.admin.ch/newsd/en/home.html",
+        articles_dict = feed.articles_from_feed_entries(feedo, {"url": "https://www.newsd.admin.ch/newsd/en/home.html",
                                                                   "quelle": "News Service Bund"})
-        self.assertEqual(499, len(articles))
-        print(articles)
+        self.assertEqual(499, len(articles_dict))
+        filtered_articles = articles.filter_articles_published_after(articles_dict, datetime.datetime(2026, 11, 1))
+        self.assertEqual(121, len(filtered_articles))
+
 
 if __name__ == '__main__':
     download_test_data("https://www.newsd.admin.ch/newsd/feeds/rss?lang=de&org-nr=1")

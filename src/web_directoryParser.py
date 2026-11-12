@@ -140,20 +140,3 @@ def parse_article_directory(html: str) -> list[dict]:
     soup = BeautifulSoup(html, 'html.parser')
     parser = _select_parser_for_soup(soup)
     return parser.parse(soup)
-
-
-def filter_articles_published_after(articles: list[dict], min_published_date: datetime,) -> list[dict]:
-    """
-    Filtert Artikel und gibt nur jene zurück, deren 'published'-Datum
-    NACH dem gegebenen Datum liegt.
-    Erwartetes Datumsformat in 'published': 'dd.mm.yyyy', z.B. '06.11.2026'.
-    """
-    def _parse_published_date(published_str: str) -> datetime:
-        return datetime.strptime(published_str, "%d.%m.%Y")
-
-    return [
-        article
-        for article in articles
-        if _parse_published_date(article["published"]) >= min_published_date
-    ]
-
