@@ -38,6 +38,12 @@ def load_rss(feed_src: dict[str, str]) -> list[dict]:
     feed = feedparser.parse(feed_src["url"])
     if feed.status != 200:
         logging.error("Status %d when fetching feed from url %s", feed.status, feed_src)
+    articles = articles_from_feed_entries(feed, feed_src)
+    return articles
+
+
+def articles_from_feed_entries(feed,
+                               feed_src: dict[str, str]) -> list:
     articles = []
     for entry in feed.entries:
         for key in entry:
@@ -55,7 +61,6 @@ def load_rss(feed_src: dict[str, str]) -> list[dict]:
             lead = artikel_inhalt_html
             content = entry.get("summary_detail")  # Überlappungen mit lead. Aber hier nur für das UI
 
-
         articles.append({
             "title": entry_title,
             "lead": lead,
@@ -63,7 +68,7 @@ def load_rss(feed_src: dict[str, str]) -> list[dict]:
             "image": imgsrc,
             "published": published,
             "quellenArt": "Quelle",
-            "quelle" : feed_src["quelle"]
+            "quelle": feed_src["quelle"]
             # url nicht befüllen, sonst wird ein QR erzeugt
         })
     return articles

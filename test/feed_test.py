@@ -1,10 +1,21 @@
 import unittest
+import sys
 
-from src import feed
+import feedparser
+
+sys.path.append("..")
+from src import feed, myrequests
 from pathlib import Path
 
 TEST_DIR = Path(__file__).parent
 TESTDATA_DIR = TEST_DIR / "testdata"
+
+
+def download_test_data(url):
+    data = myrequests.get(url).content
+    with open(TESTDATA_DIR / "feed_summary_admin_ch.txt", "wb") as f:
+        f.write(data)
+
 
 class FeedTest(unittest.TestCase):
 
@@ -30,3 +41,14 @@ class FeedTest(unittest.TestCase):
         self.summary_from_file(TESTDATA_DIR / "feed_summary_testdata.txt", 72)  # Erfahrungswert
         self.summary_from_file(TESTDATA_DIR / "feed_summary_testdata2.txt", 72)
         self.summary_from_file(TESTDATA_DIR / "feed_a_Kanton_St29.txt", 38)
+
+    def test_admin_ch_directory(self):
+        with open(TESTDATA_DIR / "feed_summary_admin_ch.txt", "rb") as f:
+            feedo = feedparser.parse(f)
+        articles = feed.articles_from_feed_entries(feedo, {"url": "https://www.newsd.admin.ch/newsd/en/home.html",
+                                                                  "quelle": "News Service Bund"})
+        self.assertEqual(499, len(articles))
+        print(articles)
+
+if __name__ == '__main__':
+    download_test_data("https://www.newsd.admin.ch/newsd/feeds/rss?lang=de&org-nr=1")
