@@ -34,15 +34,22 @@ def fetch_web_articles(url: str):
     articles = filter_articles_published_after(articles, getSinceDate())
 
     parsed_uri = urlparse(url)
-    netloc = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+    netloc = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
 
     for article in articles:
 
-        article_content = online_article.copy_online_article(netloc + article["article_url"])
+        article_full_url = netloc + article["article_url_to_fetch_from"]
+        article_content = online_article.copy_online_article(article_full_url)
         article.update(article_content)
         article["quellenArt"] = "Quelle"
         if "image" in article:
-            replace_image_url_with_download_image(article)
+            try:
+                replace_image_url_with_download_image(article)
+            except Exception as e:
+                logging.error(e)
+                logging.error("Fehler beim Download von " + article["image"])
+                logging.error("Artikel-URL: " + article_full_url)
+                article["image"] = ""
         save_article(article)
 
 

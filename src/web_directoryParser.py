@@ -39,7 +39,7 @@ class NewsDivArticleDirectoryParser(BaseArticleDirectoryParser):
             published_time = published_container.select_one("time") if published_container is not None else None
             published_text = published_time.get_text(strip=True) if published_time is not None else ""
 
-            articles.append({"title": title, "article_url": article_url, "published": published_text})
+            articles.append({"title": title, "article_url_to_fetch_from": article_url, "published": published_text})
 
             print(title)
             print(article_url)
@@ -87,7 +87,7 @@ class HerisauArticleDirectoryParser(BaseArticleDirectoryParser):
                             if article_url:
                                 articles.append({
                                     "title": str(title).strip(),
-                                    "article_url": str(article_url).strip(),
+                                    "article_url_to_fetch_from": str(article_url).strip(),
                                     "published": str(published_text).strip(),
                                 })
                         if articles:
@@ -157,9 +157,3 @@ def filter_articles_published_after(articles: list[dict], min_published_date: da
         if _parse_published_date(article["published"]) >= min_published_date
     ]
 
-
-def fetch_content_of_articles(articles: list[dict]) -> list[dict]:
-    for article in articles:
-        fetched = online_article.copy_online_article(article["article_url"])
-        article.update(fetched)
-    return articles

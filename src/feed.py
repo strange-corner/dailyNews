@@ -41,7 +41,7 @@ def load_rss(feed_src: dict[str, str]) -> list[dict]:
     articles = []
     for entry in feed.entries:
         for key in entry:
-            print(key, entry[key])
+            logging.debug("key: %s, value: %s", key, entry[key])
 
         entry_title = entry.get("title", "")
         # Im Feed von Kapo SG steht alles in der Summary; kompletter HTML Artikel inkl Bild
@@ -61,9 +61,9 @@ def load_rss(feed_src: dict[str, str]) -> list[dict]:
             "lead": lead,
             "content": content,
             "image": imgsrc,
-            "url": entry.get("link"),
             "published": published,
             "quellenArt": "Quelle",
             "quelle" : feed_src["quelle"]
+            # url nicht befüllen, sonst wird ein QR erzeugt
         })
     return articles
