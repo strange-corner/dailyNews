@@ -186,7 +186,7 @@ def article_from_soup_herisau_ch(soup):
         article_dict['lead'] = leadsoupdiv.text
     contentsoup = soup.find("div", class_="icms-text-container")
     article_dict['content'] = '\n'.join([f.text for f in contentsoup.find_all("p", class_="icmsPContent")])
-    article_dict['quelle'] = "Gde. Herisau"
+    article_dict['quelle'] = "Gemeinde Herisau"
     img = soup.find("div", class_="icms-picture-container")
     if img:
         img = img.find("img")
