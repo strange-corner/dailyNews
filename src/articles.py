@@ -26,10 +26,11 @@ def _delete_symbolbilder_from_article(article_dict: dict[str, str]):
         "symbolbild",
         "_symb_"
     ]
-    for pattern in patterns_lowercase:
-        if pattern in article_dict['image'].lower():
-            article_dict['image'] = None
-            return
+    if article_dict['image']:
+        for pattern in patterns_lowercase:
+            if pattern in article_dict['image'].lower():
+                article_dict['image'] = None
+                return
 
 def filter_articles_published_after(articles: list[dict], min_published_date: datetime,) -> list[dict]:
     """
