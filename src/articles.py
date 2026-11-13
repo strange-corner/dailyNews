@@ -57,3 +57,6 @@ def filter_articles_published_after(articles: list[dict], min_published_date: da
         if _parse_published_date(article["published"]) >= min_published_date
     ]
 
+
+def select_articles_admin_ch(article_list):
+    return [article for article in article_list if "Öffentliche Warnung" in article["title"]]

@@ -21,7 +21,12 @@ def parseConfig(toml_file) -> dict[str, Any]:
 
 def fetch_feed_articles(feed: dict[str, str]) -> list[dict]:
     articles = load_rss(feed)
-    articles = filter_articles_older_than(articles, getSinceDate())
+    articles = filter_articles_published_after(articles, getSinceDate())
+    # TODO warum diese zusätzliche Filterfunktion? articles = filter_articles_older_than(articles, getSinceDate())
+    if feed["url"].startswith("https://www.newsd.admin.ch"):
+        articles = select_articles_admin_ch(articles)
+        for article in articles:
+            article.update(online_article.copy_online_article(article["article_url_to_fetch_from"]))
     for article in articles:
         replace_image_url_with_download_image(article)
         save_article(article)
