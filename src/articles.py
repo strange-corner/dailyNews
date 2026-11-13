@@ -41,9 +41,14 @@ def filter_articles_published_after(articles: list[dict], min_published_date: da
     def _parse_published_date(published_str: str) -> datetime:
         s = published_str.strip()
         try:
-            return datetime.strptime(s, "%d.%m.%Y")
+            result = datetime.strptime(s, "%d.%m.%Y")
         except ValueError:
-            return datetime.strptime(s, "%Y-%m-%d")
+            try:
+                result = datetime.strptime(s, "%Y-%m-%d")
+            except ValueError:
+                result = datetime.strptime(s, "%a, %d %b %Y %H:%M:%S %z").replace(tzinfo=None)
+                # manchmal vorhandene Timezone Info ignorieren wir mal der Einfachheit halber
+        return result
 
     return [
         article
