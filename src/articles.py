@@ -12,7 +12,7 @@ def save_as_tex_and_json(article_dict: dict[str, str | None], article_filename: 
 
 def replace_image_url_with_download_image(article_dict: dict[str, str]):
     _delete_symbolbilder_from_article(article_dict)
-    if article_dict['image']:
+    if "image" in article_dict and article_dict['image']:
         url_or_file = article_dict['image']
         if urlparse(url_or_file).scheme in ['http', 'https']:
             image_filename = download_image(url_or_file)
@@ -26,7 +26,7 @@ def _delete_symbolbilder_from_article(article_dict: dict[str, str]):
         "symbolbild",
         "_symb_"
     ]
-    if article_dict['image']:
+    if "image" in article_dict and article_dict['image']:
         for pattern in patterns_lowercase:
             if pattern in article_dict['image'].lower():
                 article_dict['image'] = None
