@@ -199,7 +199,7 @@ def article_from_soup_admin_ch(soup):
     print("article_from_soup_admin_ch")
     article_dict = dict()
     lead_section = soup.find("section", identifier="lead-contentpage")
-    article_dict['title'] = lead_section.h1.string
+    article_dict['title'] = lead_section.h1.string.text
     article_dict['lead'] = lead_section.find_all("p")[1].get_text(strip=True)
     content_section = soup.find("section", identifier="section")
     soup = None  # nur noch main_div verwenden
