@@ -11,7 +11,10 @@ quelle = "Kanton St. Gallen"
 url = "https://www.stadt.sg.ch/home/verwaltung-politik/direktionen/soziales-sicherheit/stadtpolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
 quelle = "Stadtpolizei St. Gallen"
 
-# "https://gruene.ch/kategorie/medienmitteilungen/feed"
+[[Feeds.rss]]
+url = "https://www.newsd.admin.ch/newsd/feeds/rss?lang=de&org-nr=1"
+quelle = "News Service Bund"
+
 
 [Feeds]
 web = [
