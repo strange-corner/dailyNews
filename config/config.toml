@@ -5,11 +5,11 @@ quelle = "Kapo SG"
 
 [[Feeds.rss]]
 url = "https://www.stadt.sg.ch/home/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
-quelle = "Kanton St. Gallen"
+quelle = "Kanton SG"
 
 [[Feeds.rss]]
 url = "https://www.stadt.sg.ch/home/verwaltung-politik/direktionen/soziales-sicherheit/stadtpolizei/_jcr_content/NewsPar.RssFeed.qualident__item0.rdf"
-quelle = "Stadtpolizei St. Gallen"
+quelle = "Stadtpolizei St.Gallen"
 
 [[Feeds.rss]]
 url = "https://www.newsd.admin.ch/newsd/feeds/rss?lang=de&org-nr=1"
