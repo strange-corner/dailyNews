@@ -68,7 +68,8 @@ def articles_from_feed_entries(feed,
             "image": imgsrc,
             "published": published,
             "quellenArt": "Quelle",
-            "quelle": feed_src["quelle"]
+            "quelle": feed_src["quelle"],
+            "article_url_to_fetch_from": entry.get("link")  # für feeds, die nur das directory sind, url zum weiterarbeiten
             # url nicht befüllen, sonst wird ein QR erzeugt
         })
     return articles
