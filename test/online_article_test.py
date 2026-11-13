@@ -6,6 +6,10 @@ sys.path.append("../src")
 sys.path.append("src")
 import myrequests
 import online_article
+from pathlib import Path
+
+TEST_DIR = Path(__file__).parent
+TESTDATA_DIR = TEST_DIR / "testdata"
 
 class Test(unittest.TestCase):
     pass
@@ -14,21 +18,32 @@ class Test(unittest.TestCase):
         filename = url.split("/")[-1]
         if filename == "":
             filename = url.split("/")[-2]
-        if not os.path.exists(filename):
+        filename = filename + ".html"
+        filepath = TESTDATA_DIR / filename
+        if not os.path.exists(filepath):
             response = myrequests.get(url)
-            with open(filename, "wb") as f:
-                f.write(response.content)
-        return filename
+            with open(filepath, "w", encoding="utf8") as f:
+                f.write(response.text)
+        return filepath
 
     def teiltest(self, url, parser):
         filename = self.save_html_if_not_exist(url)
         content = open(filename).read()
         test_soup = bs4.BeautifulSoup(content, "html.parser")
-        print(test_soup.prettify())
+        #print(test_soup.prettify())
         article = parser(test_soup, url)
         for key in article.keys():
             print(key, article[key])
+            self.assertTrue(type(article[key]) == str, f"{key} must be a string, not {type(article[key])}")
         return article
+
+    def test_admin_ch(self):
+        url = "https://www.admin.ch/de/newnsb/zFg3zWdH4gI6"
+        self.teiltest(url, online_article.article_from_soup)
+
+    def test_admin_ch2(self):
+        url = "https://www.admin.ch/de/newnsb/hLtItNJ5hKOy"
+        self.teiltest(url, online_article.article_from_soup)
 
     # def test_Herisau_ch(self):
     #     url = "https://www.herisau.ch/aktuellesinformationen/3042187"
