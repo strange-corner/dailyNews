@@ -201,10 +201,10 @@ def _collect_image_attachments(msg: Message, include_data: bool = False) -> list
 
 
 def _skip_this_from(from_, subject: str):
-    if "MM Kapo AR:" in subject:
+    if "MM Kapo AR" in subject:
         print(subject + "  wird mit Feed bearbeitet")
         return True
-    if "MM der Kapo AR:" in subject:
+    if "MM der Kapo AR" in subject:
         print(subject + "  wird mit Feed bearbeitet")
         return True
     if "Kommunikation Stadt St.Gallen" in from_:
