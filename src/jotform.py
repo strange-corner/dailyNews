@@ -154,12 +154,12 @@ def _download_submissions() -> bytes:
     return requests.get(submissions_request).content
 
 
-def download_and_save_agenda_as_article(datum: date):
+def download_and_save_agenda_as_article(datum: date) -> str:
     agenda_article_dict = _download_and_generate_as_article(datum)
     folder = getCreateFolderFromDate(datum)
-    agenda_filename = os.path.join(folder, "a_agenda.tex")  # a_: als Artikel im Pageflow behandeln
-    articles.save_as_tex_and_json(agenda_article_dict, agenda_filename)
-    return agenda_filename
+    agenda_filepath = os.path.join(folder, "a_agenda.tex")  # a_: als Artikel im Pageflow behandeln
+    articles.save_as_tex_and_json(agenda_article_dict, agenda_filepath)
+    return agenda_filepath
 
 
 def _download_and_generate_as_article(datum: date):
