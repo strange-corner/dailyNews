@@ -31,6 +31,15 @@ class CategoryMarker(SeqElem):
         return self.name
 
 
+def _getListOfTexArticleFiles(folder: str) -> set:
+    filenameset = set()  # set, not list for efficiency, we don't need the order here
+    if os.path.isdir(folder):
+        for fname in os.listdir(folder):
+            if fname.endswith(".tex") and fname.startswith("a_"):
+                filenameset.add(fname)
+    return filenameset
+
+
 class PageFlow:
     """ Represents the Sequence of Elements (SeqElems) in the newspaper. SeqElems can be Articles, Category markers, etc."""
 
@@ -49,11 +58,8 @@ class PageFlow:
             self.seq.append(elem)
 
     def refreshArticles(self, folder: str):
-        filenameset = set()  # set, not list for efficiency, we don't need the order here
-        if os.path.isdir(folder):
-            for fname in os.listdir(folder):
-                if fname.endswith(".tex") and fname.startswith("a_"):
-                    filenameset.add(fname)
+        """ Reloads the articles from the folder and reorders them according to the pageflow.txt file """
+        filenameset = _getListOfTexArticleFiles(folder)
         self.removeAllArticles()
         fname = f"{folder}/pageflow.txt"
         if os.path.exists(fname):
