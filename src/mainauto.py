@@ -1,9 +1,11 @@
+import pathlib
 from typing import Any
 import tomllib
 
 import email_fetcher
 from article_codec import *
 from articles import *
+import pageflow
 from web_directoryParser import *
 from urllib.parse import urlparse
 from multiprocessing import Process
@@ -83,6 +85,15 @@ def save_article(article: dict[str, str]):
     save_as_tex_and_json(article, article_filename)
 
 
+
+def generate_initial_pageflow(agenda_filename):
+    pageflow_ = pageflow.PageFlow()
+    pageflow_.add(pageflow.Article(agenda_filename))
+    pageflow_.add(pageflow.CategoryMarker("Meldungen"))
+    pageflow_.save_pageflow(workdir)
+    pageflow_.refreshArticles(workdir)
+
+
 if __name__ == "__main__":
     print("Hello Daily Newspaper.")
     workdir = getCreateFolderFromDate()
@@ -92,7 +103,7 @@ if __name__ == "__main__":
     wetter_process = Process(target=wetter_fetcher_and_article.fetch_weather_and_save)
     wetter_process.start()
 
-    jotform.download_and_save_agenda_as_article(datetime.now().date())
+    agenda_path = jotform.download_and_save_agenda_as_article(datetime.now().date())
 
     create_articles_from_mail()
 
@@ -106,3 +117,5 @@ if __name__ == "__main__":
         fetch_feed_articles(rssfeed1)
 
     wetter_process.join()
+
+    generate_initial_pageflow(pathlib.Path(agenda_path).name)
