@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, timezone
-from zoneinfo import ZoneInfo
+from datetime import datetime, timedelta
 import os
 import myrequests
+from pathlib import Path
 import urllib.parse
 if not os.getenv("GITHUB_ACTIONS"):
     from PIL import Image
@@ -18,13 +18,14 @@ def getCreateFolderFromDate(date_time = get_default_issue_date_time()):
 
 def download_image(url):
     image = myrequests.get(url)
-    image_name = url.split('/')[-1]
-    image_name_unquoted = urllib.parse.unquote(image_name)
-    image_path = os.path.join(getCreateFolderFromDate(), image_name_unquoted)
+    # extract filename from (path from) url:
+    image_filenname = Path(urllib.parse.urlparse(url).path).name
+    image_filename_unquoted = urllib.parse.unquote(image_filenname)
+    image_path = os.path.join(getCreateFolderFromDate(), image_filename_unquoted)
     with open(image_path, 'wb') as f:
         for chunk in image.iter_content():
             f.write(chunk)
-    return image_name_unquoted
+    return image_filename_unquoted
 
 
 def shrink_image(filename: str)-> str:
