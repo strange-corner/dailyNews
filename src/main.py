@@ -39,11 +39,8 @@ def save_article():
     lead = article_lead.get("1.0", "end").strip()
     content = article_content.get("1.0", "end").strip()
     url = article_url.get().strip()
-    if len(url) > 1 and not url.startswith(shortify.base_url):
-        url = shortify.create_shortlink_or_get_from_db(url, title)
     image_url = image_url_entry.get().strip()
     quelle = quelle_entry.get().strip()
-    image_filename = None
     quellenArt = comboQuellArt.get()
 
     if title:
@@ -63,6 +60,7 @@ def save_article():
     article_dict = {"title": title, "lead": lead, "image": image_url, "content": content, "url": url,
                     "quelle": quelle, "quellenArt": quellenArt, "infobox": infobox_content}
     replace_image_url_with_download_image(article_dict)
+    replace_article_url_with_shortified_url(article_dict)
     save_as_tex_and_json(article_dict, article_filename)
     pageflow.add(Article(fname))
     refresh_article_ui()

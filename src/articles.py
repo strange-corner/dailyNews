@@ -2,6 +2,7 @@ import sys
 sys.path.append("src")
 import article_saveload
 import article_codec
+import shortify
 from urllib.parse import urlparse
 from util import *
 
@@ -20,6 +21,12 @@ def replace_image_url_with_download_image(article_dict: dict[str, str]):
             image_filename = url_or_file
         image_filename = shrink_image(image_filename)
         article_dict['image'] = image_filename
+
+def replace_article_url_with_shortified_url(article_dict: dict[str, str]):
+    if "url" in article_dict and article_dict['url']:
+        url = article_dict['url']
+        if not url.startswith(shortify.base_url):
+            article_dict['url'] = shortify.create_shortlink_or_get_from_db(url, article_dict['title'])
 
 def _delete_symbolbilder_from_article(article_dict: dict[str, str]):
     patterns_lowercase = [

@@ -30,6 +30,7 @@ def fetch_feed_articles(feed: dict[str, str]) -> list[dict]:
             article.update(online_article.copy_online_article(article["article_url_to_fetch_from"]))
     for article in articles:
         replace_image_url_with_download_image(article)
+        replace_article_url_with_shortified_url(article)
         save_article(article)
         print(article)
 
@@ -56,6 +57,7 @@ def fetch_web_articles(url: str):
                 logging.error("Fehler beim Download von " + article["image"])
                 logging.error("Artikel-URL: " + article_full_url)
                 article["image"] = ""
+        replace_article_url_with_shortified_url(article)
         save_article(article)
 
 
@@ -81,8 +83,8 @@ def getSinceDate() -> datetime:
 def save_article(article: dict[str, str]):
     fname = articleFilenameFromTitle(article["title"])
     folder = getCreateFolderFromDate()
-    article_filename = os.path.join(folder, fname)
-    save_as_tex_and_json(article, article_filename)
+    article_filepath = os.path.join(folder, fname)
+    save_as_tex_and_json(article, article_filepath)
 
 
 
