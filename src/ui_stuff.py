@@ -12,7 +12,7 @@ def open_infobox_popup(root, insert_infobox_into_article, initVal=""):
     tk.Label(popup, text="Inhalt der Infobox:").pack(anchor="w", padx=10, pady=5)
 
     text_widget = tk.Text(popup, wrap="word")
-    text_widget.insert(tk.END, initVal)
+    text_widget.insert(tk.END, str(initVal))
 
     def save_infobox():
         content = text_widget.get("1.0", "end-1c")
