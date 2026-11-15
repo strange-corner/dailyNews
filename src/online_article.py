@@ -152,7 +152,8 @@ def article_from_soup_ar_ch(soup):
     article_dict = dict()
     article_dict['title'] = souproot.find("h2", itemprop="headline").text
     article_dict['lead'] = souproot.find("div", class_="teaser-text").text
-    article_dict['content'] = souproot.find("div", class_="news-text-wrap").text
+    # Trennstellen <br> werden default mit nichts ersetzt, darum Abschnittwechsel einbauden mit  \n\n:
+    article_dict['content'] = souproot.find("div", class_="news-text-wrap").get_text(separator="\n\n", strip=True)
     img = souproot.select_one("img")
     if img:
         article_dict['image'] = "https://ar.ch" + img["src"]
