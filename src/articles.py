@@ -31,7 +31,8 @@ def replace_article_url_with_shortified_url(article_dict: dict[str, str]):
 def _delete_symbolbilder_from_article(article_dict: dict[str, str]):
     patterns_lowercase = [
         "symbolbild",
-        "_symb_"
+        "_symb_",
+        "csm_patrouillenwagen_mit_blaulicht"
     ]
     if "image" in article_dict and article_dict['image']:
         for pattern in patterns_lowercase:
