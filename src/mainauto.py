@@ -106,7 +106,7 @@ if __name__ == "__main__":
     wetter_process = Process(target=wetter_fetcher_and_article.fetch_weather_and_save)
     wetter_process.start()
 
-    agenda_path = jotform.download_and_save_agenda_as_article(datetime.now().date())
+    agenda_path = jotform.download_and_save_agenda_as_article(issue_date_time.date())
 
     create_articles_from_mail()
 
