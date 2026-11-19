@@ -113,7 +113,6 @@ def dateSelected():
     refresh_articles()
 
 def refresh_articles():
-    global issue_date_time  # util
     pageflow.refreshArticles(getCreateFolderFromDate(util.issue_date_time))
     refresh_article_ui()
 
