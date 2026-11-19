@@ -29,8 +29,13 @@ class PdfToday(object):
             shutil.copy(src_template, tgt_template)
         subprocess.run(["pdflatex", f"-jobname={outname}", "template.tex"], cwd=self.day_folder)
 
+    def _write_pdfMeta(self):
+        with open(os.path.join(self.day_folder, "pdfMeta.tex"), "w", encoding="utf-8") as f:
+            date_str = self.datum.strftime("%#d. %b. %Y")
+            f.write(f"\\newcommand{{\\NewspaperDate}}{{{date_str}}}\n")
 
     def generate_today(self, pageflow: PageFlow, selected_indices: list):
+        self._write_pdfMeta()
         today_path = os.path.join(self.day_folder, "today.tex")
 
         with open(today_path, "w", encoding="utf-8") as f:

@@ -2,6 +2,7 @@
 
 \newcommand{\NewspaperTitle}{Gübsensee Journal}
 \newcommand{\NewspaperSubtitle}{Tageszeitung für Herisau, St. Gallen und Umgebung als E-Papier oder zum selber ausdrucken}
+\input{pdfMeta.tex}
 
 % --- Layout & Typografie ---
 \usepackage[margin=0.9cm]{geometry}
@@ -16,7 +17,7 @@
 \usepackage{titlesec}
 \usepackage{setspace}
 \usepackage[hidelinks,
-    pdftitle={\NewspaperTitle},
+    pdftitle={\NewspaperTitle\ vom\  \NewspaperDate},
     pdfsubject={\NewspaperSubtitle}]{hyperref}
 \usepackage[ngerman]{babel} % deutsche Sprache
 \usepackage[useregional]{datetime2}
@@ -36,7 +37,6 @@
 \pagestyle{empty}
 
 % --- Zeitungskopf ---
-\newcommand{\NewspaperDate}{\today}
 
 \newcommand{\FirstPageOverlay}[2]{%
   \AddToShipoutPictureFG*{%
