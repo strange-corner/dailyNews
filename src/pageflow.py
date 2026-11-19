@@ -75,7 +75,7 @@ class PageFlow:
                     else:
                         self.seq.append(CategoryMarker(stripline))
         for neue in filenameset:  # falls es neue hat, die noch nicht im pageflow.txt sind
-            logger.info("adding %s from file", stripline)
+            logger.info("adding %s from file", neue)
             self.seq.append(Article(neue))
 
     def removeAllArticles(self):
