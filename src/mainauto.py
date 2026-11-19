@@ -97,6 +97,7 @@ def generate_initial_pageflow(agenda_filename):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     print("Hello Daily Newspaper.")
     workdir = getCreateFolderFromDate()
     print("Working directory is: " + workdir)

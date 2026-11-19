@@ -20,7 +20,7 @@ from pageflow import *
 from pdf_today import PdfToday
 import ui_stuff
 from src import wetter_fetcher_and_article
-from util import *
+import util
 
 pageflow = PageFlow()
 infobox_content = None # Zwischenspeicher, da Editor in anderem Fenster stattfindet.
@@ -106,8 +106,15 @@ def refresh_article_ui():
         article_listbox.insert(tk.END, identifier)
 
 
+def dateSelected():
+    selected_date = date_entry.get_date()
+    getCreateFolderFromDate()
+    util.issue_date_time = selected_date
+    refresh_articles()
+
 def refresh_articles():
-    pageflow.refreshArticles(getExistingFolderFromDate())
+    global issue_date_time  # util
+    pageflow.refreshArticles(getCreateFolderFromDate(util.issue_date_time))
     refresh_article_ui()
 
 
@@ -261,6 +268,8 @@ def on_closing():
     pageflow.save_pageflow(getExistingFolderFromDate())
     root.destroy()
 
+logging.basicConfig(level=logging.INFO)
+
 locale.setlocale(locale.LC_TIME, "de_CH")
 
 # --- GUI Setup ---
@@ -278,7 +287,7 @@ tk.Label(date_frame, text="Datum:").pack(side="left")
 date_entry = DateEntry(date_frame, date_pattern="dd.mm.yyyy")
 date_entry.set_date(datetime.now() + timedelta(hours=12))
 date_entry.pack(side="left")
-date_entry.bind("<<DateEntrySelected>>", lambda d: refresh_articles())
+date_entry.bind("<<DateEntrySelected>>", lambda d: dateSelected())
 
 # Artikelbereich
 artf = tk.LabelFrame(root, text="Artikel", padx=5, pady=5)

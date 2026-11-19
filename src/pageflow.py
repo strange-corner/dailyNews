@@ -1,6 +1,8 @@
 import abc
 import os
+import logging
 
+logger = logging.getLogger(__name__)
 
 class SeqElem:
 
@@ -68,11 +70,12 @@ class PageFlow:
                     if stripline in filenameset:
                         filenameset.remove(stripline)
                         if stripline.endswith(".tex") and stripline.startswith("a_"):
-                            print("adding " + stripline)
+                            logger.info("adding %s", stripline)
                             self.seq.append(Article(stripline))
                     else:
                         self.seq.append(CategoryMarker(stripline))
         for neue in filenameset:  # falls es neue hat, die noch nicht im pageflow.txt sind
+            logger.info("adding %s from file", stripline)
             self.seq.append(Article(neue))
 
     def removeAllArticles(self):
@@ -98,6 +101,6 @@ class PageFlow:
         with open(f"{folder}/pageflow.txt", "w", encoding="utf-8") as f:
             for elem in self.seq:
                 ident = elem.ident()
-                print("saving " + ident)
+                logger.info("saving %s", ident)
                 f.write(ident)
                 f.write("\n")
