@@ -91,10 +91,10 @@ def convert_node(node) -> str:
         # Fett
         if name in ["b", "strong"]:
             content = "".join(convert_node(c) for c in node.children)
-            return r"\textbf{" + content + "}"
+            return r"\textbf{" + content + "}\n\n"
 
         # Absatz
-        elif name == "p":
+        elif name in ["p", "br"]:  # auf svp.ch gibt es die seltsamben <br> Tags
             content = "".join(convert_node(c) for c in node.children)
             return content + "\n\n"
 
@@ -107,10 +107,6 @@ def convert_node(node) -> str:
         elif name == "li":
             content = "".join(convert_node(c) for c in node.children)
             return f"  \\item {content}\n"
-
-        # Line break
-        elif name == "br":
-            return "\\\\\n"
 
         # Default: einfach Inhalt durchreichen
         else:
