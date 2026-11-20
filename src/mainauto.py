@@ -3,6 +3,7 @@ from typing import Any
 import tomllib
 
 import email_fetcher
+import email_maintenance
 from article_codec import *
 from articles import *
 import pageflow
@@ -71,6 +72,10 @@ def create_articles_from_mail():
         if not article.zumAussortieren():
             # articles = filter_articles_published_after(articles, datetime.now() - timedelta(days=2))
             save_article(article.to_dict())
+
+    # Alte Mails löschen
+    deleted = email_maintenance.delete_old_emails(secret["imap"]["server"], secret["imap"]["user"], secret["imap"]["password"])
+    logging.log(logging.INFO, "Deleted %d emails", deleted)
 
 
 def getSinceDate() -> datetime:
