@@ -74,7 +74,7 @@ def create_articles_from_mail():
             save_article(article.to_dict())
 
     # Alte Mails löschen
-    deleted = email_maintenance.delete_old_emails(secret["imap"]["server"], secret["imap"]["user"], secret["imap"]["password"])
+    deleted = email_maintenance.delete_emails_older_than_days_imap(secret["imap"]["server"], secret["imap"]["user"], secret["imap"]["password"])
     logging.log(logging.INFO, "Deleted %d emails", deleted)
 
 
