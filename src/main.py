@@ -271,6 +271,37 @@ logging.basicConfig(level=logging.INFO)
 
 locale.setlocale(locale.LC_TIME, "de_CH")
 
+# Mausrad-Scroll-Unterstützung
+def _is_descendant(w, ancestor):
+    while w is not None:
+        if w == ancestor:
+            return True
+        w = getattr(w, "master", None)
+    return False
+
+
+def _on_mousewheel(event):
+    # Nur scrollen, wenn der Cursor über dem scrollbaren Bereich ist und das Ziel-Widget
+    # nicht selbst per Mausrad scrollt (z.B. Text, Listbox, Combobox, Treeview).
+    try:
+        wclass = event.widget.winfo_class()
+    except Exception:
+        wclass = ""
+    if wclass in ("Text", "Listbox", "TCombobox", "Treeview"):
+        return
+    if not (_is_descendant(event.widget, scrollable_frame) or event.widget == canvas):
+        return
+
+    if hasattr(event, "delta") and event.delta:
+        # Windows/macOS
+        canvas.yview_scroll(-1 if event.delta > 0 else 1, "units")
+    elif hasattr(event, "num"):
+        # Linux (Button-4 = up, Button-5 = down)
+        if event.num == 4:
+            canvas.yview_scroll(-1, "units")
+        elif event.num == 5:
+            canvas.yview_scroll(1, "units")
+
 # --- GUI Setup ---
 root = tk.Tk()
 root.title("Zeitungs-Generator mit Wetter & Datum")
@@ -293,6 +324,11 @@ canvas.bind(
 
 scrollable_frame = tk.Frame(canvas)
 canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+# Mausrad-Events für das Scrollen des Canvas global binden (plattformübergreifend)
+root.bind_all("<MouseWheel>", _on_mousewheel)  # Windows/macOS
+root.bind_all("<Button-4>", _on_mousewheel)    # Linux scroll up
+root.bind_all("<Button-5>", _on_mousewheel)    # Linux scroll down
 
 # Datumsauswahl
 date_frame = tk.Frame(scrollable_frame)
