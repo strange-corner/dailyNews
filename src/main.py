@@ -19,7 +19,7 @@ from article_codec import articleFilenameFromTitle
 from pageflow import *
 from pdf_today import PdfToday
 import ui_stuff
-from src import wetter_fetcher_and_article
+import wetter_fetcher_and_article
 import util
 
 pageflow = PageFlow()
