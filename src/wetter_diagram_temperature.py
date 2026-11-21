@@ -132,11 +132,11 @@ def generate_tikz(tempf: list, ymin, ymax, precip_str: list, pmax, precip_quant1
     return part1 + coords + part3
 
 
-if __name__ == "__main__":
-    # Gegebene Daten
-    temps_str = ['2.7', '2.5', '2.7', '2.7', '2.8', '3.0', '3.2', '3.4',
-                 '3.7', '4.0', '4.2', '4.6', '4.9', '5.2', '5.5', '5.7',
-                 '5.9', '5.9', '5.8', '5.6', '5.4', '5.2', '5.0', '4.9']
-    generate_image_and_get_insertiontext(temps_str, ".", "temperaturverlauf.png")
+# if __name__ == "__main__":
+#     # Gegebene Daten
+#     temps_str = ['2.7', '2.5', '2.7', '2.7', '2.8', '3.0', '3.2', '3.4',
+#                  '3.7', '4.0', '4.2', '4.6', '4.9', '5.2', '5.5', '5.7',
+#                  '5.9', '5.9', '5.8', '5.6', '5.4', '5.2', '5.0', '4.9']
+#     generate_image_and_get_insertiontext(temps_str, ".", "temperaturverlauf.png")
 
 
