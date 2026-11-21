@@ -27,6 +27,10 @@ class PdfToday(object):
             src_template = os.path.join("template", filename)
             tgt_template = os.path.join(self.day_folder, filename)
             shutil.copy(src_template, tgt_template)
+        if shutil.which("pdflatex") is None:
+            messagebox.showwarning("Fehler", "pdflatex wurde nicht gefunden. Bitte installieren Sie LaTeX "
+                                             "(pdflatex) und stellen Sie sicher, dass es im PATH verfügbar ist.")
+            return
         subprocess.run(["pdflatex", f"-jobname={outname}", "template.tex"], cwd=self.day_folder)
 
     def _write_pdfMeta(self):
