@@ -393,6 +393,26 @@ tk.Button(scrollable_frame, text="Artikel übernehmen", command=import_rss_artic
 # Beim Start vorhandene Artikel laden
 refresh_articles()
 
+
+def _adapt_window_size():
+    # Fenstergrösse an Inhalte anpassen (und auf Bildschirmgrösse beschränken)
+    root.update_idletasks()
+    content_w = scrollable_frame.winfo_reqwidth()
+    content_h = scrollable_frame.winfo_reqheight()
+    scrollbar_w = scrollbar.winfo_reqwidth()
+    total_w = content_w + scrollbar_w + 30
+    total_h = content_h + 30
+    screen_w = root.winfo_screenwidth()
+    screen_h = root.winfo_screenheight()
+    win_w = min(total_w, screen_w - 50)
+    win_h = min(total_h, screen_h - 80)
+    x = max((screen_w - win_w) // 2, 0)
+    y = max((screen_h - win_h) // 2, 0)
+    root.geometry(f"{win_w}x{win_h}+{x}+{y}")
+
+
+_adapt_window_size()
+
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
 root.mainloop()
