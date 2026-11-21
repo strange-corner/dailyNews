@@ -1,6 +1,6 @@
 import pathlib
 from typing import Any
-import tomllib
+import tomllib  # requires Python 3.11
 
 import email_fetcher
 import email_maintenance
