@@ -209,3 +209,4 @@ toc.json
 # Secrets
 /config/secret.toml
 email_fetcher_test.py
+src/config.py
