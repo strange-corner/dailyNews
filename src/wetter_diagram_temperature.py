@@ -1,41 +1,41 @@
-import matplotlib
-import matplotlib.pyplot as plt
+# import matplotlib
+# import matplotlib.pyplot as plt
 
-def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename: str):
-    """
-    :param temps_str: list of temp values
-    :param filename: e.g. temp_260219.png
-    :return: TeX, das direkt im Dokument eingefügt werden kann.
-    """
+# def generate_image_and_get_insertiontext(temps_str: list, folder: str, filename: str):
+#     """
+#     :param temps_str: list of temp values
+#     :param filename: e.g. temp_260219.png
+#     :return: TeX, das direkt im Dokument eingefügt werden kann.
+#     """
 
-    # LaTeX-Schriften verwenden
-    matplotlib.rcParams.update({
-        "pgf.texsystem": "pdflatex",  # oder lualatex/xelatex
-        "font.family": "serif",
-        "text.usetex": True,
-        "pgf.rcfonts": False,
-    })
+#     # LaTeX-Schriften verwenden
+#     matplotlib.rcParams.update({
+#         "pgf.texsystem": "pdflatex",  # oder lualatex/xelatex
+#         "font.family": "serif",
+#         "text.usetex": True,
+#         "pgf.rcfonts": False,
+#     })
 
-    temps = [float(t) for t in temps_str]
-    hours = list(range(24))
+#     temps = [float(t) for t in temps_str]
+#     hours = list(range(24))
 
-    fig_width = 5  # in inch
-    fig_height = fig_width / 2.5
+#     fig_width = 5  # in inch
+#     fig_height = fig_width / 2.5
 
-    # Plot
-    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
-    ax.plot(hours, temps)
-    ax.set_ylabel("Temp. °C")
-    ax.set_xlabel("Stunde")
-    ax.set_xlim(0, 23)
-    ax.set_xticks(range(0, 24, 2))
-    ax.grid(True)
+#     # Plot
+#     fig, ax = plt.subplots(figsize=(fig_width, fig_height))
+#     ax.plot(hours, temps)
+#     ax.set_ylabel("Temp. °C")
+#     ax.set_xlabel("Stunde")
+#     ax.set_xlim(0, 23)
+#     ax.set_xticks(range(0, 24, 2))
+#     ax.grid(True)
 
-    # Speichern als PGF
-    plt.savefig(f"{folder}/{filename}", bbox_inches="tight", pad_inches=0)
-    plt.close(fig)
+#     # Speichern als PGF
+#     plt.savefig(f"{folder}/{filename}", bbox_inches="tight", pad_inches=0)
+#     plt.close(fig)
 
-    return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
+#     return "\\includegraphics[width =\\columnwidth]{" + filename + "}\n"
 
 def _generate_precip_part(precip_d: list, pmax, precip_quant10: list, precip_quant90: list) -> str:
     """ Gibt den String für das Balkendiagramm zurück. Wenn es keinen Niederschlag gibt, dann Leerstring"""
