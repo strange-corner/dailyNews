@@ -275,8 +275,27 @@ locale.setlocale(locale.LC_TIME, "de_CH")
 root = tk.Tk()
 root.title("Zeitungs-Generator mit Wetter & Datum")
 
+# Scrollbarer Hauptbereich
+main_frame = tk.Frame(root)
+main_frame.pack(fill="both", expand=True)
+
+canvas = tk.Canvas(main_frame)
+canvas.pack(side="left", fill="both", expand=True)
+
+scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+scrollbar.pack(side="right", fill="y")
+
+canvas.configure(yscrollcommand=scrollbar.set)
+canvas.bind(
+    "<Configure>",
+    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+)
+
+scrollable_frame = tk.Frame(canvas)
+canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
 # Datumsauswahl
-date_frame = tk.Frame(root)
+date_frame = tk.Frame(scrollable_frame)
 date_frame.pack(padx=10, pady=5)
 tk.Label(date_frame, text="Nr.:").pack(side="left")
 nr_entry = tk.Entry(date_frame)
@@ -289,7 +308,7 @@ date_entry.pack(side="left")
 date_entry.bind("<<DateEntrySelected>>", lambda d: dateSelected())
 
 # Artikelbereich
-artf = tk.LabelFrame(root, text="Artikel", padx=5, pady=5)
+artf = tk.LabelFrame(scrollable_frame, text="Artikel", padx=5, pady=5)
 artf.pack(fill="both", expand=True, padx=10, pady=5)
 tk.Label(artf, text="Titel:").pack(anchor="w")
 article_title = tk.Entry(artf, width=80)
@@ -323,7 +342,7 @@ tk.Button(artf, text="Copy online article", command=copy_online_article).pack(pa
 tk.Button(artf, text="Infobox einfügen", command=(lambda: ui_stuff.open_infobox_popup(root, insert_infobox_into_article, infobox_content))).pack(pady=5, side="left")
 tk.Button(artf, text="Felder löschen", command=felder_loeschen).pack(pady=5)
 
-l2rFrame = tk.Frame(root)
+l2rFrame = tk.Frame(scrollable_frame)
 l2rFrame.pack()
 rf = tk.LabelFrame(l2rFrame, text="Rubrik", padx=5, pady=5)
 rf.pack(side="left", padx=10, pady=5)
@@ -343,7 +362,7 @@ af.pack(side="left", padx=10, pady=5)
 tk.Button(af, text="Agenda erstellen", command=save_agenda_block).pack()
 
 # Auswahl und Reihenfolge der Artikel
-self = tk.LabelFrame(root, text="Artikel für Tagesausgabe", padx=5, pady=5)
+self = tk.LabelFrame(scrollable_frame, text="Artikel für Tagesausgabe", padx=5, pady=5)
 self.pack(fill="both", expand=True, padx=10, pady=5)
 article_listbox = tk.Listbox(self, selectmode=tk.MULTIPLE, width=60, height=8)
 article_listbox.pack(side="left", fill="both", expand=True)
@@ -357,7 +376,7 @@ tk.Button(btnf, text="Tagesausgabe erzeugen", command=generate_today).pack(pady=
 tk.Button(btnf, text="Tagesausgabe hochladen", command=lambda: upload_today_and_add_to_clipboard(pdf_ausgabe, root)).pack(pady=10)
 
 # RSS Feed
-rss_frame = tk.LabelFrame(root, text="RSS-Feeds", padx=5, pady=5)
+rss_frame = tk.LabelFrame(scrollable_frame, text="RSS-Feeds", padx=5, pady=5)
 rss_frame.pack(fill="both", padx=10, pady=5)
 
 rss_url_entry = tk.Entry(rss_frame, width=60)
@@ -366,10 +385,10 @@ rss_url_entry.pack(side="left", padx=5)
 
 tk.Button(rss_frame, text="RSS laden", command=load_rss_clicked).pack(side="left")
 
-rss_listbox = tk.Listbox(root, height=8, width=90)
+rss_listbox = tk.Listbox(scrollable_frame, height=8, width=90)
 rss_listbox.pack(fill="x", padx=10, pady=5)
 
-tk.Button(root, text="Artikel übernehmen", command=import_rss_article).pack(pady=5)
+tk.Button(scrollable_frame, text="Artikel übernehmen", command=import_rss_article).pack(pady=5)
 
 # Beim Start vorhandene Artikel laden
 refresh_articles()
