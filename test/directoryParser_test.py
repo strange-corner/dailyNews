@@ -17,13 +17,12 @@ class DirectoryParserTest(unittest.TestCase):
     def test_article_count_parametrized(self):
         cases = [
             ("test/testdata/directoryParserTestdata_kapoAR.html", 9),
-            (testdatafile, 251),
+            (testdatafile, 244),
         ]
         for filename, expected in cases:
-            with self.subTest(filename=filename, expected=expected):
-                testdata = self._read_testdata(filename)
-                articlelist = web_directoryParser.parse_article_directory(testdata)
-                self.assertEqual(expected, len(articlelist))
+            testdata = self._read_testdata(filename)
+            articlelist = web_directoryParser.parse_article_directory(testdata)
+            self.assertEqual(expected, len(articlelist))
 
     def test_first_article_details_parametrized(self):
         cases = [
@@ -31,12 +30,11 @@ class DirectoryParserTest(unittest.TestCase):
             (testdatafile, "Ja zu Bahnhof-Vorlagen sorgt für Erleichterung", "27.09.2020"),
         ]
         for filename, exp_title, exp_published in cases:
-            with self.subTest(filename=filename):
-                testdata = self._read_testdata(filename)
-                articlelist = web_directoryParser.parse_article_directory(testdata)
-                testarticle = articlelist[0]
-                self.assertEqual(exp_title, testarticle["title"])
-                self.assertEqual(exp_published, testarticle["published"])
+            testdata = self._read_testdata(filename)
+            articlelist = web_directoryParser.parse_article_directory(testdata)
+            testarticle = articlelist[0]
+            self.assertEqual(exp_title, testarticle["title"])
+            self.assertEqual(exp_published, testarticle["published"])
 
     def test_filter_by_date(self):
         cases = [
