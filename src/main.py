@@ -22,6 +22,8 @@ import ui_stuff
 import wetter_fetcher_and_article
 import util
 
+import sudoku
+
 pageflow = PageFlow()
 infobox_content = None # Zwischenspeicher, da Editor in anderem Fenster stattfindet.
 
@@ -267,6 +269,13 @@ def on_closing():
     pageflow.save_pageflow(getExistingFolderFromDate())
     root.destroy()
 
+def gen_sudoku():
+    universal_pageflow_element = Universal("u_sudoku.tex")
+    filepath = os.path.join(getExistingFolderFromDate(), universal_pageflow_element.filename)
+    sudoku.generate_and_save_sudoku_tex(filepath, show_solution=False, title="Sudoku")
+    pageflow.add(universal_pageflow_element)
+    refresh_article_ui()
+
 logging.basicConfig(level=logging.INFO)
 
 locale.setlocale(locale.LC_TIME, "de_CH")
@@ -396,6 +405,9 @@ tk.Button(wf, text="Wetter für Datum speichern", command=save_weather_block).pa
 af = tk.LabelFrame(l2rFrame, text="Agenda", padx=5, pady=5)
 af.pack(side="left", padx=10, pady=5)
 tk.Button(af, text="Agenda erstellen", command=save_agenda_block).pack()
+
+btn_sudoku = tk.Button(l2rFrame, text="Sudoku generieren", command=gen_sudoku)
+btn_sudoku.pack(pady=5)
 
 # Auswahl und Reihenfolge der Artikel
 self = tk.LabelFrame(scrollable_frame, text="Artikel für Tagesausgabe", padx=5, pady=5)
