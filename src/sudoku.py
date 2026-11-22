@@ -230,28 +230,6 @@ def _carve_uniquely(puzzle: list[list[int]], target_clues: int, rng: random.Rand
 
 # ------------------------- LaTeX-Ausgabe ------------------------- #
 
-def _latex_escape(text: str) -> str:
-    """
-    Escapt häufige LaTeX-Sonderzeichen in 'text' minimal, um sie in Tabellenausgaben zu verwenden.
-    """
-    repl = {
-        "\\": r"\textbackslash{}",
-        "&": r"\&",
-        "%": r"\%",
-        "$": r"\$",
-        "#": r"\#",
-        "_": r"\_",
-        "{": r"\{",
-        "}": r"\}",
-        "~": r"\textasciitilde{}",
-        "^": r"\textasciicircum{}",
-    }
-    out = []
-    for ch in text:
-        out.append(repl.get(ch, ch))
-    return "".join(out)
-
-
 def sudoku_to_tex(puzzle: list[list[int]], title: str | None = None, solution: list[list[int]] | None = None,
                   show_solution: bool = False) -> str:
     """
@@ -285,7 +263,7 @@ def sudoku_to_tex(puzzle: list[list[int]], title: str | None = None, solution: l
 
     out: list[str] = [r"% Sudoku (inkludierbar)"]
     if title:
-        out.append(r"\textbf{" + _latex_escape(title) + r"}\\[0.3em]")
+        out.append(r"\textbf{" + title + r"}\\[0.3em]")
     out.extend(grid_to_tabular(puzzle))
 
     if show_solution and solution is not None:
