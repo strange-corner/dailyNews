@@ -10,6 +10,7 @@ import pageflow
 from web_directoryParser import *
 from urllib.parse import urlparse
 from multiprocessing import Process
+import online_article
 
 
 import wetter_fetcher_and_article, jotform
