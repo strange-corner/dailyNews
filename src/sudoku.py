@@ -293,7 +293,7 @@ def sudoku_to_tex(puzzle: list[list[int]], title: str | None = None, solution: l
         out.append(r"\textit{Lösung}\\[0.2em]")
         out.extend(grid_to_tabular(solution))
 
-    return "\n".join(out) + "\n"
+    return "\n".join(out) + "\n\\\\"
 
 
 def save_sudoku_tex(filepath: str, puzzle: list[list[int]], solution: list[list[int]] | None = None,
