@@ -1,0 +1,15 @@
+         	<div class="t">
+	         		<strong><p>Am Samstagmorgen (21.11.2026) verursachte ein Lernfahrer mit seinem Auto ohne Begleitperson auf der Martinsbruggstrasse einen Selbstunfall. Ohne sich um den entstandenen Schaden zu kümmern und sich zu melden, entfernte er sich von der Unfallstelle. Der Verursacher konnte später angehalten werden.<br/></p></strong>
+
+						<div class="newsbild">
+							<a href="https://www.stadt.sg.ch/news/stsg_stadtpolizei/2026/11/pflichtwidriges-verhalten-nach-unfall.html" title="Interner Link: Pflichtwidriges Verhalten nach Unfall">
+								<img src="https://www.stadt.sg.ch/content/applikationen/news/stsg_stadtpolizei/2026/11/pflichtwidriges-verhalten-nach-unfall/jcr:content/newsdetail/image.originalsize.jpg/Beschädigtes Fz.jpg" class="textbild cq-dd-image" alt="Besch&auml;digtes Fz" width="250"/>
+							</a>
+							<p class="bildlegende"></p>
+						</div>
+
+					<p>Am Samstagmorgen, kurz nach 7 Uhr, erhielt die Stadtpolizei die Meldung eines mutmasslichen Verkehrsunfalls an der Martinsbruggstrasse. Dabei wurde ein Leitpfosten beschädigt und Flurschaden begangen. In der Nähe konnte ein beschädigtes Fahrzeug angetroffen werden. Abklärungen führten zum Unfallverursacher. Gemäss Aussagen fuhr der Lenker auf der Martinsbruggstrasse stadtauswärts. Auf der nassen Fahrbahn kam er ins Rutschen und kollidierte rechtsseitig mit einem Leitpfosten und verursachte zudem Flurschaden. Einige Meter weiter wurde das Fahrzeug parkiert und das beschädigte Rad vorne rechts gewechselt. Die Weiterfahrt blieb infolge der beschädigten Achse erfolglos. Der 22-jährige Lenker entfernte sich von der Unfallstelle ohne sich um den Schaden zu kümmern und es zu melden. Er konnte später angehalten und zur Sache befragt werden. Er ist im Besitze eines Lernfahrausweises und führte die Fahrt ohne Begleitperson durch. Personen wurden keine verletzt. Es entstand mässiger Sachschaden.</p>
+
+
+
+	         	</div>

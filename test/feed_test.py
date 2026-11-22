@@ -36,7 +36,11 @@ class FeedTest(unittest.TestCase):
 
         self.assertEqual(expected_content_lines, len(parts[1].splitlines()))
         print("****************************************")
+        return parts
 
+    def test_has_all_parts(self):
+        parts = self.summary_from_file(TESTDATA_DIR / "feed_article_Stapo_mit_br_im_Lead.txt", 4)
+        self.assertTrue(all(part is not None for part in parts))
 
     def test_all(self):
         """ Einfach mal durchlaufen lassen, und es soll nix crashen"""

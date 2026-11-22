@@ -11,7 +11,7 @@ def _parts_from_feed_summary(artikel_html: str):
     paragraphs = soup.find_all(["p", "li"])
 
     if soup.strong:
-        lead = soup.strong.string
+        lead = soup.strong.text
     elif paragraphs:
         lead = paragraphs[0].text
     else:
