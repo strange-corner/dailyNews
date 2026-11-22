@@ -1,9 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
-from datetime import datetime
-
-import online_article
+import logging
 
 
 class BaseArticleDirectoryParser(ABC):
@@ -91,6 +89,8 @@ class HerisauArticleDirectoryParser(BaseArticleDirectoryParser):
                                         "article_url_to_fetch_from": str(article_url).strip(),
                                         "published": str(published_text).strip(),
                                     })
+                            else:
+                                logging.info("Gefiltert: " + title)
                         if articles:
                             return articles
                 except Exception:

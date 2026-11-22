@@ -41,7 +41,7 @@ class DirectoryParserTest(unittest.TestCase):
     def test_filter_by_date(self):
         cases = [
             ("test/testdata/directoryParserTestdata_kapoAR.html", 3),
-            (testdatafile, 8),
+            (testdatafile, 7),  # Bauplanauflage gefiltert
         ]
         for filename, exp_count in cases:
             testdata = self._read_testdata(filename)
