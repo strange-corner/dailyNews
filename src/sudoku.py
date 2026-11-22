@@ -264,6 +264,7 @@ def sudoku_to_tex(puzzle: list[list[int]], title: str | None = None, solution: l
     out: list[str] = [r"% Sudoku (inkludierbar)"]
     if title:
         out.append(r"\textbf{" + title + r"}\\[0.3em]")
+    out.append("{\\large")  # damit wird es genau 1 Spalte breit
     out.extend(grid_to_tabular(puzzle))
 
     if show_solution and solution is not None:
@@ -271,6 +272,7 @@ def sudoku_to_tex(puzzle: list[list[int]], title: str | None = None, solution: l
         out.append(r"\textit{Lösung}\\[0.2em]")
         out.extend(grid_to_tabular(solution))
 
+    out.extend("}")  # \large schliessen
     return "\n".join(out) + "\n\\\\"
 
 
