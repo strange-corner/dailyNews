@@ -4,7 +4,7 @@ import subprocess
 from datetime import datetime
 from tkinter import messagebox
 
-from pageflow import PageFlow, Article, CategoryMarker
+from pageflow import PageFlow, Article, CategoryMarker, Universal
 
 
 class PdfToday(object):
@@ -57,7 +57,7 @@ class PdfToday(object):
             elements = pageflow.elements()
             for i in selected_indices:
                 ele = elements[i]
-                if type(ele) == Article:
+                if type(ele) in (Article, Universal):
                     f.write("\\input{" + ele.filename + "}\n")
                 elif type(ele) == CategoryMarker:
                     f.write("\\section{" + ele.ident() + "}\n")  # \section* wäre unnumbered section; nicht im TOC

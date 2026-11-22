@@ -33,11 +33,27 @@ class CategoryMarker(SeqElem):
         return self.name
 
 
-def _getListOfTexArticleFiles(folder: str) -> set:
+class Universal(SeqElem):
+    """
+    Universelles Tex-File, das eingefügt werden kann, z.B. Sudoku
+    """
+    def __init__(self, filename):
+        self.filename = filename
+        if not filename.startswith("u_"):
+            raise ValueError("Universal filename must start with u_")
+
+    def __eq__(self, other):
+        return self.ident() == other.ident()
+
+    def ident(self) -> str:
+        return self.filename
+
+
+def _getListOfTexSeqElemFiles(folder: str) -> set:
     filenameset = set()  # set, not list for efficiency, we don't need the order here
     if os.path.isdir(folder):
         for fname in os.listdir(folder):
-            if fname.endswith(".tex") and fname.startswith("a_"):
+            if fname.endswith(".tex") and fname[1] == "_":
                 filenameset.add(fname)
     return filenameset
 
@@ -61,7 +77,7 @@ class PageFlow:
 
     def refreshArticles(self, folder: str):
         """ Reloads the articles from the folder and reorders them according to the pageflow.txt file """
-        filenameset = _getListOfTexArticleFiles(folder)
+        filenameset = _getListOfTexSeqElemFiles(folder)
         self.removeAllArticles()
         fname = f"{folder}/pageflow.txt"
         if os.path.exists(fname):
@@ -70,8 +86,11 @@ class PageFlow:
                     if stripline in filenameset:
                         filenameset.remove(stripline)
                         if stripline.endswith(".tex") and stripline.startswith("a_"):
-                            logger.info("adding %s", stripline)
+                            logger.info("adding Article %s", stripline)
                             self.seq.append(Article(stripline))
+                        else:
+                            logger.info("adding Universal %s", stripline)
+                            self.seq.append(Universal(stripline))
                     else:
                         self.seq.append(CategoryMarker(stripline))
         for neue in filenameset:  # falls es neue hat, die noch nicht im pageflow.txt sind
