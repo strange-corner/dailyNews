@@ -83,13 +83,14 @@ class HerisauArticleDirectoryParser(BaseArticleDirectoryParser):
                                 continue
                             title_url = _pick(ent, ["name"])
                             (title, article_url) = _trenne_url_und_text(title_url)
-                            published_text = _pick(ent,["datum",])
-                            if article_url:
-                                articles.append({
-                                    "title": str(title).strip(),
-                                    "article_url_to_fetch_from": str(article_url).strip(),
-                                    "published": str(published_text).strip(),
-                                })
+                            if not title.startswith("Bauplanauflage"):
+                                published_text = _pick(ent,["datum",])
+                                if article_url:
+                                    articles.append({
+                                        "title": str(title).strip(),
+                                        "article_url_to_fetch_from": str(article_url).strip(),
+                                        "published": str(published_text).strip(),
+                                    })
                         if articles:
                             return articles
                 except Exception:
