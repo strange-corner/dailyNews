@@ -35,7 +35,7 @@ class DirectoryParserTest(unittest.TestCase):
         cases = [
             ("test/testdata/directoryParserTestdata_kapoAR.html", "Unfall zwischen Auto und Roller", "06.11.2026"),
             ("test/testdata/directoryParserTestdata_HerisauCh.html", "Ja zu Bahnhof-Vorlagen sorgt für Erleichterung", "27.09.2020"),
-            ("test/testdata/ar_kant_verwaltung.html", f"Kantonales Tiefbauamt erhÃ¤lt ersten vollelektrischen Lieferwagen", "24.11.2026"),
+            ("test/testdata/ar_kant_verwaltung.html", f"Kantonales Tiefbauamt erhält ersten vollelektrischen Lieferwagen", "24.11.2026"),
         ]
         for filename, exp_title, exp_published in cases:
             testdata = self._read_testdata(filename)
@@ -58,7 +58,7 @@ class DirectoryParserTest(unittest.TestCase):
             self.assertEqual(exp_count, len(filtered_list))
 
     def _read_testdata(self, filename):
-        with open(filename) as f:
+        with open(filename, encoding="utf-8") as f:
             html = f.read()
             return html
 
