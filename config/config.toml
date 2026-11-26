@@ -19,5 +19,6 @@ quelle = "News Service Bund"
 [Feeds]
 web = [
     "https://ar.ch/verwaltung/departement-inneres-und-sicherheit/kantonspolizei/medienmitteilungen-der-kantonspolizei/",
-    "https://www.herisau.ch/aktuellesinformationen"
+    "https://www.herisau.ch/aktuellesinformationen",
+    "https://ar.ch/schnellzugriff/medienmitteilungen-der-kantonalen-verwaltung/"
 ]
