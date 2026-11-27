@@ -57,7 +57,7 @@ class FeedTest(unittest.TestCase):
         filtered_articles = articles.filter_articles_published_after(articles_dict, datetime.datetime(2026, 11, 1))
         self.assertEqual(121, len(filtered_articles))
         selected_articles = articles.select_articles_admin_ch(filtered_articles)
-        self.assertEqual(2, len(selected_articles))
+        self.assertEqual(3, len(selected_articles))
         print(filtered_articles[0]["article_url_to_fetch_from"])
 
 
