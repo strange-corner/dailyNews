@@ -67,4 +67,11 @@ def filter_articles_published_after(articles: list[dict], min_published_date: da
 
 
 def select_articles_admin_ch(article_list):
-    return [article for article in article_list if "Öffentliche Warnung" in article["title"]]
+    return [
+        article
+        for article in article_list
+        if (
+                "Öffentliche Warnung" in article["title"]
+                or "Brandgefahr" in article["title"]
+        )
+    ]
